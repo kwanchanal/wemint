@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mint Your Coin</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%E2%AD%90%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" />
+    <link rel="stylesheet" href="mintcoin.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="header">
+        <h1>MINT YOUR COIN 🪄</h1>
+        <p>COIN DETAIL</p>
+        <small>CHOOSE CAREFULLY, THESE CAN'T BE CHANGED ONCE THE COIN IS CREATED</small>
+      </header>
+
+      <div class="tabs" role="tablist">
+        <button class="tab is-active" role="tab" aria-selected="true" data-tab="new">New coin</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="created">Created coin</button>
+      </div>
+
+      <section class="panel is-active" role="tabpanel" data-panel="new">
+        <div class="card mono-form">
+          <div class="field wallet-field">
+            YOUR WALLET
+            <div class="wallet">
+              <button class="wallet__btn" type="button">CONNECT WALLET</button>
+              <select class="wallet__select">
+                <option>METAMASK</option>
+              </select>
+            </div>
+          </div>
+
+          <label class="field">
+            OWNER ADDRESS
+            <span class="field__hint">WALLET CONNECTED WILL BE OWNER</span>
+            <input id="owner-address" class="owner-address" type="text" placeholder="0x..." readonly />
+          </label>
+
+          <label class="field">
+            NETWORK
+            <span class="field__hint">WHERE YOUR COIN LOCATED</span>
+            <select>
+              <option>BASE MAINNET</option>
+              <option>BASE SEPOLIA</option>
+            </select>
+          </label>
+
+          <label class="field">
+            STANDARD
+            <span class="field__hint">ONLY ERC-20 AVAILABLE</span>
+            <select>
+              <option>ERC-20</option>
+            </select>
+          </label>
+
+          <label class="field">
+            COIN NAME
+            <input id="coin-name" type="text" placeholder="BITCOIN" />
+          </label>
+
+          <label class="field">
+            TICKER SYMBOL
+            <input id="coin-symbol" type="text" placeholder="BTC" />
+          </label>
+
+          <label class="field">
+            DECIMALS
+            <span class="field__hint">DEFAULT 18 FOR ERC-20</span>
+            <input id="coin-decimals" type="number" placeholder="18" />
+          </label>
+
+          <label class="field">
+            SHORT DESCRIPTION
+            <span class="field__hint">TELL ABOUT YOUR COIN &lt;15 WORDS</span>
+            <textarea rows="3" placeholder="PEER-PEER ENABLED TRANSACTION DIGITAL GOLD"></textarea>
+          </label>
+
+          <label class="field">
+            INITIAL SUPPLY
+            <span class="field__hint">FREE FOR FIRST 100 COIN</span>
+            <input id="initial-supply" type="number" value="100" readonly />
+          </label>
+
+          <label class="field">
+            SUPPLY CAP (OPTIONAL)
+            <input id="supply-cap" type="number" placeholder="1000000" />
+          </label>
+
+          <div class="field">
+            FEATURES
+            <div class="checks">
+              <label class="check"><input type="checkbox" checked /> Mintable</label>
+              <label class="check"><input type="checkbox" checked /> Burnable</label>
+              <label class="check"><input type="checkbox" checked /> Pausable</label>
+              <label class="check"><input type="checkbox" checked /> Ownable</label>
+            </div>
+          </div>
+
+          <div class="field">
+            COIN IMAGE
+            <label class="upload-box" for="coin-image">
+              <div class="upload-box__icon">+</div>
+              <p>Select image to upload</p>
+              <p>Image - max 15mb, .jpg, .gif or .png</p>
+              <p>Ratio - min. 1000x1000px, 1:1 square recommended</p>
+            </label>
+            <input id="coin-image" class="upload-input" type="file" accept=".jpg,.jpeg,.png,.gif,image/*" />
+          </div>
+
+          <div class="field preview">
+            COIN PREVIEW
+            <div class="preview__empty">Your coin preview appears here</div>
+            <img class="preview__image" alt="Coin preview" />
+          </div>
+
+          <button class="mint-btn" type="button">MINT</button>
+          <div class="mint-status" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="panel" role="tabpanel" data-panel="created">
+        <div class="list">
+          <article class="coin-card">
+            <div class="coin-card__img">(PLACEHOLDER)</div>
+            <div class="coin-card__body">
+              <h3>NETWORK - COIN NAME</h3>
+              <p>Description, is................................</p>
+              <div class="coin-card__meta">
+                <span>Coin contract address</span>
+                <span class="pill">Claimed count</span>
+              </div>
+            </div>
+            <div class="coin-card__actions">
+              <button class="ghost" type="button">❤</button>
+              <button class="ghost" type="button">⧉</button>
+            </div>
+          </article>
+
+          <article class="coin-card">
+            <div class="coin-card__img">(PLACEHOLDER)</div>
+            <div class="coin-card__body">
+              <h3>NETWORK - COIN NAME</h3>
+              <p>Description, is................................</p>
+              <div class="coin-card__meta">
+                <span>Coin contract address</span>
+                <span class="pill">Claimed count</span>
+              </div>
+            </div>
+            <div class="coin-card__actions">
+              <button class="ghost" type="button">❤</button>
+              <button class="ghost" type="button">⧉</button>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.12.0/dist/ethers.umd.min.js"></script>
+    <script src="mintcoin.js"></script>
+  </body>
+</html>
