@@ -48,7 +48,7 @@ contract CoinFactory is Ownable {
             cap_
         );
 
-        (bool sent, ) = feeRecipient.call{value: msg.value}(""");
+        (bool sent, ) = feeRecipient.call{value: msg.value}("");
         require(sent, "FEE_TRANSFER_FAILED");
 
         emit CoinCreated(address(coin), owner_, name_, symbol_);

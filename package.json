@@ -1,5 +1,5 @@
 {
-  "name": "factory",
+  "name": "wemint",
   "private": true,
   "scripts": {
     "compile": "hardhat compile",

@@ -3,13 +3,12 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "@openzeppelin/contracts/utils/Pausable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Pausable.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Capped.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract MintCoin is ERC20, ERC20Burnable, Pausable, Ownable {
+contract MintCoin is ERC20, ERC20Burnable, ERC20Pausable, ERC20Capped, Ownable {
     uint8 private immutable _coinDecimals;
-    uint256 public immutable cap;
-
     constructor(
         string memory name_,
         string memory symbol_,
@@ -17,10 +16,12 @@ contract MintCoin is ERC20, ERC20Burnable, Pausable, Ownable {
         uint256 initialSupply_,
         address owner_,
         uint256 cap_
-    ) ERC20(name_, symbol_) Ownable(owner_) {
+    )
+        ERC20(name_, symbol_)
+        ERC20Capped(cap_ == 0 ? type(uint256).max : cap_)
+        Ownable(owner_)
+    {
         _coinDecimals = decimals_;
-        cap = cap_;
-
         if (initialSupply_ > 0) {
             _mint(owner_, initialSupply_);
         }
@@ -42,14 +43,10 @@ contract MintCoin is ERC20, ERC20Burnable, Pausable, Ownable {
         _mint(to, amount);
     }
 
-    function _mint(address account, uint256 amount) internal override {
-        if (cap > 0) {
-            require(totalSupply() + amount <= cap, "CAP_EXCEEDED");
-        }
-        super._mint(account, amount);
-    }
-
-    function _update(address from, address to, uint256 value) internal override(ERC20) whenNotPaused {
+    function _update(address from, address to, uint256 value)
+        internal
+        override(ERC20, ERC20Pausable, ERC20Capped)
+    {
         super._update(from, to, value);
     }
 }

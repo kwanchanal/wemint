@@ -19,7 +19,7 @@ const ownerAddress = document.querySelector("#owner-address");
 const mintButton = document.querySelector(".mint-btn");
 const mintStatus = document.querySelector(".mint-status");
 
-const FACTORY_ADDRESS = "REPLACE_WITH_FACTORY_ADDRESS";
+const FACTORY_ADDRESS = "0x08813b21e4B2fB89Dbd8b25CcC54fFf69dA08BFF";
 const DEPLOY_FEE_ETH = "0.001";
 const FACTORY_ABI = [
   "function createCoin(string name,string symbol,uint8 decimals,uint256 initialSupply,address owner,uint256 cap) payable returns (address)"
