@@ -29,6 +29,9 @@ const FACTORY_ABI = [
   "event CoinCreated(address indexed coin,address indexed owner,string name,string symbol,string description)",
   "function createCoin(string name,string symbol,uint8 decimals,uint256 initialSupply,address owner,uint256 cap,string description) payable returns (address)"
 ];
+const FACTORY_ABI_LEGACY = [
+  "event CoinCreated(address indexed coin,address indexed owner,string name,string symbol)"
+];
 const ERC20_ABI = [
   "function name() view returns (string)",
   "function symbol() view returns (string)",
@@ -244,29 +247,45 @@ const loadCreatedCoins = async () => {
     const network = await provider.getNetwork();
     const networkLabel = getNetworkLabel(Number(network.chainId));
     const iface = new ethers.Interface(FACTORY_ABI);
+    const legacyIface = new ethers.Interface(FACTORY_ABI_LEGACY);
     const logs = (
       await Promise.all(
-        FACTORY_ADDRESSES.map((address) =>
-          provider.getLogs({
-            address,
-            topics: [iface.getEvent("CoinCreated").topicHash],
-            fromBlock: 0,
-            toBlock: "latest"
-          })
-        )
+        FACTORY_ADDRESSES.map(async (address) => {
+          const [modernLogs, legacyLogs] = await Promise.all([
+            provider.getLogs({
+              address,
+              topics: [iface.getEvent("CoinCreated").topicHash],
+              fromBlock: 0,
+              toBlock: "latest"
+            }),
+            provider.getLogs({
+              address,
+              topics: [legacyIface.getEvent("CoinCreated").topicHash],
+              fromBlock: 0,
+              toBlock: "latest"
+            })
+          ]);
+          return [...modernLogs, ...legacyLogs];
+        })
       )
     ).flat();
 
     const seen = new Set();
     const coins = [];
     for (const log of logs) {
-      const parsed = iface.parseLog(log);
+      let parsed;
+      let description = "";
+      try {
+        parsed = iface.parseLog(log);
+        description = parsed.args.description;
+      } catch (error) {
+        parsed = legacyIface.parseLog(log);
+      }
       const address = parsed.args.coin;
       if (seen.has(address)) continue;
       seen.add(address);
       let name = parsed.args.name;
       let symbol = parsed.args.symbol;
-      let description = parsed.args.description;
       try {
         const token = new ethers.Contract(address, ERC20_ABI, provider);
         name = await token.name();
