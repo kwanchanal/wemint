@@ -1,54 +1,517 @@
 <!doctype html>
-<html lang="th">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>We Mint</title>
+    <title>We Mint | Showcase</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%90%B0%3C/text%3E%3C/svg%3E" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700;800&display=swap" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #05070d;
+        --blue: #7cc7ff;
+        --blue-dim: #2d5f8f;
+        --blue-soft: rgba(124, 199, 255, 0.22);
+        --ink: #d9f2ff;
+        --ink-dim: #9bb6cc;
+        --panel: rgba(11, 18, 30, 0.82);
+        --border: rgba(124, 199, 255, 0.2);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        background: var(--bg);
+        color: var(--ink);
+      }
+
+      .matrix-shell {
+        position: relative;
+        min-height: 100vh;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at top, #070c14 0%, #05070d 55%, #030508 100%);
+      }
+
+      canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .scanlines {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          180deg,
+          rgba(124, 199, 255, 0.08) 0px,
+          rgba(124, 199, 255, 0.08) 1px,
+          transparent 1px,
+          transparent 4px
+        );
+        opacity: 0.45;
+        mix-blend-mode: screen;
+        animation: scan 8s linear infinite;
+        pointer-events: none;
+      }
+
+      .matrix-shell::after {
+        content: "";
+        position: absolute;
+        inset: -4%;
+        border-radius: 28px;
+        box-shadow: inset 0 0 140px rgba(2, 4, 8, 0.85);
+        pointer-events: none;
+      }
+
+      .overlay {
+        position: relative;
+        z-index: 2;
+        width: min(1100px, 86vw);
+        height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        padding: 28px 0 48px;
+        pointer-events: none;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-transform: uppercase;
+        letter-spacing: 0.32em;
+        font-size: 12px;
+        color: var(--ink-dim);
+        pointer-events: auto;
+      }
+
+      .topbar a {
+        color: var(--ink);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        padding-bottom: 4px;
+        transition: border-color 0.25s ease, color 0.25s ease;
+      }
+
+      .topbar a:hover {
+        color: var(--blue);
+        border-color: var(--blue);
+      }
+
+      .center-copy {
+        display: grid;
+        place-items: center;
+        text-align: center;
+        gap: 10px;
+      }
+
+      .terminal-popup {
+        width: min(520px, 80vw);
+        background: rgba(4, 6, 10, 0.92);
+        border: 1px solid rgba(124, 199, 255, 0.18);
+        border-radius: 14px;
+        padding: 16px 18px 18px;
+        box-shadow: 0 24px 60px rgba(2, 6, 12, 0.75);
+        text-align: left;
+      }
+
+      .terminal-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .terminal-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #2a3648;
+      }
+
+      .terminal-title {
+        margin-left: auto;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        color: var(--ink-dim);
+        text-transform: uppercase;
+      }
+
+      .terminal-line {
+        margin: 0;
+        font-size: clamp(14px, 2.8vw, 18px);
+        color: var(--ink);
+        letter-spacing: 0.08em;
+        white-space: pre-wrap;
+      }
+
+      .terminal-cursor {
+        display: inline-block;
+        width: 2px;
+        height: 1.1em;
+        margin-left: 6px;
+        background: var(--ink);
+        animation: blink 0.8s steps(1, end) infinite;
+        vertical-align: -2px;
+      }
+
+      .terminal-heart {
+        color: #ff4b5f;
+      }
+
+      .cta-bar {
+        align-self: end;
+        justify-self: center;
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+        border-radius: 999px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        box-shadow: 0 24px 60px rgba(2, 6, 12, 0.8);
+        pointer-events: auto;
+      }
+
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
+        border-radius: 999px;
+        background: rgba(18, 28, 44, 0.8);
+        color: var(--ink);
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-size: 12px;
+        border: 1px solid transparent;
+        transition: border-color 0.25s ease, transform 0.2s ease, color 0.25s ease;
+      }
+
+      .cta:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+        transform: translateY(-1px);
+      }
+
+      .cta-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--blue);
+        box-shadow: 0 0 10px var(--blue-soft);
+      }
+
+      .cta-dot--amber {
+        background: #f0b15c;
+        box-shadow: 0 0 10px rgba(240, 177, 92, 0.35);
+      }
+
+      .cta-dot--rose {
+        background: #ff5c8a;
+        box-shadow: 0 0 10px rgba(255, 92, 138, 0.35);
+      }
+
+      @keyframes scan {
+        0% {
+          background-position-y: 0;
+        }
+        100% {
+          background-position-y: 100px;
+        }
+      }
+
+      @keyframes blink {
+        0%,
+        49% {
+          opacity: 1;
+        }
+        50%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .topbar {
+          flex-direction: column;
+          gap: 8px;
+          letter-spacing: 0.2em;
+        }
+
+        .cta-bar {
+          flex-direction: column;
+          align-items: stretch;
+          width: min(360px, 90vw);
+        }
+
+        .cta {
+          justify-content: center;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .scanlines {
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div class="page">
-      <header class="topbar">
-        <div class="topbar__spacer"></div>
-        <a href="mintcoin.html" class="topbar__link text-mint-yours reveal delay-1"><span class="wiggle-target">MINT YOURS ✨</span></a>
-        <a href="#" class="topbar__link topbar__link--bold text-login reveal delay-2"><span class="wiggle-target">LOGIN</span></a>
-      </header>
+    <div class="matrix-shell">
+      <canvas id="matrix"></canvas>
+      <div class="scanlines"></div>
 
-      <main class="hero">
-        <div class="hero__text">
-          <div class="brand">
-            <span class="text-we reveal delay-3">WE</span>
-            <span class="brand__heart text-heart reveal delay-4 heart-blink">
-              <img class="heart-img" src="assets/shape/heart.png" alt="heart" />
-            </span>
-            <span class="text-mint reveal delay-5">MINT</span>
-          </div>
-          <h1 class="text-hello reveal delay-6"><span class="wiggle-target">สวัสดีค่ะ</span></h1>
-          <p class="hero__subtitle text-subtitle reveal delay-7">WE MINT DELIGHTFUL THINGS HERE</p>
-        </div>
+      <div class="overlay">
+        <header class="topbar">
+          <div>We Mint Showcase</div>
+          <a href="index.html">Back to Home</a>
+        </header>
 
-        <div class="hero__art">
-          <div class="stage">
-            <div class="asset asset--jar reveal delay-8">
-              <img src="assets/jar.png" alt="Jar with coins" />
+        <div class="center-copy">
+          <div class="terminal-popup">
+            <div class="terminal-bar">
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+              <span class="terminal-dot"></span>
+              <span class="terminal-title">Terminal</span>
             </div>
-            <div class="asset asset--coin1 reveal delay-9">
-              <img src="assets/coin1.png" alt="coin1" />
-            </div>
-            <div class="asset asset--coin2 reveal delay-10">
-              <img src="assets/coin2.png" alt="coin2" />
-            </div>
-            <div class="asset asset--coin3 reveal delay-11">
-              <img src="assets/coin3.png" alt="coin3" />
-            </div>
-            <div class="asset asset--coin4 reveal delay-12">
-              <img src="assets/coin4.png" alt="coin4" />
-            </div>
+            <p class="terminal-line"><span id="terminal-static"></span><span id="terminal-loop"></span><span class="terminal-cursor"></span></p>
           </div>
         </div>
-      </main>
+
+        <div class="cta-bar">
+          <a class="cta" href="#">
+            <span class="cta-dot"></span>
+            Sign Up
+          </a>
+          <a class="cta" href="#">
+            <span class="cta-dot cta-dot--amber"></span>
+            Log In
+          </a>
+          <a class="cta" href="#">
+            <span class="cta-dot cta-dot--rose"></span>
+            Explore
+          </a>
+        </div>
+      </div>
     </div>
+
+    <script>
+      const canvas = document.getElementById("matrix");
+      const ctx = canvas.getContext("2d");
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/\\|<>-+*#@";
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      let width = 0;
+      let height = 0;
+      let fontSize = 16;
+      let points = [];
+      let maskData = null;
+
+      const maskCanvas = document.createElement("canvas");
+      const maskCtx = maskCanvas.getContext("2d");
+      const terminalStatic = document.getElementById("terminal-static");
+      const terminalLoop = document.getElementById("terminal-loop");
+      const terminalStaticLines = [
+        "Good Morning",
+        "We {heart} Mint, Nice to see you",
+        "We create delightful things",
+        "",
+      ];
+      const terminalLoopPhrases = [
+        "What's on your mind today?",
+        "Ready to dive in?",
+        "What's up?",
+      ];
+      const terminalStaticMessage = terminalStaticLines.join("\n");
+      const terminalTokens = [];
+      let terminalIndex = 0;
+      let loopIndex = 0;
+      let loopPhraseIndex = 0;
+      let loopDeleting = false;
+
+      function resize() {
+        const dpr = window.devicePixelRatio || 1;
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        fontSize = Math.max(14, Math.floor(width / 90));
+        buildPoints();
+        buildMask();
+      }
+
+      function buildTerminalTokens(message) {
+        terminalTokens.length = 0;
+        for (let i = 0; i < message.length; i += 1) {
+          if (message.startsWith("{heart}", i)) {
+            terminalTokens.push({ type: "heart" });
+            i += "{heart}".length - 1;
+          } else {
+            terminalTokens.push({ type: "char", value: message[i] });
+          }
+        }
+      }
+
+      function renderToken(token) {
+        if (token.type === "heart") {
+          return '<span class="terminal-heart">♥︎</span>';
+        }
+        if (token.value === "\n") {
+          return "<br />";
+        }
+        return token.value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      }
+
+      function typeTerminal() {
+        if (!terminalStatic || !terminalLoop) {
+          return;
+        }
+        if (prefersReducedMotion) {
+          terminalStatic.innerHTML = terminalTokens.map(renderToken).join("");
+          terminalLoop.textContent = `\n${terminalLoopPhrases[0]}`;
+          return;
+        }
+        terminalStatic.innerHTML = terminalTokens.slice(0, terminalIndex).map(renderToken).join("");
+        if (terminalIndex < terminalTokens.length) {
+          terminalIndex += 1;
+          setTimeout(typeTerminal, 120);
+        } else {
+          terminalLoop.innerHTML = "<br />";
+          typeLoop();
+        }
+      }
+
+      function typeLoop() {
+        if (!terminalLoop) {
+          return;
+        }
+        const phrase = terminalLoopPhrases[loopPhraseIndex];
+        terminalLoop.innerHTML = `<br />${phrase.slice(0, loopIndex)}`;
+        if (!loopDeleting && loopIndex < phrase.length) {
+          loopIndex += 1;
+          setTimeout(typeLoop, 80);
+          return;
+        }
+        if (!loopDeleting) {
+          loopDeleting = true;
+          setTimeout(typeLoop, 900);
+          return;
+        }
+        if (loopIndex > 0) {
+          loopIndex -= 1;
+          setTimeout(typeLoop, 50);
+          return;
+        }
+        loopDeleting = false;
+        loopPhraseIndex = (loopPhraseIndex + 1) % terminalLoopPhrases.length;
+        setTimeout(typeLoop, 300);
+      }
+
+      function buildPoints() {
+        const count = Math.floor((width * height) / 1100);
+        points = Array.from({ length: count }, () => {
+          const radius = Math.random() * (Math.min(width, height) * 0.92);
+          return {
+            radius,
+            angle: Math.random() * Math.PI * 2,
+            speed: (Math.random() * 1.4 + 0.8) * (Math.random() > 0.5 ? 1 : -1),
+            offset: Math.random() * Math.PI * 2,
+            char: chars[Math.floor(Math.random() * chars.length)],
+          };
+        });
+      }
+
+      function buildMask() {
+        maskCanvas.width = width;
+        maskCanvas.height = height;
+        maskCtx.clearRect(0, 0, width, height);
+
+        let textSize = Math.min(width * 0.22, height * 0.32);
+        maskCtx.font = `600 ${Math.floor(textSize)}px "IBM Plex Mono", monospace`;
+        const text = "WE MINT";
+        let metrics = maskCtx.measureText(text);
+
+        while (metrics.width > width * 0.8 && textSize > 60) {
+          textSize -= 6;
+          maskCtx.font = `600 ${Math.floor(textSize)}px "IBM Plex Mono", monospace`;
+          metrics = maskCtx.measureText(text);
+        }
+
+        maskCtx.fillStyle = "rgba(255, 255, 255, 0.85)";
+        maskCtx.textAlign = "center";
+        maskCtx.textBaseline = "middle";
+        maskCtx.fillText(text, width / 2, height / 2);
+        maskCtx.shadowColor = "rgba(124, 199, 255, 0.6)";
+        maskCtx.shadowBlur = 20;
+        maskCtx.fillText(text, width / 2, height / 2);
+
+        maskData = maskCtx.getImageData(0, 0, width, height).data;
+      }
+
+      function drawFrame() {
+        ctx.fillStyle = "rgba(4, 6, 10, 1)";
+        ctx.fillRect(0, 0, width, height);
+
+        ctx.font = `500 ${fontSize}px "IBM Plex Mono", monospace`;
+        const centerX = width / 2;
+        const centerY = height / 2;
+
+        points.forEach((point) => {
+          const wobble = Math.sin(point.angle * 2 + point.offset) * 8;
+          const x = centerX + Math.cos(point.angle) * (point.radius + wobble);
+          const y = centerY + Math.sin(point.angle) * (point.radius + wobble * 0.6);
+          const maskIndex = (Math.floor(y) * width + Math.floor(x)) * 4 + 3;
+          const maskAlpha = maskData ? maskData[maskIndex] : 0;
+
+          if (maskAlpha > 20) {
+            ctx.fillStyle = "rgba(175, 224, 255, 0.85)";
+          } else {
+            ctx.fillStyle = "rgba(74, 130, 185, 0.6)";
+          }
+          ctx.shadowBlur = 0;
+
+          ctx.fillText(point.char, x, y);
+          point.angle += (point.speed * 0.005);
+          if (Math.random() > 0.98) {
+            point.char = chars[Math.floor(Math.random() * chars.length)];
+          }
+        });
+      }
+
+      let lastTime = 0;
+      function animate(time) {
+        if (!prefersReducedMotion) {
+          if (time - lastTime > 50) {
+            drawFrame();
+            lastTime = time;
+          }
+          requestAnimationFrame(animate);
+        }
+      }
+
+      resize();
+      buildTerminalTokens(terminalStaticMessage);
+      window.addEventListener("resize", resize);
+      drawFrame();
+      typeTerminal();
+      if (!prefersReducedMotion) {
+        requestAnimationFrame(animate);
+      }
+    </script>
   </body>
 </html>
