@@ -243,32 +243,45 @@ const loadCreatedCoins = async () => {
     provider = new ethers.JsonRpcProvider("https://sepolia.base.org");
   }
 
+  const fetchLogsInChunks = async (address, topic) => {
+    const latest = await provider.getBlockNumber();
+    const chunkSize = 50000;
+    const results = [];
+    for (let from = 0; from <= latest; from += chunkSize + 1) {
+      const to = Math.min(from + chunkSize, latest);
+      const chunk = await provider.getLogs({
+        address,
+        topics: [topic],
+        fromBlock: from,
+        toBlock: to
+      });
+      results.push(...chunk);
+    }
+    return results;
+  };
+
   try {
     const network = await provider.getNetwork();
     const networkLabel = getNetworkLabel(Number(network.chainId));
+    console.log("[created-coins] network", networkLabel, Number(network.chainId));
     const iface = new ethers.Interface(FACTORY_ABI);
     const legacyIface = new ethers.Interface(FACTORY_ABI_LEGACY);
     const logs = (
       await Promise.all(
         FACTORY_ADDRESSES.map(async (address) => {
           const [modernLogs, legacyLogs] = await Promise.all([
-            provider.getLogs({
-              address,
-              topics: [iface.getEvent("CoinCreated").topicHash],
-              fromBlock: 0,
-              toBlock: "latest"
-            }),
-            provider.getLogs({
-              address,
-              topics: [legacyIface.getEvent("CoinCreated").topicHash],
-              fromBlock: 0,
-              toBlock: "latest"
-            })
+            fetchLogsInChunks(address, iface.getEvent("CoinCreated").topicHash),
+            fetchLogsInChunks(address, legacyIface.getEvent("CoinCreated").topicHash)
           ]);
+          console.log("[created-coins] logs", address, {
+            modern: modernLogs.length,
+            legacy: legacyLogs.length
+          });
           return [...modernLogs, ...legacyLogs];
         })
       )
     ).flat();
+    console.log("[created-coins] total logs", logs.length);
 
     const seen = new Set();
     const coins = [];
@@ -296,9 +309,11 @@ const loadCreatedCoins = async () => {
       }
       coins.push({ address, name, symbol, description });
     }
+    console.log("[created-coins] parsed coins", coins.length);
 
     renderCreatedCoins(coins.length ? coins : fallback, networkLabel);
   } catch (error) {
+    console.error("[created-coins] failed", error);
     renderCreatedCoins(fallback, "BASE SEPO");
   }
 };
