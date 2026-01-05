@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>We Mint | Showcase</title>
+    <title>We Mint</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%90%B0%3C/text%3E%3C/svg%3E" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
     <style>
@@ -221,6 +221,11 @@
         box-shadow: 0 0 10px rgba(255, 92, 138, 0.35);
       }
 
+      .cta-dot--green {
+        background: #5dff8a;
+        box-shadow: 0 0 10px rgba(93, 255, 138, 0.35);
+      }
+
       @keyframes scan {
         0% {
           background-position-y: 0;
@@ -238,6 +243,23 @@
         50%,
         100% {
           opacity: 0;
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .terminal-popup {
+          width: min(480px, 85vw);
+        }
+
+        .cta-bar {
+          flex-wrap: wrap;
+          justify-content: center;
+          width: min(520px, 90vw);
+        }
+
+        .cta {
+          flex: 1 1 200px;
+          justify-content: center;
         }
       }
 
@@ -259,6 +281,21 @@
         }
       }
 
+      @media (max-width: 480px) {
+        .topbar {
+          letter-spacing: 0.14em;
+        }
+
+        .terminal-line {
+          letter-spacing: 0.05em;
+        }
+
+        .cta {
+          font-size: 11px;
+          letter-spacing: 0.1em;
+        }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .scanlines {
           animation: none;
@@ -272,10 +309,7 @@
       <div class="scanlines"></div>
 
       <div class="overlay">
-        <header class="topbar">
-          <div>We Mint Showcase</div>
-          <a href="index.html">Back to Home</a>
-        </header>
+        <header class="topbar"></header>
 
         <div class="center-copy">
           <div class="terminal-popup">
@@ -290,17 +324,21 @@
         </div>
 
         <div class="cta-bar">
-          <a class="cta" href="#">
+          <a class="cta" href="mintcoin/mintcoin.html">
             <span class="cta-dot"></span>
-            Sign Up
+            MINT YOUR COIN
           </a>
           <a class="cta" href="#">
             <span class="cta-dot cta-dot--amber"></span>
-            Log In
+            WE BUILD
           </a>
           <a class="cta" href="#">
             <span class="cta-dot cta-dot--rose"></span>
-            Explore
+            WE APP
+          </a>
+          <a class="cta" href="#">
+            <span class="cta-dot cta-dot--green"></span>
+            WE SERVE
           </a>
         </div>
       </div>

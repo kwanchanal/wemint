@@ -111,6 +111,8 @@ if (mintButton) {
 const imageInput = document.querySelector("#coin-image");
 const previewImage = document.querySelector(".preview__image");
 const previewEmpty = document.querySelector(".preview__empty");
+const headerText = document.querySelector("#header-text");
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 if (imageInput) {
   imageInput.addEventListener("change", () => {
@@ -123,4 +125,37 @@ if (imageInput) {
       previewEmpty.style.display = "none";
     }
   });
+}
+
+if (headerText) {
+  const headerMessage = "MINT YOUR COIN";
+  let headerIndex = 0;
+  let headerDeleting = false;
+
+  const typeHeader = () => {
+    if (prefersReducedMotion) {
+      headerText.textContent = headerMessage;
+      return;
+    }
+    headerText.textContent = headerMessage.slice(0, headerIndex);
+    if (!headerDeleting && headerIndex < headerMessage.length) {
+      headerIndex += 1;
+      setTimeout(typeHeader, 110);
+      return;
+    }
+    if (!headerDeleting) {
+      headerDeleting = true;
+      setTimeout(typeHeader, 900);
+      return;
+    }
+    if (headerIndex > 0) {
+      headerIndex -= 1;
+      setTimeout(typeHeader, 60);
+      return;
+    }
+    headerDeleting = false;
+    setTimeout(typeHeader, 500);
+  };
+
+  typeHeader();
 }

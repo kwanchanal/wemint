@@ -1,11 +1,14 @@
 :root {
-  --bg: #000000;
-  --card: #0d0d0d;
-  --card-light: #d9d9d9;
-  --text: #f5f5f5;
-  --muted: #9b9b9b;
-  --mint: #6fcf97;
-  --line: #2a2a2a;
+  --bg: #05070d;
+  --bg-deep: #030508;
+  --card: rgba(6, 10, 16, 0.92);
+  --card-bright: rgba(9, 16, 28, 0.92);
+  --text: #d9f2ff;
+  --muted: #8aa4ba;
+  --mint: #7cc7ff;
+  --mint-soft: rgba(124, 199, 255, 0.2);
+  --line: rgba(124, 199, 255, 0.18);
+  --warning: #ff6b6b;
 }
 
 * {
@@ -17,21 +20,48 @@
 body {
   min-height: 100vh;
   font-family: "IBM Plex Mono", "Noto Sans Thai", monospace;
-  background: var(--bg);
+  background: radial-gradient(circle at top, #070c14 0%, var(--bg) 55%, var(--bg-deep) 100%);
   color: var(--text);
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(124, 199, 255, 0.08) 0px,
+    rgba(124, 199, 255, 0.08) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .shell {
   width: min(440px, 92vw);
-  margin: 32px auto 48px;
+  margin: 32px auto 64px;
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
 .header h1 {
-  font-size: 26px;
-  letter-spacing: 0.04em;
+  font-size: clamp(26px, 4vw, 34px);
+  letter-spacing: 0.08em;
+}
+
+.header-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 6px;
+  background: var(--text);
+  animation: blink 0.8s steps(1, end) infinite;
+  vertical-align: -2px;
 }
 
 .header p {
@@ -45,7 +75,7 @@ body {
 .header small {
   display: block;
   margin-top: 8px;
-  color: #ff6b6b;
+  color: var(--warning);
   font-size: 11px;
   letter-spacing: 0.08em;
 }
@@ -54,10 +84,10 @@ body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
-  background: #101010;
+  background: rgba(9, 16, 28, 0.8);
   padding: 6px;
   border-radius: 12px;
-  border: 1px solid #1c1c1c;
+  border: 1px solid var(--line);
 }
 
 .tab {
@@ -69,14 +99,14 @@ body {
   border-radius: 10px;
   cursor: pointer;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   font-family: "IBM Plex Mono", "Noto Sans Thai", monospace;
 }
 
 .tab.is-active {
-  background: #1a1a1a;
+  background: rgba(15, 26, 44, 0.9);
   color: var(--text);
-  box-shadow: inset 0 0 0 1px #2b2b2b;
+  box-shadow: inset 0 0 0 1px var(--line);
 }
 
 .panel {
@@ -94,7 +124,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  border: 1px solid #181818;
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 60px rgba(2, 6, 12, 0.7);
 }
 
 .mono-form {
@@ -119,12 +150,13 @@ body {
 .field input,
 .field textarea,
 .field select {
-  background: transparent;
+  background: rgba(5, 10, 18, 0.6);
   border: 1px solid var(--line);
   padding: 10px 12px;
   color: var(--text);
   font-size: 13px;
   font-family: inherit;
+  border-radius: 10px;
 }
 
 .checks {
@@ -156,7 +188,7 @@ body {
 
 .field select {
   appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, #cfcfcf 50%), linear-gradient(135deg, #cfcfcf 50%, transparent 50%);
+  background-image: linear-gradient(45deg, transparent 50%, #cfe7ff 50%), linear-gradient(135deg, #cfe7ff 50%, transparent 50%);
   background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%;
   background-size: 6px 6px, 6px 6px;
   background-repeat: no-repeat;
@@ -171,13 +203,15 @@ body {
 
 .wallet__btn {
   background: var(--mint);
-  color: #0b0b0b;
+  color: #061019;
   border: none;
   padding: 10px 12px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   cursor: pointer;
   font-family: inherit;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px var(--mint-soft);
 }
 
 .wallet__select {
@@ -186,14 +220,16 @@ body {
 
 .mint-btn {
   background: var(--mint);
-  color: #0b0b0b;
+  color: #061019;
   border: none;
   padding: 12px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.1em;
   cursor: pointer;
   font-family: inherit;
   text-transform: uppercase;
+  border-radius: 10px;
+  box-shadow: 0 0 0 1px var(--mint-soft);
 }
 
 .mint-status {
@@ -214,14 +250,16 @@ body {
   color: var(--muted);
   text-transform: none;
   cursor: pointer;
+  background: rgba(5, 10, 18, 0.6);
+  border-radius: 16px;
 }
 
 .upload-box__icon {
   width: 56px;
   height: 56px;
   border-radius: 999px;
-  background: #e5e5e5;
-  color: #111111;
+  background: rgba(124, 199, 255, 0.18);
+  color: var(--text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -252,6 +290,8 @@ body {
   color: var(--muted);
   font-size: 11px;
   text-transform: none;
+  border-radius: 12px;
+  background: rgba(5, 10, 18, 0.6);
 }
 
 .preview__image {
@@ -261,6 +301,7 @@ body {
   border: 1px solid var(--line);
   margin-top: 8px;
   display: none;
+  border-radius: 12px;
 }
 
 
@@ -271,25 +312,27 @@ body {
 }
 
 .coin-card {
-  background: #d7d7d7;
-  color: #121212;
+  background: var(--card-bright);
+  color: var(--text);
   border-radius: 14px;
   padding: 16px;
   display: grid;
   grid-template-columns: 90px 1fr auto;
   gap: 12px;
   align-items: center;
+  border: 1px solid var(--line);
 }
 
 .coin-card__img {
   width: 90px;
   height: 90px;
-  background: #9b9b9b;
+  background: rgba(124, 199, 255, 0.18);
   border-radius: 50%;
   display: grid;
   place-items: center;
   font-size: 12px;
   font-weight: 700;
+  color: var(--text);
 }
 
 .coin-card__body h3 {
@@ -308,11 +351,12 @@ body {
   gap: 10px;
   font-size: 11px;
   text-transform: uppercase;
+  color: var(--muted);
 }
 
 .pill {
   background: var(--mint);
-  color: #121212;
+  color: #061019;
   padding: 4px 8px;
   border-radius: 6px;
   font-weight: 700;
@@ -328,7 +372,35 @@ body {
   border: none;
   background: transparent;
   font-size: 16px;
+  color: var(--text);
   cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .shell {
+    margin: 24px auto 48px;
+  }
+
+  .coin-card {
+    grid-template-columns: 70px 1fr;
+  }
+
+  .coin-card__actions {
+    flex-direction: row;
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+@keyframes blink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }
 
 @media (max-width: 420px) {
