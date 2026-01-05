@@ -20,6 +20,10 @@ const mintButton = document.querySelector(".mint-btn");
 const mintStatus = document.querySelector(".mint-status");
 
 const FACTORY_ADDRESS = "0xa73b1C83dFd2EeC46434f931c6A891FC9E6628E2";
+const FACTORY_ADDRESSES = [
+  "0xa73b1C83dFd2EeC46434f931c6A891FC9E6628E2",
+  "0x08813b21e4B2fB89Dbd8b25CcC54fFf69dA08BFF"
+];
 const DEPLOY_FEE_ETH = "0.001";
 const FACTORY_ABI = [
   "event CoinCreated(address indexed coin,address indexed owner,string name,string symbol,string description)",
@@ -240,31 +244,39 @@ const loadCreatedCoins = async () => {
     const network = await provider.getNetwork();
     const networkLabel = getNetworkLabel(Number(network.chainId));
     const iface = new ethers.Interface(FACTORY_ABI);
-    const logs = await provider.getLogs({
-      address: FACTORY_ADDRESS,
-      topics: [iface.getEvent("CoinCreated").topicHash],
-      fromBlock: 0,
-      toBlock: "latest"
-    });
+    const logs = (
+      await Promise.all(
+        FACTORY_ADDRESSES.map((address) =>
+          provider.getLogs({
+            address,
+            topics: [iface.getEvent("CoinCreated").topicHash],
+            fromBlock: 0,
+            toBlock: "latest"
+          })
+        )
+      )
+    ).flat();
 
-    const coins = await Promise.all(
-      logs.map(async (log) => {
-        const parsed = iface.parseLog(log);
-        const address = parsed.args.coin;
-        let name = parsed.args.name;
-        let symbol = parsed.args.symbol;
-        let description = parsed.args.description;
-        try {
-          const token = new ethers.Contract(address, ERC20_ABI, provider);
-          name = await token.name();
-          symbol = await token.symbol();
-          description = description || await token.description();
-        } catch (error) {
-          // Keep event data if token call fails.
-        }
-        return { address, name, symbol, description };
-      })
-    );
+    const seen = new Set();
+    const coins = [];
+    for (const log of logs) {
+      const parsed = iface.parseLog(log);
+      const address = parsed.args.coin;
+      if (seen.has(address)) continue;
+      seen.add(address);
+      let name = parsed.args.name;
+      let symbol = parsed.args.symbol;
+      let description = parsed.args.description;
+      try {
+        const token = new ethers.Contract(address, ERC20_ABI, provider);
+        name = await token.name();
+        symbol = await token.symbol();
+        description = description || await token.description();
+      } catch (error) {
+        // Keep event data if token call fails.
+      }
+      coins.push({ address, name, symbol, description });
+    }
 
     renderCreatedCoins(coins.length ? coins : fallback, networkLabel);
   } catch (error) {
