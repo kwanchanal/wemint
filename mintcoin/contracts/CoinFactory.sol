@@ -8,7 +8,7 @@ contract CoinFactory is Ownable {
     uint256 public deployFee;
     address public feeRecipient;
 
-    event CoinCreated(address indexed coin, address indexed owner, string name, string symbol);
+    event CoinCreated(address indexed coin, address indexed owner, string name, string symbol, string description);
     event DeployFeeUpdated(uint256 newFee);
     event FeeRecipientUpdated(address newRecipient);
 
@@ -34,7 +34,8 @@ contract CoinFactory is Ownable {
         uint8 decimals_,
         uint256 initialSupply_,
         address owner_,
-        uint256 cap_
+        uint256 cap_,
+        string memory description_
     ) external payable returns (address) {
         require(msg.value == deployFee, "INVALID_FEE");
         require(owner_ != address(0), "INVALID_OWNER");
@@ -45,13 +46,14 @@ contract CoinFactory is Ownable {
             decimals_,
             initialSupply_,
             owner_,
-            cap_
+            cap_,
+            description_
         );
 
         (bool sent, ) = feeRecipient.call{value: msg.value}("");
         require(sent, "FEE_TRANSFER_FAILED");
 
-        emit CoinCreated(address(coin), owner_, name_, symbol_);
+        emit CoinCreated(address(coin), owner_, name_, symbol_, description_);
         return address(coin);
     }
 }

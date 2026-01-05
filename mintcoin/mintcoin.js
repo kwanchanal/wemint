@@ -19,10 +19,16 @@ const ownerAddress = document.querySelector("#owner-address");
 const mintButton = document.querySelector(".mint-btn");
 const mintStatus = document.querySelector(".mint-status");
 
-const FACTORY_ADDRESS = "0x08813b21e4B2fB89Dbd8b25CcC54fFf69dA08BFF";
+const FACTORY_ADDRESS = "0xa73b1C83dFd2EeC46434f931c6A891FC9E6628E2";
 const DEPLOY_FEE_ETH = "0.001";
 const FACTORY_ABI = [
-  "function createCoin(string name,string symbol,uint8 decimals,uint256 initialSupply,address owner,uint256 cap) payable returns (address)"
+  "event CoinCreated(address indexed coin,address indexed owner,string name,string symbol,string description)",
+  "function createCoin(string name,string symbol,uint8 decimals,uint256 initialSupply,address owner,uint256 cap,string description) payable returns (address)"
+];
+const ERC20_ABI = [
+  "function name() view returns (string)",
+  "function symbol() view returns (string)",
+  "function description() view returns (string)"
 ];
 let isConnected = false;
 
@@ -77,6 +83,7 @@ if (mintButton) {
     const initialSupplyRaw = document.querySelector("#initial-supply")?.value || "0";
     const owner = ownerAddress?.value.trim();
     const capRaw = document.querySelector("#supply-cap")?.value || "0";
+    const description = document.querySelector("#coin-description")?.value.trim() || "";
 
     if (!name || !symbol || !owner) {
       if (mintStatus) mintStatus.textContent = "PLEASE FILL REQUIRED FIELDS";
@@ -95,7 +102,7 @@ if (mintButton) {
       const capValue = capRaw ? ethers.parseUnits(capRaw, decimals) : 0n;
       const fee = ethers.parseEther(DEPLOY_FEE_ETH);
 
-      const tx = await factory.createCoin(name, symbol, decimals, initialSupply, owner, capValue, { value: fee });
+      const tx = await factory.createCoin(name, symbol, decimals, initialSupply, owner, capValue, description, { value: fee });
       if (mintStatus) mintStatus.textContent = "DEPLOYING...";
 
       await tx.wait();
@@ -113,6 +120,9 @@ const previewImage = document.querySelector(".preview__image");
 const previewEmpty = document.querySelector(".preview__empty");
 const headerText = document.querySelector("#header-text");
 const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const createdList = document.querySelector("#created-list");
+const createdEmpty = document.querySelector("#created-empty");
+const placeholderImage = "../assets/placeholder/placeholder2.png";
 
 if (imageInput) {
   imageInput.addEventListener("change", () => {
@@ -159,3 +169,107 @@ if (headerText) {
 
   typeHeader();
 }
+
+const getNetworkLabel = (chainId) => {
+  if (chainId === 84532) return "BASE SEPO";
+  if (chainId === 8453) return "BASE MAIN";
+  return "NETWORK";
+};
+
+const createCoinCard = ({ address, name, symbol, description, networkLabel }) => {
+  const article = document.createElement("article");
+  article.className = "coin-card";
+  article.innerHTML = `
+    <div class="coin-card__img">
+      <img src="${placeholderImage}" alt="${name} logo" />
+    </div>
+    <div class="coin-card__body">
+      <h3>${networkLabel} - ${symbol}</h3>
+      <p>${description || name}</p>
+      <div class="coin-card__meta">
+        <span>${address}</span>
+        <span class="pill">Created</span>
+      </div>
+    </div>
+    <div class="coin-card__actions">
+      <button class="ghost" type="button" aria-label="favorite">❤</button>
+      <button class="ghost" type="button" aria-label="copy address">⧉</button>
+    </div>
+  `;
+  const copyBtn = article.querySelector('[aria-label="copy address"]');
+  if (copyBtn) {
+    copyBtn.addEventListener("click", () => {
+      navigator.clipboard?.writeText(address);
+    });
+  }
+  return article;
+};
+
+const renderCreatedCoins = (coins, networkLabel) => {
+  if (!createdList || !createdEmpty) return;
+  createdList.innerHTML = "";
+  if (!coins.length) {
+    createdEmpty.style.display = "block";
+    return;
+  }
+  createdEmpty.style.display = "none";
+  coins.forEach((coin) => {
+    createdList.appendChild(createCoinCard({ ...coin, networkLabel }));
+  });
+};
+
+const loadCreatedCoins = async () => {
+  if (!createdList || !window.ethers) return;
+  const fallback = [
+    {
+      address: "0xa1206055387fb5573591ce921e91db2a3a770f83",
+      name: "WeMint01",
+      symbol: "WEMINT01",
+      description: "We Mint community coin"
+    }
+  ];
+
+  let provider;
+  if (window.ethereum) {
+    provider = new ethers.BrowserProvider(window.ethereum);
+  } else {
+    provider = new ethers.JsonRpcProvider("https://sepolia.base.org");
+  }
+
+  try {
+    const network = await provider.getNetwork();
+    const networkLabel = getNetworkLabel(Number(network.chainId));
+    const iface = new ethers.Interface(FACTORY_ABI);
+    const logs = await provider.getLogs({
+      address: FACTORY_ADDRESS,
+      topics: [iface.getEvent("CoinCreated").topicHash],
+      fromBlock: 0,
+      toBlock: "latest"
+    });
+
+    const coins = await Promise.all(
+      logs.map(async (log) => {
+        const parsed = iface.parseLog(log);
+        const address = parsed.args.coin;
+        let name = parsed.args.name;
+        let symbol = parsed.args.symbol;
+        let description = parsed.args.description;
+        try {
+          const token = new ethers.Contract(address, ERC20_ABI, provider);
+          name = await token.name();
+          symbol = await token.symbol();
+          description = description || await token.description();
+        } catch (error) {
+          // Keep event data if token call fails.
+        }
+        return { address, name, symbol, description };
+      })
+    );
+
+    renderCreatedCoins(coins.length ? coins : fallback, networkLabel);
+  } catch (error) {
+    renderCreatedCoins(fallback, "BASE SEPO");
+  }
+};
+
+loadCreatedCoins();

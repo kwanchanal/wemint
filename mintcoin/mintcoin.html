@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Mint Your Coin</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%E2%AD%90%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%92%8E%3C/text%3E%3C/svg%3E" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" />
     <link rel="stylesheet" href="mintcoin.css" />
   </head>
@@ -75,7 +75,7 @@
           <label class="field">
             SHORT DESCRIPTION
             <span class="field__hint">TELL ABOUT YOUR COIN &lt;15 WORDS</span>
-            <textarea rows="3" placeholder="PEER-PEER ENABLED TRANSACTION DIGITAL GOLD"></textarea>
+            <textarea id="coin-description" rows="3" placeholder="PEER-PEER ENABLED TRANSACTION DIGITAL GOLD"></textarea>
           </label>
 
           <label class="field">
@@ -122,39 +122,8 @@
       </section>
 
       <section class="panel" role="tabpanel" data-panel="created">
-        <div class="list">
-          <article class="coin-card">
-            <div class="coin-card__img">(PLACEHOLDER)</div>
-            <div class="coin-card__body">
-              <h3>NETWORK - COIN NAME</h3>
-              <p>Description, is................................</p>
-              <div class="coin-card__meta">
-                <span>Coin contract address</span>
-                <span class="pill">Claimed count</span>
-              </div>
-            </div>
-            <div class="coin-card__actions">
-              <button class="ghost" type="button">❤</button>
-              <button class="ghost" type="button">⧉</button>
-            </div>
-          </article>
-
-          <article class="coin-card">
-            <div class="coin-card__img">(PLACEHOLDER)</div>
-            <div class="coin-card__body">
-              <h3>NETWORK - COIN NAME</h3>
-              <p>Description, is................................</p>
-              <div class="coin-card__meta">
-                <span>Coin contract address</span>
-                <span class="pill">Claimed count</span>
-              </div>
-            </div>
-            <div class="coin-card__actions">
-              <button class="ghost" type="button">❤</button>
-              <button class="ghost" type="button">⧉</button>
-            </div>
-          </article>
-        </div>
+        <div class="list" id="created-list"></div>
+        <p class="created-empty" id="created-empty">No coins created yet.</p>
       </section>
     </main>
 

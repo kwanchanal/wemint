@@ -9,19 +9,22 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MintCoin is ERC20, ERC20Burnable, ERC20Pausable, ERC20Capped, Ownable {
     uint8 private immutable _coinDecimals;
+    string public description;
     constructor(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
         uint256 initialSupply_,
         address owner_,
-        uint256 cap_
+        uint256 cap_,
+        string memory description_
     )
         ERC20(name_, symbol_)
         ERC20Capped(cap_ == 0 ? type(uint256).max : cap_)
         Ownable(owner_)
     {
         _coinDecimals = decimals_;
+        description = description_;
         if (initialSupply_ > 0) {
             _mint(owner_, initialSupply_);
         }
