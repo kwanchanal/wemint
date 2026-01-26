@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | wemint.app</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: var(--bg-primary);
+        }
+
+        /* Two Column Layout with Preview */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .content-area {
+            min-width: 0;
+        }
+
+        /* Preview Section - Your Page */
+        .preview-section {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .preview-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .preview-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            transition: var(--transition-base);
+        }
+
+        .preview-link:hover {
+            background: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .preview-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .preview-url-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .url-dots {
+            display: flex;
+            gap: 0.375rem;
+        }
+
+        .url-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--border-color);
+        }
+
+        .url-dot.red { background: #ff5f56; }
+        .url-dot.yellow { background: #ffbd2e; }
+        .url-dot.green { background: #27ca40; }
+
+        .url-input {
+            flex: 1;
+            padding: 0.375rem 0.75rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .phone-preview-container {
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .phone-mockup {
+            width: 300px;
+            height: 600px;
+            background: #1a1a1a;
+            border-radius: 40px;
+            padding: 10px;
+            box-shadow: var(--shadow-xl), 0 0 0 1px rgba(255,255,255,0.1) inset;
+        }
+
+        .phone-inner {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Apple-style minimal scrollbar */
+        .phone-iframe {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,255,255,0.3) transparent;
+        }
+
+        .phone-iframe::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .phone-iframe::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .phone-iframe::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
+
+        .phone-iframe::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90px;
+            height: 24px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            z-index: 10;
+        }
+
+        .phone-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 32px;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .preview-actions button {
+            flex: 1;
+            padding: 0.625rem;
+            font-size: 0.8125rem;
+            border-radius: var(--radius-md);
+        }
+
+        .btn-copy-link {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .btn-copy-link:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-share {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .btn-share:hover {
+            background: var(--border-color);
+        }
+
+        /* Responsive - hide preview on smaller screens */
+        @media (max-width: 1100px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-section {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <span>💎</span> wemint.app
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <span class="icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">🛍️</span>
+                    <span>Products</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">💰</span>
+                    <span>Sales</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">🔗</span>
+                    <span>Links</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">👤</span>
+                    <span>Customers</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">💳</span>
+                    <span>Payouts</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">🎨</span>
+                    <span>Appearance</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div style="margin-top: auto; padding-top: 2rem;">
+                <a href="index.html" class="nav-item" target="_blank">
+                    <span class="icon">👁️</span>
+                    <span>View Bio Page</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Left Column - Content Area -->
+            <div class="content-area">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <h1 class="page-title">Dashboard</h1>
+                    <div style="display: flex; gap: 0.75rem; align-items: center;">
+                        <span style="color: var(--text-muted); font-size: 0.875rem;">wemint.app/@creativestudio</span>
+                        <button class="btn-primary" onclick="copyBioLink()">
+                            📋 Copy Link
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <p class="stat-label">Total Revenue</p>
+                    <p class="stat-value">$2,847</p>
+                    <p class="stat-change">↑ 12% from last month</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Total Sales</p>
+                    <p class="stat-value">142</p>
+                    <p class="stat-change">↑ 8% from last month</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Page Views</p>
+                    <p class="stat-value">3,521</p>
+                    <p class="stat-change">↑ 24% from last month</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Conversion Rate</p>
+                    <p class="stat-value">4.03%</p>
+                    <p class="stat-change negative">↓ 2% from last month</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">Quick Actions</h2>
+                </div>
+                <div class="card-body">
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn-primary" onclick="openAddProductModal()">
+                            ➕ Add Product
+                        </button>
+                        <button class="btn-secondary" onclick="openAddLinkModal()">
+                            🔗 Add Link
+                        </button>
+                        <button class="btn-secondary" onclick="window.open('index.html', '_blank')">
+                            👁️ Preview Bio
+                        </button>
+                        <button class="btn-secondary" onclick="openWithdrawModal()">
+                            💳 Withdraw
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Table -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">Your Products</h2>
+                    <button class="btn-primary" onclick="openAddProductModal()">
+                        ➕ Add Product
+                    </button>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Sales</th>
+                                <th>Revenue</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <img src="https://images.unsplash.com/photo-1561070791-2526d30994b5?w=100&h=100&fit=crop" alt="Product" class="product-thumb">
+                                        <span class="product-name">Instagram Templates Pack</span>
+                                    </div>
+                                </td>
+                                <td>$19</td>
+                                <td>68</td>
+                                <td>$1,292</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn-icon" onclick="editProduct(1)" title="Edit">✏️</button>
+                                        <button class="btn-icon" onclick="viewProductStats(1)" title="Stats">📊</button>
+                                        <button class="btn-icon" onclick="deleteProduct(1)" title="Delete">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <img src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=100&h=100&fit=crop" alt="Product" class="product-thumb">
+                                        <span class="product-name">Lightroom Presets Bundle</span>
+                                    </div>
+                                </td>
+                                <td>$29</td>
+                                <td>42</td>
+                                <td>$1,218</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn-icon" onclick="editProduct(2)" title="Edit">✏️</button>
+                                        <button class="btn-icon" onclick="viewProductStats(2)" title="Stats">📊</button>
+                                        <button class="btn-icon" onclick="deleteProduct(2)" title="Delete">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <img src="https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?w=100&h=100&fit=crop" alt="Product" class="product-thumb">
+                                        <span class="product-name">3D Icon Pack</span>
+                                    </div>
+                                </td>
+                                <td>$39</td>
+                                <td>12</td>
+                                <td>$468</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn-icon" onclick="editProduct(3)" title="Edit">✏️</button>
+                                        <button class="btn-icon" onclick="viewProductStats(3)" title="Stats">📊</button>
+                                        <button class="btn-icon" onclick="deleteProduct(3)" title="Delete">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <img src="https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=100&h=100&fit=crop" alt="Product" class="product-thumb">
+                                        <span class="product-name">Social Media Growth Guide</span>
+                                    </div>
+                                </td>
+                                <td>$15</td>
+                                <td>20</td>
+                                <td>$300</td>
+                                <td><span class="status-badge draft">Draft</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn-icon" onclick="editProduct(4)" title="Edit">✏️</button>
+                                        <button class="btn-icon" onclick="viewProductStats(4)" title="Stats">📊</button>
+                                        <button class="btn-icon" onclick="deleteProduct(4)" title="Delete">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Sales -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Sales</h2>
+                    <a href="#" style="color: var(--primary); font-size: 0.875rem; font-weight: 500;">View All →</a>
+                </div>
+                <div class="card-body">
+                    <div class="sales-list">
+                        <div class="sale-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border-color);">
+                            <div>
+                                <p style="font-weight: 500; color: var(--text-primary);">Instagram Templates Pack</p>
+                                <p style="font-size: 0.8125rem; color: var(--text-muted);">john@example.com • 2 minutes ago</p>
+                            </div>
+                            <span style="font-weight: 600; color: var(--accent);">+$19</span>
+                        </div>
+                        <div class="sale-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border-color);">
+                            <div>
+                                <p style="font-weight: 500; color: var(--text-primary);">Lightroom Presets Bundle</p>
+                                <p style="font-size: 0.8125rem; color: var(--text-muted);">sarah@example.com • 15 minutes ago</p>
+                            </div>
+                            <span style="font-weight: 600; color: var(--accent);">+$29</span>
+                        </div>
+                        <div class="sale-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border-color);">
+                            <div>
+                                <p style="font-weight: 500; color: var(--text-primary);">3D Icon Pack</p>
+                                <p style="font-size: 0.8125rem; color: var(--text-muted);">mike@example.com • 1 hour ago</p>
+                            </div>
+                            <span style="font-weight: 600; color: var(--accent);">+$39</span>
+                        </div>
+                        <div class="sale-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0;">
+                            <div>
+                                <p style="font-weight: 500; color: var(--text-primary);">Instagram Templates Pack</p>
+                                <p style="font-size: 0.8125rem; color: var(--text-muted);">anna@example.com • 3 hours ago</p>
+                            </div>
+                            <span style="font-weight: 600; color: var(--accent);">+$19</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payout Info -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Payout Balance</h2>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 0.25rem;">Available for withdrawal</p>
+                                <p style="font-size: 2rem; font-weight: 700; color: var(--text-primary);">$1,847.00</p>
+                            </div>
+                            <div style="display: flex; gap: 0.75rem;">
+                                <button class="btn-secondary">
+                                    📋 Transaction History
+                                </button>
+                                <button class="btn-primary" onclick="openWithdrawModal()">
+                                    💳 Withdraw
+                                </button>
+                            </div>
+                        </div>
+                        <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: var(--radius-md);">
+                            <p style="font-size: 0.8125rem; color: var(--text-secondary);">
+                                💡 <strong>Tip:</strong> Set up automatic payouts to receive funds every week.
+                                <a href="#" style="color: var(--primary);">Configure now →</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Your Page Preview -->
+            <div class="preview-section">
+                <div class="preview-header">
+                    <div class="preview-title">
+                        <span>💁🏻‍♀️</span>
+                        <span>Your Page</span>
+                    </div>
+                    <a href="index.html" target="_blank" class="preview-link">
+                        <span>Open</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+
+                <div class="preview-card">
+                    <!-- Browser URL Bar -->
+                    <div class="preview-url-bar">
+                        <div class="url-dots">
+                            <span class="url-dot red"></span>
+                            <span class="url-dot yellow"></span>
+                            <span class="url-dot green"></span>
+                        </div>
+                        <div class="url-input">wemint.app/@creativestudio</div>
+                    </div>
+
+                    <!-- Phone Mockup -->
+                    <div class="phone-preview-container">
+                        <div class="phone-mockup">
+                            <div class="phone-inner">
+                                <div class="phone-notch"></div>
+                                <iframe src="index.html" class="phone-iframe" id="previewIframe"></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Actions -->
+                    <div class="preview-actions">
+                        <button class="btn-copy-link" onclick="copyBioLink()">
+                            📋 Copy Link
+                        </button>
+                        <button class="btn-share" onclick="shareLink()">
+                            📤 Share
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Stats under preview -->
+                <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+                    <p style="font-size: 0.8125rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem;">📊 Today's Stats</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                        <div>
+                            <p style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">127</p>
+                            <p style="font-size: 0.75rem; color: var(--text-muted);">Views</p>
+                        </div>
+                        <div>
+                            <p style="font-size: 1.25rem; font-weight: 700; color: var(--accent);">$89</p>
+                            <p style="font-size: 0.75rem; color: var(--text-muted);">Revenue</p>
+                        </div>
+                        <div>
+                            <p style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">5</p>
+                            <p style="font-size: 0.75rem; color: var(--text-muted);">Sales</p>
+                        </div>
+                        <div>
+                            <p style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">3.9%</p>
+                            <p style="font-size: 0.75rem; color: var(--text-muted);">Conv. Rate</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="modal-close" onclick="closeAddProductModal()">&times;</button>
+
+            <div class="modal-body">
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem;">Add New Product</h2>
+
+                <form onsubmit="handleAddProduct(event)">
+                    <div class="form-group">
+                        <label>Product Type</label>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 0.5rem;">
+                            <label class="payment-option selected" style="padding: 1rem;">
+                                <input type="radio" name="productType" value="digital" checked>
+                                <span style="font-size: 1.5rem;">📦</span>
+                                <span>Digital Download</span>
+                            </label>
+                            <label class="payment-option" style="padding: 1rem;">
+                                <input type="radio" name="productType" value="course">
+                                <span style="font-size: 1.5rem;">🎓</span>
+                                <span>Course</span>
+                            </label>
+                            <label class="payment-option" style="padding: 1rem;">
+                                <input type="radio" name="productType" value="membership">
+                                <span style="font-size: 1.5rem;">⭐</span>
+                                <span>Membership</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" placeholder="e.g., Instagram Templates Pack" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea placeholder="Describe your product..." rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; resize: vertical;"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Price (USD)</label>
+                            <input type="number" placeholder="19" min="0" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Compare at Price</label>
+                            <input type="number" placeholder="29" min="0" step="0.01">
+                            <p class="form-hint">Optional - shows as strikethrough</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Product Image</label>
+                        <div style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 2rem; text-align: center; cursor: pointer;" onclick="document.getElementById('productImageInput').click()">
+                            <p style="color: var(--text-muted);">📷 Click to upload or drag & drop</p>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">PNG, JPG up to 10MB</p>
+                            <input type="file" id="productImageInput" accept="image/*" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Product File</label>
+                        <div style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 2rem; text-align: center; cursor: pointer;" onclick="document.getElementById('productFileInput').click()">
+                            <p style="color: var(--text-muted);">📁 Click to upload your digital product</p>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">ZIP, PDF, or any file up to 500MB</p>
+                            <input type="file" id="productFileInput" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                        <button type="button" class="btn-secondary" style="flex: 1;" onclick="closeAddProductModal()">Cancel</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">Create Product</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdraw Modal -->
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content" style="max-width: 420px;">
+            <button class="modal-close" onclick="closeWithdrawModal()">&times;</button>
+
+            <div class="modal-body">
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">Withdraw Funds</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Available balance: <strong>$1,847.00</strong></p>
+
+                <form onsubmit="handleWithdraw(event)">
+                    <div class="form-group">
+                        <label>Amount (USD)</label>
+                        <input type="number" placeholder="1847.00" min="10" max="1847" step="0.01" required>
+                        <p class="form-hint">Minimum withdrawal: $10</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Withdraw to</label>
+                        <div class="payment-methods" style="flex-direction: column;">
+                            <label class="payment-option selected">
+                                <input type="radio" name="withdrawMethod" value="bank" checked>
+                                <span>🏦 Bank Account (****1234)</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="withdrawMethod" value="paypal">
+                                <span>💳 PayPal (email@example.com)</span>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="withdrawMethod" value="crypto">
+                                <span>₿ Crypto Wallet</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--bg-tertiary); padding: 1rem; border-radius: var(--radius-md); margin: 1rem 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: var(--text-secondary);">Amount</span>
+                            <span>$1,847.00</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="color: var(--text-secondary);">Fee (2%)</span>
+                            <span>-$36.94</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-weight: 700; padding-top: 0.5rem; border-top: 1px solid var(--border-color);">
+                            <span>You'll receive</span>
+                            <span style="color: var(--accent);">$1,810.06</span>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        ⏱️ Estimated arrival: 1-3 business days
+                    </p>
+
+                    <button type="submit" class="btn-primary" style="width: 100%;">
+                        Withdraw $1,810.06
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Dashboard-specific functions
+        function copyBioLink() {
+            navigator.clipboard.writeText('https://wemint.app/@creativestudio');
+
+            // Show toast feedback
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ Copied!';
+            btn.style.background = 'var(--accent)';
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+
+        function shareLink() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Creative Studio',
+                    text: 'Check out my bio page!',
+                    url: 'https://wemint.app/@creativestudio'
+                });
+            } else {
+                copyBioLink();
+            }
+        }
+
+        function refreshPreview() {
+            const iframe = document.getElementById('previewIframe');
+            iframe.src = iframe.src;
+        }
+
+        function openAddProductModal() {
+            document.getElementById('addProductModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('addProductModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function openAddLinkModal() {
+            alert('Add Link modal - Coming soon!');
+        }
+
+        function openWithdrawModal() {
+            document.getElementById('withdrawModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeWithdrawModal() {
+            document.getElementById('withdrawModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function handleAddProduct(event) {
+            event.preventDefault();
+            alert('Product created! (Demo)');
+            closeAddProductModal();
+        }
+
+        function handleWithdraw(event) {
+            event.preventDefault();
+            alert('Withdrawal request submitted! (Demo)');
+            closeWithdrawModal();
+        }
+
+        function viewProductStats(productId) {
+            alert('Viewing stats for product ' + productId + ' (Demo)');
+        }
+
+        // Initialize product type selection
+        document.querySelectorAll('#addProductModal .payment-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('#addProductModal .payment-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+            });
+        });
+
+        // Initialize withdraw method selection
+        document.querySelectorAll('#withdrawModal .payment-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('#withdrawModal .payment-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+            });
+        });
+    </script>
+</body>
+</html>
