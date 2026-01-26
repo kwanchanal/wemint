@@ -83,6 +83,106 @@ const defaultProducts = [
 ];
 
 // ========================================
+// Default Quick Links Data
+// ========================================
+
+const defaultQuickLinks = [
+    {
+        id: 1,
+        title: 'Watch my latest YouTube video',
+        url: 'https://youtube.com/',
+        icon: '📺',
+        clicks: 127,
+        status: 'active'
+    },
+    {
+        id: 2,
+        title: 'Follow me on Instagram',
+        url: 'https://instagram.com/',
+        icon: '📸',
+        clicks: 86,
+        status: 'active'
+    },
+    {
+        id: 3,
+        title: 'View my portfolio',
+        url: 'https://behance.net/',
+        icon: '💼',
+        clicks: 42,
+        status: 'active'
+    },
+    {
+        id: 4,
+        title: 'Contact for collaborations',
+        url: 'mailto:hello@wemint.app',
+        icon: '📧',
+        clicks: 15,
+        status: 'draft'
+    }
+];
+
+// ========================================
+// Section Visibility
+// ========================================
+
+const defaultSectionVisibility = {
+    affiliate: true,
+    products: true,
+    links: true
+};
+
+function getSectionVisibility() {
+    const saved = localStorage.getItem('wemint_sections');
+    if (saved) {
+        return { ...defaultSectionVisibility, ...JSON.parse(saved) };
+    }
+    localStorage.setItem('wemint_sections', JSON.stringify(defaultSectionVisibility));
+    return { ...defaultSectionVisibility };
+}
+
+function saveSectionVisibility(data) {
+    localStorage.setItem('wemint_sections', JSON.stringify(data));
+}
+
+function applySectionVisibility() {
+    const visibility = getSectionVisibility();
+    const map = {
+        affiliate: 'affiliate-section',
+        products: 'products-section',
+        links: 'links-section'
+    };
+
+    Object.entries(map).forEach(([key, id]) => {
+        const section = document.getElementById(id);
+        if (!section) return;
+        section.style.display = visibility[key] ? '' : 'none';
+    });
+}
+
+function initSectionToggles() {
+    const visibility = getSectionVisibility();
+    const affiliateToggle = document.getElementById('toggleAffiliate');
+    const productsToggle = document.getElementById('toggleProducts');
+    const linksToggle = document.getElementById('toggleLinks');
+
+    if (affiliateToggle) affiliateToggle.checked = !!visibility.affiliate;
+    if (productsToggle) productsToggle.checked = !!visibility.products;
+    if (linksToggle) linksToggle.checked = !!visibility.links;
+}
+
+function toggleSectionVisibility(key, checkbox) {
+    const visibility = getSectionVisibility();
+    visibility[key] = checkbox ? checkbox.checked : !visibility[key];
+    saveSectionVisibility(visibility);
+
+    applySectionVisibility();
+
+    if (typeof refreshPreview === 'function') {
+        refreshPreview();
+    }
+}
+
+// ========================================
 // Product Management
 // ========================================
 
@@ -104,6 +204,193 @@ function getProducts() {
  */
 function saveProducts(products) {
     localStorage.setItem('wemint_products', JSON.stringify(products));
+}
+
+// ========================================
+// Quick Links Management
+// ========================================
+
+function getQuickLinks() {
+    const saved = localStorage.getItem('wemint_quick_links');
+    if (saved) {
+        return JSON.parse(saved);
+    }
+    localStorage.setItem('wemint_quick_links', JSON.stringify(defaultQuickLinks));
+    return defaultQuickLinks;
+}
+
+function saveQuickLinks(links) {
+    localStorage.setItem('wemint_quick_links', JSON.stringify(links));
+}
+
+function addQuickLink(linkData) {
+    const links = getQuickLinks();
+    const newId = Math.max(...links.map(l => l.id), 0) + 1;
+    const newLink = {
+        id: newId,
+        title: linkData.title || 'New Link',
+        url: linkData.url || '#',
+        icon: linkData.icon || '🔗',
+        clicks: 0,
+        status: linkData.status || 'active'
+    };
+    links.push(newLink);
+    saveQuickLinks(links);
+    return newLink;
+}
+
+function updateQuickLink(id, updates) {
+    const links = getQuickLinks();
+    const index = links.findIndex(l => l.id === parseInt(id));
+    if (index === -1) return null;
+    links[index] = { ...links[index], ...updates };
+    saveQuickLinks(links);
+    return links[index];
+}
+
+function deleteQuickLink(id) {
+    const links = getQuickLinks().filter(l => l.id !== parseInt(id));
+    saveQuickLinks(links);
+    return links;
+}
+
+function getQuickLinkById(id) {
+    const links = getQuickLinks();
+    return links.find(l => l.id === parseInt(id));
+}
+
+function renderQuickLinksBio() {
+    const list = document.getElementById('quickLinksList');
+    if (!list) return;
+
+    const links = getQuickLinks().filter(l => l.status === 'active');
+    list.innerHTML = links.map(link => `
+        <a href="${link.url}" class="link-item" target="_blank" rel="noopener">
+            <span class="link-icon">${link.icon || '🔗'}</span>
+            <span class="link-text">${link.title}</span>
+            <span class="link-arrow">→</span>
+        </a>
+    `).join('');
+}
+
+function renderQuickLinksDashboard() {
+    const tbody = document.getElementById('linksTableBody');
+    if (!tbody) return;
+
+    const links = getQuickLinks();
+    tbody.innerHTML = links.map(link => `
+        <tr data-link-id="${link.id}">
+            <td>
+                <div class="product-cell">
+                    <span class="product-thumb" style="display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; background: var(--bg-tertiary);">${link.icon || '🔗'}</span>
+                    <span class="product-name">${link.title}</span>
+                </div>
+            </td>
+            <td style="max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${link.url}</td>
+            <td>${link.clicks || 0}</td>
+            <td><span class="status-badge ${link.status}">${link.status === 'active' ? 'Active' : 'Draft'}</span></td>
+            <td>
+                <div class="table-actions">
+                    <button class="btn-icon" onclick="editQuickLink(${link.id})" title="Edit">✏️</button>
+                    <button class="btn-icon" onclick="toggleQuickLinkStatus(${link.id})" title="Toggle Status">
+                        ${link.status === 'active' ? '🔴' : '🟢'}
+                    </button>
+                    <button class="btn-icon" onclick="deleteQuickLinkRow(${link.id})" title="Delete">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+let editingQuickLinkId = null;
+
+function openAddLinkModal() {
+    const modal = document.getElementById('addLinkModal');
+    if (!modal) return;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAddLinkModal() {
+    const modal = document.getElementById('addLinkModal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+    const title = document.getElementById('linkTitle');
+    const url = document.getElementById('linkUrl');
+    const icon = document.getElementById('linkIcon');
+    const status = document.getElementById('linkStatus');
+    if (title) title.value = '';
+    if (url) url.value = '';
+    if (icon) icon.value = '';
+    if (status) status.value = 'active';
+}
+
+function handleAddLink(event) {
+    event.preventDefault();
+    const title = document.getElementById('linkTitle')?.value?.trim();
+    const url = document.getElementById('linkUrl')?.value?.trim();
+    const icon = document.getElementById('linkIcon')?.value?.trim();
+    const status = document.getElementById('linkStatus')?.value || 'active';
+
+    if (!title || !url) return;
+    addQuickLink({ title, url, icon, status });
+    renderQuickLinksDashboard();
+    renderQuickLinksBio();
+    closeAddLinkModal();
+}
+
+function editQuickLink(id) {
+    const link = getQuickLinkById(id);
+    if (!link) return;
+    editingQuickLinkId = id;
+    document.getElementById('editLinkTitle').value = link.title;
+    document.getElementById('editLinkUrl').value = link.url;
+    document.getElementById('editLinkIcon').value = link.icon || '';
+    document.getElementById('editLinkStatus').value = link.status;
+    document.getElementById('editLinkModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeEditLinkModal() {
+    const modal = document.getElementById('editLinkModal');
+    if (!modal) return;
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+    editingQuickLinkId = null;
+}
+
+function saveEditedLink(event) {
+    event.preventDefault();
+    if (!editingQuickLinkId) return;
+    const title = document.getElementById('editLinkTitle')?.value?.trim();
+    const url = document.getElementById('editLinkUrl')?.value?.trim();
+    const icon = document.getElementById('editLinkIcon')?.value?.trim();
+    const status = document.getElementById('editLinkStatus')?.value || 'active';
+    if (!title || !url) return;
+    updateQuickLink(editingQuickLinkId, { title, url, icon, status });
+    renderQuickLinksDashboard();
+    renderQuickLinksBio();
+    closeEditLinkModal();
+}
+
+function deleteQuickLinkRow(id) {
+    const link = getQuickLinkById(id);
+    if (!link) return;
+    if (confirm(`Delete "${link.title}"?`)) {
+        deleteQuickLink(id);
+        renderQuickLinksDashboard();
+        renderQuickLinksBio();
+    }
+}
+
+function toggleQuickLinkStatus(id) {
+    const link = getQuickLinkById(id);
+    if (!link) return;
+    const nextStatus = link.status === 'active' ? 'draft' : 'active';
+    updateQuickLink(id, { status: nextStatus });
+    renderQuickLinksDashboard();
+    renderQuickLinksBio();
 }
 
 /**
@@ -331,7 +618,7 @@ function handleDownload() {
  * Render products table in dashboard
  */
 function renderProductsTable() {
-    const tbody = document.querySelector('.products-table tbody');
+    const tbody = document.querySelector('#productsTable tbody');
     if (!tbody) return;
 
     const products = getProducts();
@@ -694,9 +981,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Dashboard initialization
-    if (document.querySelector('.products-table')) {
+    if (document.querySelector('#productsTable')) {
         renderProductsTable();
         updateDashboardStats();
+    }
+
+    applySectionVisibility();
+    initSectionToggles();
+
+    if (document.getElementById('quickLinksList')) {
+        renderQuickLinksBio();
+    }
+
+    if (document.getElementById('linksTableBody')) {
+        renderQuickLinksDashboard();
     }
 
     // Common initializations

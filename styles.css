@@ -349,6 +349,160 @@ section {
 }
 
 /* ========================================
+   Affiliate Links Section
+   ======================================== */
+
+.affiliate-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.affiliate-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+}
+
+@media (max-width: 400px) {
+    .affiliate-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.affiliate-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: var(--transition-base);
+    text-decoration: none;
+    color: inherit;
+}
+
+.affiliate-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.affiliate-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.affiliate-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition-base);
+}
+
+.affiliate-card:hover .affiliate-image img {
+    transform: scale(1.05);
+}
+
+.affiliate-placeholder {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 0.35rem 0.6rem;
+    border-radius: 999px;
+    box-shadow: var(--shadow-sm);
+}
+
+.affiliate-image.amazon {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.affiliate-image.shopee {
+    background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+}
+
+.affiliate-image.lazada {
+    background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+}
+
+.affiliate-image.aliexpress {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+}
+
+.affiliate-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: rgba(15, 23, 42, 0.9);
+    border-radius: 999px;
+    box-shadow: var(--shadow-sm);
+    z-index: 2;
+    opacity: 1;
+}
+
+.affiliate-badge.amazon {
+    background: #111827;
+}
+
+.affiliate-badge.shopee {
+    background: #f97316;
+}
+
+.affiliate-badge.lazada {
+    background: #7c3aed;
+}
+
+.affiliate-badge.aliexpress {
+    background: #ef4444;
+}
+
+.affiliate-info {
+    padding: var(--spacing-md);
+}
+
+.affiliate-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.affiliate-review {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: var(--spacing-sm);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.affiliate-cta {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.affiliate-card:hover .affiliate-cta {
+    color: var(--primary-dark);
+}
+
+/* ========================================
    Links Section
    ======================================== */
 

@@ -213,6 +213,74 @@
             background: var(--border-color);
         }
 
+        .section-toggle-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.75rem 1rem;
+        }
+
+        .section-toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #cbd5f5;
+            border-radius: 999px;
+            transition: 0.2s ease;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--primary);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
         /* Responsive - hide preview on smaller screens */
         @media (max-width: 1100px) {
             .main-content {
@@ -237,6 +305,10 @@
                 <a href="dashboard.html" class="nav-item active">
                     <span class="icon">📊</span>
                     <span>Dashboard</span>
+                </a>
+                <a href="#affiliate-links" class="nav-item" onclick="document.getElementById('affiliateLinksSection').scrollIntoView({behavior: 'smooth'}); return false;">
+                    <span class="icon">🛒</span>
+                    <span>Affiliate Links</span>
                 </a>
                 <a href="#" class="nav-item">
                     <span class="icon">🛍️</span>
@@ -289,9 +361,6 @@
                     <h1 class="page-title">Dashboard</h1>
                     <div style="display: flex; gap: 0.75rem; align-items: center;">
                         <span style="color: var(--text-muted); font-size: 0.875rem;">wemint.app/@creativestudio</span>
-                        <button class="btn-primary" onclick="copyBioLink()">
-                            📋 Copy Link
-                        </button>
                     </div>
                 </div>
 
@@ -326,6 +395,9 @@
                 </div>
                 <div class="card-body">
                     <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn-primary" onclick="openAddAffiliateModal()">
+                            ➕ Add Affiliate Link
+                        </button>
                         <button class="btn-primary" onclick="openAddProductModal()">
                             ➕ Add Product
                         </button>
@@ -342,6 +414,154 @@
                 </div>
             </div>
 
+            <!-- Section Visibility -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Section Visibility</h2>
+                        <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem;">Show or hide sections in your bio preview</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="section-toggle-list">
+                        <div class="section-toggle-item">
+                            <span class="section-toggle-label">👏🏻 Affiliate Links</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleAffiliate" onchange="toggleSectionVisibility('affiliate', this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="section-toggle-item">
+                            <span class="section-toggle-label">🛍️ Products</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleProducts" onchange="toggleSectionVisibility('products', this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="section-toggle-item">
+                            <span class="section-toggle-label">🔗 Quick Links</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="toggleLinks" onchange="toggleSectionVisibility('links', this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Affiliate Links Section -->
+            <div class="dashboard-card" id="affiliateLinksSection">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Your Affiliate Links</h2>
+                        <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem;">Your Affiliate Links • <a href="#" style="color: var(--primary);">See All Affiliate Links →</a></p>
+                    </div>
+                    <button class="btn-primary" onclick="openAddAffiliateModal()">
+                        ➕ Add Affiliate Link
+                    </button>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Review</th>
+                                <th>Clicks</th>
+                                <th>Earnings</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="affiliateLinksTable">
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop" alt="Product" class="product-thumb">
+                                        <span class="product-name">Sony WH-1000XM5</span>
+                                    </div>
+                                </td>
+                                <td style="max-width: 200px;">
+                                    <p style="font-size: 0.8125rem; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">หูฟังตัดเสียงที่ดีที่สุด เสียงดี แบตอึด ใส่สบาย 🔥</p>
+                                </td>
+                                <td>1,247</td>
+                                <td style="color: var(--accent);">$312.50</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn-icon" onclick="editAffiliate(1)" title="Edit">✏️</button>
+                                        <button class="btn-icon" onclick="copyAffiliateLink(1)" title="Copy Link">📋</button>
+                                        <button class="btn-icon" onclick="deleteAffiliate(1)" title="Delete">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop" alt="Product" class="product-thumb">
+                                        <span class="product-name">Apple Watch Ultra 2</span>
+                                    </div>
+                                </td>
+                                <td style="max-width: 200px;">
+                                    <p style="font-size: 0.8125rem; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">สมาร์ทวอทช์สำหรับคนรักสุขภาพ แบตอยู่ได้หลายวัน 💪</p>
+                                </td>
+                                <td>892</td>
+                                <td style="color: var(--accent);">$445.00</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn-icon" onclick="editAffiliate(2)" title="Edit">✏️</button>
+                                        <button class="btn-icon" onclick="copyAffiliateLink(2)" title="Copy Link">📋</button>
+                                        <button class="btn-icon" onclick="deleteAffiliate(2)" title="Delete">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <img src="https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=100&h=100&fit=crop" alt="Product" class="product-thumb">
+                                        <span class="product-name">Kindle Paperwhite</span>
+                                    </div>
+                                </td>
+                                <td style="max-width: 200px;">
+                                    <p style="font-size: 0.8125rem; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">อ่านหนังสือไม่เจ็บตา จอ e-ink ชัดมาก 📚</p>
+                                </td>
+                                <td>654</td>
+                                <td style="color: var(--accent);">$98.10</td>
+                                <td><span class="status-badge active">Active</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn-icon" onclick="editAffiliate(3)" title="Edit">✏️</button>
+                                        <button class="btn-icon" onclick="copyAffiliateLink(3)" title="Copy Link">📋</button>
+                                        <button class="btn-icon" onclick="deleteAffiliate(3)" title="Delete">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="product-cell">
+                                        <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=100&h=100&fit=crop" alt="Product" class="product-thumb">
+                                        <span class="product-name">Nike Air Max 90</span>
+                                    </div>
+                                </td>
+                                <td style="max-width: 200px;">
+                                    <p style="font-size: 0.8125rem; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">รองเท้าสวยใส่สบาย ไม่ต้องพอกหน้า 👟</p>
+                                </td>
+                                <td>423</td>
+                                <td style="color: var(--accent);">$67.80</td>
+                                <td><span class="status-badge draft">Draft</span></td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn-icon" onclick="editAffiliate(4)" title="Edit">✏️</button>
+                                        <button class="btn-icon" onclick="copyAffiliateLink(4)" title="Copy Link">📋</button>
+                                        <button class="btn-icon" onclick="deleteAffiliate(4)" title="Delete">🗑️</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Products Table -->
             <div class="dashboard-card">
                 <div class="card-header">
@@ -351,7 +571,7 @@
                     </button>
                 </div>
                 <div class="card-body" style="padding: 0;">
-                    <table class="products-table">
+                    <table class="products-table" id="productsTable">
                         <thead>
                             <tr>
                                 <th>Product</th>
@@ -440,6 +660,33 @@
                                 </td>
                             </tr>
                         </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Quick Links Section -->
+            <div class="dashboard-card" id="quickLinksSection">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Your Quick Links</h2>
+                        <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem;">Add links that show on your bio page</p>
+                    </div>
+                    <button class="btn-primary" onclick="openAddLinkModal()">
+                        ➕ Add Link
+                    </button>
+                </div>
+                <div class="card-body" style="padding: 0;">
+                    <table class="products-table" id="linksTable">
+                        <thead>
+                            <tr>
+                                <th>Link</th>
+                                <th>URL</th>
+                                <th>Clicks</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="linksTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -793,6 +1040,217 @@
         </div>
     </div>
 
+    <!-- Add Quick Link Modal -->
+    <div id="addLinkModal" class="modal">
+        <div class="modal-content" style="max-width: 520px;">
+            <button class="modal-close" onclick="closeAddLinkModal()">&times;</button>
+
+            <div class="modal-body">
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem;">🔗 Add Quick Link</h2>
+
+                <form onsubmit="handleAddLink(event)">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="linkTitle" placeholder="e.g., Watch my latest YouTube video" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL</label>
+                        <input type="url" id="linkUrl" placeholder="https://..." required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Icon (emoji)</label>
+                            <input type="text" id="linkIcon" placeholder="🔗" maxlength="2" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Status</label>
+                            <select id="linkStatus" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                                <option value="active">Active</option>
+                                <option value="draft">Draft</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                        <button type="button" class="btn-secondary" style="flex: 1;" onclick="closeAddLinkModal()">Cancel</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">➕ Add Link</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Quick Link Modal -->
+    <div id="editLinkModal" class="modal">
+        <div class="modal-content" style="max-width: 520px;">
+            <button class="modal-close" onclick="closeEditLinkModal()">&times;</button>
+
+            <div class="modal-body">
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem;">✏️ Edit Quick Link</h2>
+
+                <form onsubmit="saveEditedLink(event)">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="editLinkTitle" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                    </div>
+
+                    <div class="form-group">
+                        <label>URL</label>
+                        <input type="url" id="editLinkUrl" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Icon (emoji)</label>
+                            <input type="text" id="editLinkIcon" maxlength="2" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Status</label>
+                            <select id="editLinkStatus" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                                <option value="active">Active</option>
+                                <option value="draft">Draft</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                        <button type="button" class="btn-secondary" style="flex: 1;" onclick="closeEditLinkModal()">Cancel</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">💾 Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Affiliate Link Modal -->
+    <div id="addAffiliateModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="modal-close" onclick="closeAddAffiliateModal()">&times;</button>
+
+            <div class="modal-body">
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem;">👏🏻 Add Affiliate Link</h2>
+
+                <form onsubmit="handleAddAffiliate(event)">
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" id="affiliateProductName" placeholder="e.g., Sony WH-1000XM5" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Affiliate Link URL</label>
+                        <input type="url" id="affiliateUrl" placeholder="https://affiliate.example.com/your-link" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                        <p class="form-hint">Paste your affiliate link from Amazon, Shopee, Lazada, etc.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Short Review (รีวิวสั้นๆ)</label>
+                        <textarea id="affiliateReview" placeholder="เขียนรีวิวสั้นๆ ว่าทำไมชอบสินค้านี้..." rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; resize: vertical;"></textarea>
+                        <p class="form-hint">ใส่ emoji ได้เลย! เช่น 🔥 💪 ⭐</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Product Image</label>
+                        <div style="border: 2px dashed var(--border-color); border-radius: var(--radius-md); padding: 2rem; text-align: center; cursor: pointer;" onclick="document.getElementById('affiliateImageInput').click()">
+                            <div id="affiliateImagePreview" style="display: none; margin-bottom: 1rem;">
+                                <img id="affiliateImagePreviewImg" src="" style="max-width: 150px; max-height: 150px; border-radius: var(--radius-md);">
+                            </div>
+                            <p style="color: var(--text-muted);">📷 Click to upload product image</p>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">PNG, JPG up to 5MB</p>
+                            <input type="file" id="affiliateImageInput" accept="image/*" style="display: none;" onchange="previewAffiliateImage(this)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Or paste Image URL</label>
+                        <input type="url" id="affiliateImageUrl" placeholder="https://images.example.com/product.jpg" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Platform</label>
+                        <select id="affiliatePlatform" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            <option value="amazon">🛒 Amazon</option>
+                            <option value="shopee">🧡 Shopee</option>
+                            <option value="lazada">💜 Lazada</option>
+                            <option value="aliexpress">🔴 AliExpress</option>
+                            <option value="other">🔗 Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <div class="payment-methods" style="flex-direction: row; gap: 1rem;">
+                            <label class="payment-option selected" style="flex: 1;">
+                                <input type="radio" name="affiliateStatus" value="active" checked>
+                                <span>✅ Active</span>
+                            </label>
+                            <label class="payment-option" style="flex: 1;">
+                                <input type="radio" name="affiliateStatus" value="draft">
+                                <span>📝 Draft</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                        <button type="button" class="btn-secondary" style="flex: 1;" onclick="closeAddAffiliateModal()">Cancel</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">➕ Add Affiliate Link</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Affiliate Link Modal -->
+    <div id="editAffiliateModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="modal-close" onclick="closeEditAffiliateModal()">&times;</button>
+
+            <div class="modal-body">
+                <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem;">✏️ Edit Affiliate Link</h2>
+
+                <form onsubmit="saveEditedAffiliate(event)">
+                    <div style="margin-bottom: 1.5rem; text-align: center;">
+                        <img id="editAffiliateImagePreview" src="" alt="Product" style="width: 150px; height: 150px; object-fit: cover; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" id="editAffiliateProductName" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Affiliate Link URL</label>
+                        <input type="url" id="editAffiliateUrl" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Short Review</label>
+                        <textarea id="editAffiliateReview" rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-family: inherit; resize: vertical;"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <input type="url" id="editAffiliateImageUrl" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);" onchange="document.getElementById('editAffiliateImagePreview').src = this.value">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="editAffiliateStatus" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md);">
+                            <option value="active">Active</option>
+                            <option value="draft">Draft</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+                        <button type="button" class="btn-secondary" style="flex: 1;" onclick="closeEditAffiliateModal()">Cancel</button>
+                        <button type="submit" class="btn-primary" style="flex: 1;">💾 Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="app.js"></script>
     <script>
         // Dashboard-specific functions
@@ -838,10 +1296,6 @@
             document.body.style.overflow = '';
         }
 
-        function openAddLinkModal() {
-            alert('Add Link modal - Coming soon!');
-        }
-
         function openWithdrawModal() {
             document.getElementById('withdrawModal').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -881,6 +1335,145 @@
         document.querySelectorAll('#withdrawModal .payment-option').forEach(option => {
             option.addEventListener('click', function() {
                 document.querySelectorAll('#withdrawModal .payment-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+                this.querySelector('input').checked = true;
+            });
+        });
+
+        // ========== Affiliate Links Functions ==========
+
+        // Mock affiliate data
+        const affiliateLinks = [
+            {
+                id: 1,
+                name: 'Sony WH-1000XM5',
+                review: 'หูฟังตัดเสียงที่ดีที่สุด เสียงดี แบตอึด ใส่สบาย 🔥',
+                url: 'https://amzn.to/sony-wh1000xm5',
+                image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop',
+                clicks: 1247,
+                earnings: 312.50,
+                status: 'active'
+            },
+            {
+                id: 2,
+                name: 'Apple Watch Ultra 2',
+                review: 'สมาร์ทวอทช์สำหรับคนรักสุขภาพ แบตอยู่ได้หลายวัน 💪',
+                url: 'https://amzn.to/apple-watch-ultra',
+                image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop',
+                clicks: 892,
+                earnings: 445.00,
+                status: 'active'
+            },
+            {
+                id: 3,
+                name: 'Kindle Paperwhite',
+                review: 'อ่านหนังสือไม่เจ็บตา จอ e-ink ชัดมาก 📚',
+                url: 'https://amzn.to/kindle-paperwhite',
+                image: 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?w=100&h=100&fit=crop',
+                clicks: 654,
+                earnings: 98.10,
+                status: 'active'
+            },
+            {
+                id: 4,
+                name: 'Nike Air Max 90',
+                review: 'รองเท้าสวยใส่สบาย ไม่ต้องพอกหน้า 👟',
+                url: 'https://amzn.to/nike-airmax90',
+                image: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=100&h=100&fit=crop',
+                clicks: 423,
+                earnings: 67.80,
+                status: 'draft'
+            }
+        ];
+
+        let editingAffiliateId = null;
+
+        function openAddAffiliateModal() {
+            document.getElementById('addAffiliateModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAddAffiliateModal() {
+            document.getElementById('addAffiliateModal').classList.remove('active');
+            document.body.style.overflow = '';
+            // Reset form
+            document.getElementById('affiliateProductName').value = '';
+            document.getElementById('affiliateUrl').value = '';
+            document.getElementById('affiliateReview').value = '';
+            document.getElementById('affiliateImageUrl').value = '';
+            document.getElementById('affiliateImagePreview').style.display = 'none';
+        }
+
+        function handleAddAffiliate(event) {
+            event.preventDefault();
+            const name = document.getElementById('affiliateProductName').value;
+            const review = document.getElementById('affiliateReview').value;
+
+            alert(`✅ Affiliate Link "${name}" added successfully!\n\nReview: ${review}\n\n(Demo mode)`);
+            closeAddAffiliateModal();
+        }
+
+        function previewAffiliateImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('affiliateImagePreviewImg').src = e.target.result;
+                    document.getElementById('affiliateImagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function editAffiliate(id) {
+            editingAffiliateId = id;
+            const affiliate = affiliateLinks.find(a => a.id === id);
+            if (!affiliate) return;
+
+            document.getElementById('editAffiliateProductName').value = affiliate.name;
+            document.getElementById('editAffiliateUrl').value = affiliate.url;
+            document.getElementById('editAffiliateReview').value = affiliate.review;
+            document.getElementById('editAffiliateImageUrl').value = affiliate.image;
+            document.getElementById('editAffiliateImagePreview').src = affiliate.image;
+            document.getElementById('editAffiliateStatus').value = affiliate.status;
+
+            document.getElementById('editAffiliateModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEditAffiliateModal() {
+            document.getElementById('editAffiliateModal').classList.remove('active');
+            document.body.style.overflow = '';
+            editingAffiliateId = null;
+        }
+
+        function saveEditedAffiliate(event) {
+            event.preventDefault();
+            const name = document.getElementById('editAffiliateProductName').value;
+            alert(`✅ Affiliate Link "${name}" updated successfully! (Demo mode)`);
+            closeEditAffiliateModal();
+        }
+
+        function copyAffiliateLink(id) {
+            const affiliate = affiliateLinks.find(a => a.id === id);
+            if (!affiliate) return;
+
+            navigator.clipboard.writeText(affiliate.url);
+            alert(`📋 Link copied!\n\n${affiliate.url}`);
+        }
+
+        function deleteAffiliate(id) {
+            const affiliate = affiliateLinks.find(a => a.id === id);
+            if (!affiliate) return;
+
+            if (confirm(`🗑️ Are you sure you want to delete "${affiliate.name}"?`)) {
+                alert(`✅ "${affiliate.name}" deleted! (Demo mode)`);
+            }
+        }
+
+        // Initialize affiliate status selection
+        document.querySelectorAll('#addAffiliateModal .payment-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('#addAffiliateModal .payment-option').forEach(o => o.classList.remove('selected'));
                 this.classList.add('selected');
                 this.querySelector('input').checked = true;
             });
