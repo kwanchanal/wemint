@@ -303,5 +303,109 @@
     </div>
 
     <script src="app.js"></script>
+    <script>
+        // Load and apply saved settings
+        function applySettings() {
+            // Load profile settings
+            const profileData = localStorage.getItem('wemint_profile');
+            if (profileData) {
+                const profile = JSON.parse(profileData);
+
+                // Update name
+                const nameEl = document.querySelector('.profile-name');
+                if (nameEl && profile.displayName) nameEl.textContent = profile.displayName;
+
+                // Update handle
+                const handleEl = document.querySelector('.profile-handle');
+                if (handleEl && profile.username) handleEl.textContent = '@' + profile.username;
+
+                // Update bio
+                const bioEl = document.querySelector('.profile-bio');
+                if (bioEl && profile.bio) bioEl.textContent = profile.bio;
+
+                // Update avatar
+                const avatarEl = document.querySelector('.profile-avatar img');
+                if (avatarEl && profile.avatar) avatarEl.src = profile.avatar;
+
+                // Update social links
+                if (profile.socials) {
+                    const socialLinks = document.querySelector('.social-links');
+                    if (socialLinks) {
+                        const icons = socialLinks.querySelectorAll('.social-icon');
+                        const socialOrder = ['instagram', 'tiktok', 'youtube'];
+
+                        icons.forEach((icon, index) => {
+                            const social = socialOrder[index];
+                            if (social && profile.socials[social]) {
+                                icon.style.display = profile.socials[social].enabled ? 'flex' : 'none';
+                                if (profile.socials[social].url) {
+                                    icon.href = profile.socials[social].url;
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+
+            // Load appearance settings
+            const appearanceData = localStorage.getItem('wemint_appearance');
+            if (appearanceData) {
+                const appearance = JSON.parse(appearanceData);
+
+                // Apply theme
+                const themeBackgrounds = {
+                    'purple-gradient': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    'blue-gradient': 'linear-gradient(135deg, #667eea 0%, #00d4ff 100%)',
+                    'green-gradient': 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                    'orange-gradient': 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                    'dark': 'linear-gradient(135deg, #232526 0%, #414345 100%)',
+                    'light': '#f8fafc'
+                };
+
+                if (appearance.theme && themeBackgrounds[appearance.theme]) {
+                    document.body.style.background = themeBackgrounds[appearance.theme];
+                }
+
+                // Apply primary color
+                if (appearance.primaryColor) {
+                    document.documentElement.style.setProperty('--primary', appearance.primaryColor);
+                    document.documentElement.style.setProperty('--primary-dark', adjustColor(appearance.primaryColor, -20));
+                    document.documentElement.style.setProperty('--primary-light', adjustColor(appearance.primaryColor, 20));
+                }
+
+                // Apply button style
+                if (appearance.buttonStyle) {
+                    const buttons = document.querySelectorAll('.btn-buy, .btn-checkout, .btn-download');
+                    buttons.forEach(btn => {
+                        switch(appearance.buttonStyle) {
+                            case 'pill': btn.style.borderRadius = '9999px'; break;
+                            case 'square': btn.style.borderRadius = '0'; break;
+                            default: btn.style.borderRadius = '0.5rem';
+                        }
+                    });
+                }
+
+                // Apply font
+                if (appearance.font) {
+                    document.body.style.fontFamily = appearance.font + ', sans-serif';
+                }
+            }
+        }
+
+        // Adjust color brightness
+        function adjustColor(hex, percent) {
+            const num = parseInt(hex.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return '#' + (0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1);
+        }
+
+        // Apply settings when page loads
+        document.addEventListener('DOMContentLoaded', applySettings);
+    </script>
 </body>
 </html>
