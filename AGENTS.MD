@@ -2,7 +2,7 @@
 
 ## Product Overview
 
-**wemint.app** is a bio-native monetization platform that transforms a single bio link into a pay-ready portfolio. It combines link-in-bio, portfolio, and a Shopify-lite digital storefront into one conversion-optimized experience.
+**wemint.app** is a bio-native monetization platform that turns a single bio link into a pay-ready creator hub. It combines tipping (Mint), link‑in‑bio, affiliate carts, and a lightweight digital storefront into one conversion‑optimized page.
 
 ### Core Thesis
 
@@ -11,18 +11,20 @@
 ### Strategic Truth
 
 > **Payment is the product—not just the page.**
+> You get paid directly and instantly to your own wallet or bank. wemint.app never holds funds.
 
 ---
 
 ## What It Does
 
-A single bio link where buyers can:
+A single bio link where supporters can:
 
 - **Discover** — View the creator's work, identity, and portfolio
-- **Browse** — Explore digital products
-- **Pay** — Complete purchase in seconds
+- **Support** — “Mint” to tip + leave a short message + email
+- **Browse** — Explore products and affiliate picks
+- **Pay** — Complete payment instantly (wallet-first, bank second)
 - **Download** — Get instant delivery
-- **Book** — Schedule demos or calls
+- **Book** — Schedule calls (optional)
 
 ---
 
@@ -31,7 +33,7 @@ A single bio link where buyers can:
 | Problem | Current Pain | Our Solution |
 |---------|--------------|--------------|
 | Marketplace dependency | Fees, algorithms, platform-owned audience | Creator owns the relationship |
-| Global payout friction | Limited processors, KYC pain, slow withdrawals, cross-border failures | Borderless payouts |
+| Global payout friction | Limited processors, KYC pain, slow withdrawals, cross-border failures | Wallet‑first payments + direct settlement |
 | Bio links don't convert | Missing trust + identity + checkout | All-in-one conversion flow |
 | Bank details don't sell | No story/portfolio/instant delivery | Payment-ready portfolio |
 
@@ -47,12 +49,12 @@ A single bio link where buyers can:
 
 ## Differentiators (Wedge)
 
-### Payments-First + Conversion-First
+### Payments‑First + Conversion‑First
 
 - **Bio-native checkout** — Designed to maximize completion, not just page customization
-- **Borderless payouts** — Less dependent on banks/country limits
+- **Wallet‑first** — Crypto wallet as the primary option, bank details as fallback
 - **Low fees** — Optimized for small-ticket digital goods / micro-transactions
-- **Fast settlement** — Near-instant where eligible
+- **Instant settlement** — Direct to creator wallet/bank (wemint does not hold funds)
 - **Trust & clarity** — License summaries, receipts, secure downloads, instant delivery
 
 ---
@@ -72,9 +74,9 @@ A single bio link where buyers can:
 - Cross-border sellers
 - Creators in regions with payout constraints
 
-### Buyer Value Proposition
+### Supporter Value Proposition
 
-> One click from social → browse → pay → instant download, with clear licensing to reduce hesitation.
+> One click from social → Mint/support → optional message + email → instant delivery (if any), with clear licensing to reduce hesitation.
 
 ---
 
@@ -141,8 +143,8 @@ Ask: "Does this reduce time-to-first-dollar?"
 | Term | Definition |
 |------|------------|
 | Bio link | The single URL creators share in social profiles |
-| Trust tier | Risk level assigned to creator affecting payout speed |
-| Payout hold | Temporary delay on funds for risk mitigation |
+| Mint | Tip/support payment to a creator |
+| Get minted | CTA used to encourage support |
 | Bio-native | Designed specifically for the bio link context |
 | Micro-transaction | Small-ticket purchases (typically < $20) |
 
@@ -181,14 +183,15 @@ The public-facing page that buyers see.
 **Components:**
 - Profile header (avatar, name, handle, bio)
 - Social links (from creator settings)
+- Mint / Get Minted panel (tip + short message + email)
 - Affiliate links grid with platform badge + Shop Now CTA
 - Products grid with badges (Best Seller, New)
 - Quick links section (from creator settings)
 - Email signup form
 
-**Checkout Flow:**
+**Payment Flow:**
 - Product detail modal with features & license info
-- Checkout modal with payment method selection (Card / PromptPay)
+- Payment modal with wallet‑first options (crypto wallet primary, bank details secondary)
 - Success modal with instant download button
 
 ### 2. Dashboard (`dashboard.html`) — One‑Page Control Center
@@ -206,7 +209,7 @@ Creator's main control panel.
 - Products table with edit/delete actions
 - Quick links table with add/edit/toggle
 - Recent sales feed
-- Payment details (customers pay creator directly; no platform-held payouts)
+- Payment details (direct to creator; wemint never holds funds)
 - Live phone preview of bio page
 
 ### 3. Appearance (`appearance.html`) [Legacy/Standalone]
@@ -221,7 +224,8 @@ Customize the look and feel of the bio page.
   - Pink Sunset
   - Dark Mode
   - Light Mode
-- **Primary Color**: preset colors + custom hex input
+- **Button Color**: preset colors + custom hex input
+- **Font Color**: preset colors + custom hex input
 - **Button Style**: Rounded, Pill, Square
 - **Font**: Inter, Poppins, Roboto, Playfair Display
 
