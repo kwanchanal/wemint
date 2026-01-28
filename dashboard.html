@@ -16,7 +16,7 @@
         /* Two Column Layout with Preview */
         .main-content {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 440px;
+            grid-template-columns: minmax(0, 1fr) 480px;
             gap: 2rem;
             align-items: start;
         }
@@ -114,8 +114,8 @@
         }
 
         .phone-mockup {
-            width: 330px;
-            height: 680px;
+            width: 350px;
+            height: 758px;
             background: #0b0d12;
             border-radius: 40px;
             padding: 10px;
@@ -613,6 +613,17 @@
             background: #fff7e8;
         }
 
+        .mint-mode-option.disabled {
+            background: #f3f4f6;
+            border-color: #e5e7eb;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .mint-mode-option.disabled input {
+            pointer-events: none;
+        }
+
         .mint-mode-option input {
             width: 16px;
             height: 16px;
@@ -633,10 +644,19 @@
         .mint-preview-card {
             width: 220px;
             background: #ffffff;
-            border-radius: 12px;
+            border-radius: 0 0 12px 12px;
             padding: 0.75rem;
+            padding-top: calc(0.75rem + 10px);
             display: grid;
             gap: 0.5rem;
+            --scallop-r: 10px;
+            --scallop-w: 31.43px;
+            -webkit-mask:
+                radial-gradient(circle at 50% 0, transparent var(--scallop-r), black calc(var(--scallop-r) + 0.5px))
+                0 0 / var(--scallop-w) 100%;
+            mask:
+                radial-gradient(circle at 50% 0, transparent var(--scallop-r), black calc(var(--scallop-r) + 0.5px))
+                0 0 / var(--scallop-w) 100%;
         }
 
         .mint-preview-card input,
@@ -926,8 +946,8 @@
                             <div class="mint-settings-card">
                                 <div class="mint-settings-label">Choose a tip mode</div>
                                 <div class="mint-mode-list">
-                                    <label class="mint-mode-option" data-mode="metaphor">
-                                        <input type="radio" name="mintMode" value="metaphor">
+                                    <label class="mint-mode-option disabled" data-mode="metaphor">
+                                        <input type="radio" name="mintMode" value="metaphor" disabled>
                                         <div>
                                             <div style="font-weight: 600; font-size: 0.875rem;">Mint metaphor</div>
                                             <div style="font-size: 0.75rem; color: var(--text-secondary);">Use the “Mint a…” metaphor</div>
@@ -944,7 +964,7 @@
 
                                 <div class="mint-preview mint-preview-metaphor is-hidden">
                                     <div class="mint-preview-card">
-                                        <div style="font-size: 0.75rem; font-weight: 600;" id="mintPreviewMetaphorTitle">Mint a coffee for kwanchanok p.</div>
+                                        <div style="font-size: 0.75rem; font-weight: 600;" id="mintPreviewMetaphorTitle">Mint a coffee for @creativestudio</div>
                                         <div style="font-size: 0.7rem; color: var(--text-secondary);" id="mintPreviewMetaphorUnit">$5 each</div>
                                         <textarea rows="2" placeholder="Your message"></textarea>
                                         <button id="mintPreviewMetaphorButton">Mint</button>
@@ -953,7 +973,7 @@
 
                                 <div class="mint-preview mint-preview-simple">
                                     <div class="mint-preview-card">
-                                        <div style="font-size: 0.75rem; font-weight: 600;">Support kwanchanok p.</div>
+                                        <div style="font-size: 0.75rem; font-weight: 600;">Support @creativestudio</div>
                                         <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
                                             <span class="mint-action-pill">$5</span>
                                             <span class="mint-action-pill">$10</span>
@@ -1257,6 +1277,30 @@
                                             <span class="font-sample" style="font-family: 'Playfair Display', serif;">Aa</span>
                                             <span class="font-name">Playfair Display</span>
                                         </label>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 1rem;">
+                                    <h3 class="block-title">Card Shape</h3>
+                                    <div class="card-shape-grid">
+                                        <div class="card-shape-option" data-shape="ticket" onclick="selectCardShape(this)">
+                                            <div class="card-shape-preview ticket">
+                                                <span></span>
+                                            </div>
+                                            <div class="card-shape-name">Ticket</div>
+                                        </div>
+                                        <div class="card-shape-option selected" data-shape="rounded" onclick="selectCardShape(this)">
+                                            <div class="card-shape-preview rounded">
+                                                <span></span>
+                                            </div>
+                                            <div class="card-shape-name">Rounded</div>
+                                        </div>
+                                        <div class="card-shape-option" data-shape="square" onclick="selectCardShape(this)">
+                                            <div class="card-shape-preview square">
+                                                <span></span>
+                                            </div>
+                                            <div class="card-shape-name">Square</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -2173,7 +2217,8 @@
             primaryColor: '#6366f1',
             buttonStyle: 'rounded',
             font: 'Inter',
-            bioColor: '#ffffff'
+            bioColor: '#ffffff',
+            cardShape: 'rounded'
         };
 
         let appearanceSettings = { ...defaultAppearanceSettings };
@@ -2215,6 +2260,10 @@
 
             document.querySelectorAll('.font-option').forEach(el => {
                 el.classList.toggle('selected', el.dataset.font === appearanceSettings.font);
+            });
+
+            document.querySelectorAll('.card-shape-option').forEach(el => {
+                el.classList.toggle('selected', el.dataset.shape === appearanceSettings.cardShape);
             });
 
             document.querySelectorAll('#bioColorOptions .color-option').forEach(el => {
@@ -2266,6 +2315,13 @@
             document.querySelectorAll('.font-option').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
             appearanceSettings.font = element.dataset.font;
+            updateAppearancePreview();
+        }
+
+        function selectCardShape(element) {
+            document.querySelectorAll('.card-shape-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            appearanceSettings.cardShape = element.dataset.shape;
             updateAppearancePreview();
         }
 
@@ -2330,6 +2386,13 @@
                             btn.style.borderRadius = '0.5rem';
                     }
                 });
+
+                // Apply card shape
+                const mintSection = iframeDoc.querySelector('.mint-section');
+                if (mintSection) {
+                    mintSection.classList.remove('card-shape-ticket', 'card-shape-rounded', 'card-shape-square');
+                    mintSection.classList.add('card-shape-' + appearanceSettings.cardShape);
+                }
             } catch (e) {
                 console.log('Cannot access iframe content');
             }
@@ -2921,7 +2984,7 @@
             const previewMetaphorTitle = document.getElementById('mintPreviewMetaphorTitle');
             const previewMetaphorUnit = document.getElementById('mintPreviewMetaphorUnit');
             const previewMetaphorButton = document.getElementById('mintPreviewMetaphorButton');
-            if (previewMetaphorTitle) previewMetaphorTitle.textContent = `Mint a ${metaphorLabel.toLowerCase()} for kwanchanok p.`;
+            if (previewMetaphorTitle) previewMetaphorTitle.textContent = `Mint a ${metaphorLabel.toLowerCase()} for @creativestudio`;
             if (previewMetaphorUnit) previewMetaphorUnit.textContent = `$${metaphorUnit} each`;
             if (previewMetaphorButton) previewMetaphorButton.textContent = buttonMetaphor;
 

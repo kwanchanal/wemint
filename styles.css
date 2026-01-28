@@ -245,11 +245,65 @@ section {
    Mint Section
    ======================================== */
 
-.mint-card {
+.mint-section {
+    background: #ffffff;
+    padding: 0;
+    position: relative;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
+}
+
+.mint-section .section-title {
+    margin: 0;
     padding: var(--spacing-md);
-    background: linear-gradient(135deg, #f8f6ff 0%, #ffffff 100%);
+    padding-bottom: 0;
+}
+
+.mint-card {
+    border: none;
+    padding: var(--spacing-md);
+    background: #ffffff;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* Card Shape: Ticket */
+.mint-section.card-shape-ticket {
+    border: 2px solid #111111;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+    --r: 10px;
+    --s: 28px;
+    -webkit-mask:
+        radial-gradient(var(--r) at var(--r) 0, transparent 98%, black) calc(var(--s) / -2) 0 / var(--s) 51% repeat-x,
+        radial-gradient(var(--r) at var(--r) 100%, transparent 98%, black) calc(var(--s) / -2) 100% / var(--s) 51% repeat-x;
+    mask:
+        radial-gradient(var(--r) at var(--r) 0, transparent 98%, black) calc(var(--s) / -2) 0 / var(--s) 51% repeat-x,
+        radial-gradient(var(--r) at var(--r) 100%, transparent 98%, black) calc(var(--s) / -2) 100% / var(--s) 51% repeat-x;
+}
+
+.mint-section.card-shape-ticket .mint-card {
+    border-radius: 0;
+}
+
+/* Card Shape: Rounded (default) */
+.mint-section.card-shape-rounded {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.mint-section.card-shape-rounded .mint-card {
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* Card Shape: Square */
+.mint-section.card-shape-square {
+    border: 1px solid var(--border-color);
+    border-radius: 0;
+}
+
+.mint-section.card-shape-square .mint-card {
+    border-radius: 0;
 }
 
 .mint-card-header {
@@ -1767,6 +1821,68 @@ section {
 }
 
 .button-style-name {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+/* Card Shape */
+.card-shape-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+}
+
+.card-shape-option {
+    border: 2px solid transparent;
+    border-radius: var(--radius-md);
+    padding: 0.4rem;
+    cursor: pointer;
+    transition: var(--transition-base);
+    background: var(--bg-tertiary);
+}
+
+.card-shape-option.selected {
+    border-color: var(--primary);
+    background: white;
+}
+
+.card-shape-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.card-shape-preview span {
+    display: block;
+    width: 100%;
+    height: 32px;
+    background: #e5e7eb;
+    border: 2px solid #111111;
+}
+
+.card-shape-preview.ticket span {
+    border-radius: 0;
+    --r: 4px;
+    --s: 12px;
+    -webkit-mask:
+        radial-gradient(var(--r) at var(--r) 0, transparent 98%, black) calc(var(--s) / -2) 0 / var(--s) 51% repeat-x,
+        radial-gradient(var(--r) at var(--r) 100%, transparent 98%, black) calc(var(--s) / -2) 100% / var(--s) 51% repeat-x;
+    mask:
+        radial-gradient(var(--r) at var(--r) 0, transparent 98%, black) calc(var(--s) / -2) 0 / var(--s) 51% repeat-x,
+        radial-gradient(var(--r) at var(--r) 100%, transparent 98%, black) calc(var(--s) / -2) 100% / var(--s) 51% repeat-x;
+}
+
+.card-shape-preview.rounded span {
+    border-radius: 8px;
+}
+
+.card-shape-preview.square span {
+    border-radius: 0;
+}
+
+.card-shape-name {
     text-align: center;
     font-size: 0.75rem;
     color: var(--text-secondary);

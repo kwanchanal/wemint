@@ -40,7 +40,7 @@
         </header>
 
         <!-- Mint Section -->
-        <section class="mint-section" id="mint-section">
+        <section class="mint-section card-shape-rounded" id="mint-section">
             <h2 class="section-title">
                 <span class="icon">💎</span>
                 Mint to support
@@ -461,6 +461,15 @@
                 // Apply font
                 if (appearance.font) {
                     document.body.style.fontFamily = appearance.font + ', sans-serif';
+                }
+
+                // Apply card shape
+                if (appearance.cardShape) {
+                    const mintSection = document.querySelector('.mint-section');
+                    if (mintSection) {
+                        mintSection.classList.remove('card-shape-ticket', 'card-shape-rounded', 'card-shape-square');
+                        mintSection.classList.add('card-shape-' + appearance.cardShape);
+                    }
                 }
             }
         }
