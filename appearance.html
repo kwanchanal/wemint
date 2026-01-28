@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             background: var(--bg-primary);
@@ -322,42 +322,6 @@
             color: var(--text-secondary);
         }
 
-        /* Font Options */
-        .font-option {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            border: 2px solid transparent;
-            transition: var(--transition-base);
-            margin-bottom: 0.5rem;
-        }
-
-        .font-option:hover {
-            background: var(--bg-primary);
-        }
-
-        .font-option.selected {
-            border-color: var(--primary);
-        }
-
-        .font-option input {
-            display: none;
-        }
-
-        .font-sample {
-            font-size: 1.25rem;
-            color: var(--text-primary);
-        }
-
-        .font-name {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
         /* Responsive */
         @media (max-width: 1100px) {
             .main-content {
@@ -572,34 +536,6 @@
                     </div>
                 </div>
 
-                <!-- Font -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h2 class="card-title">Font</h2>
-                    </div>
-                    <div class="card-body">
-                        <label class="font-option selected" data-font="Inter" onclick="selectFont(this)">
-                            <input type="radio" name="font" checked>
-                            <span class="font-sample" style="font-family: Inter, sans-serif;">Aa</span>
-                            <span class="font-name">Inter (Default)</span>
-                        </label>
-                        <label class="font-option" data-font="Poppins" onclick="selectFont(this)">
-                            <input type="radio" name="font">
-                            <span class="font-sample" style="font-family: Poppins, sans-serif;">Aa</span>
-                            <span class="font-name">Poppins</span>
-                        </label>
-                        <label class="font-option" data-font="Roboto" onclick="selectFont(this)">
-                            <input type="radio" name="font">
-                            <span class="font-sample" style="font-family: Roboto, sans-serif;">Aa</span>
-                            <span class="font-name">Roboto</span>
-                        </label>
-                        <label class="font-option" data-font="Playfair Display" onclick="selectFont(this)">
-                            <input type="radio" name="font">
-                            <span class="font-sample" style="font-family: 'Playfair Display', serif;">Aa</span>
-                            <span class="font-name">Playfair Display</span>
-                        </label>
-                    </div>
-                </div>
             </div>
 
             <!-- Right Column - Preview -->
@@ -636,7 +572,7 @@
             theme: 'purple-gradient',
             primaryColor: '#6366f1',
             buttonStyle: 'rounded',
-            font: 'Inter'
+            font: 'Google Sans'
         };
 
         // Theme backgrounds
@@ -654,8 +590,9 @@
             const saved = localStorage.getItem('wemint_appearance');
             if (saved) {
                 currentSettings = JSON.parse(saved);
-                applySettingsToUI();
             }
+            currentSettings.font = 'Google Sans';
+            applySettingsToUI();
         }
 
         // Apply settings to UI
@@ -675,11 +612,6 @@
             // Button style
             document.querySelectorAll('.button-style-option').forEach(el => {
                 el.classList.toggle('selected', el.dataset.style === currentSettings.buttonStyle);
-            });
-
-            // Font
-            document.querySelectorAll('.font-option').forEach(el => {
-                el.classList.toggle('selected', el.dataset.font === currentSettings.font);
             });
 
             // Update preview
@@ -728,13 +660,6 @@
         }
 
         // Select font
-        function selectFont(element) {
-            document.querySelectorAll('.font-option').forEach(el => el.classList.remove('selected'));
-            element.classList.add('selected');
-            currentSettings.font = element.dataset.font;
-            updatePreview();
-        }
-
         // Update preview
         function updatePreview() {
             const previewBg = document.getElementById('previewBackground');
