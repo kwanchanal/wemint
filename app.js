@@ -128,7 +128,8 @@ const defaultQuickLinks = [
 const defaultSectionVisibility = {
     affiliate: true,
     products: true,
-    links: true
+    links: true,
+    mint: true
 };
 
 function getSectionVisibility() {
@@ -149,7 +150,8 @@ function applySectionVisibility() {
     const map = {
         affiliate: 'affiliate-section',
         products: 'products-section',
-        links: 'links-section'
+        links: 'links-section',
+        mint: 'mint-section'
     };
 
     Object.entries(map).forEach(([key, id]) => {
@@ -164,10 +166,12 @@ function initSectionToggles() {
     const affiliateToggle = document.getElementById('toggleAffiliate');
     const productsToggle = document.getElementById('toggleProducts');
     const linksToggle = document.getElementById('toggleLinks');
+    const mintToggle = document.getElementById('toggleMint');
 
     if (affiliateToggle) affiliateToggle.checked = !!visibility.affiliate;
     if (productsToggle) productsToggle.checked = !!visibility.products;
     if (linksToggle) linksToggle.checked = !!visibility.links;
+    if (mintToggle) mintToggle.checked = !!visibility.mint;
 }
 
 function toggleSectionVisibility(key, checkbox) {
