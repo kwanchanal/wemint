@@ -16,7 +16,7 @@
         /* Two Column Layout with Preview */
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 380px;
+            grid-template-columns: minmax(0, 1fr) 440px;
             gap: 2rem;
             align-items: start;
         }
@@ -114,8 +114,8 @@
         }
 
         .phone-mockup {
-            width: 300px;
-            height: 600px;
+            width: 330px;
+            height: 680px;
             background: #1a1a1a;
             border-radius: 40px;
             padding: 10px;
@@ -464,8 +464,95 @@
             background: rgba(99, 102, 241, 0.08);
         }
 
+        .dashboard-card[data-accordion] .card-header {
+            cursor: pointer;
+        }
+
+        .dashboard-card.is-collapsed .accordion-body {
+            display: none;
+        }
+
+        .preview-section .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        .preview-section .stat-card {
+            padding: 0.9rem;
+        }
+
+        .mint-setup-card .card-header {
+            background: #eef0ff;
+        }
+
+        .mint-setup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.9rem;
+        }
+
+        .mint-setup-option {
+            background: #ffffff;
+            border: 2px solid #111111;
+            border-radius: 16px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .mint-setup-option small {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .mint-setup-option .option-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        .mint-setup-option .option-desc {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .mint-setup-option .btn-primary,
+        .mint-setup-option .btn-secondary {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .mint-setup-faq details {
+            background: #f1ede8;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #111111;
+        }
+
+        .mint-setup-faq details + details {
+            margin-top: 0.6rem;
+        }
+
+        .mint-setup-faq summary {
+            font-weight: 600;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .mint-setup-faq summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .mint-setup-faq p {
+            margin: 0.5rem 0 0;
+            color: var(--text-secondary);
+            font-size: 0.8125rem;
+        }
+
         /* Responsive - hide preview on smaller screens */
-        @media (max-width: 1100px) {
+        @media (max-width: 1200px) {
             .main-content {
                 grid-template-columns: 1fr;
             }
@@ -528,29 +615,102 @@
                     </div>
                 </div>
 
-                <!-- Stats Grid -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <p class="stat-label">Total Revenue</p>
-                    <p class="stat-value">$2,847</p>
-                    <p class="stat-change">↑ 12% from last month</p>
+                <!-- Ready to Get Minted -->
+                <div class="dashboard-card mint-setup-card">
+                    <div class="card-header">
+                        <div>
+                            <h2 class="card-title">✨ Payout</h2>
+                            <p style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem;">
+                                You get paid directly and instantly into your own linked account. We never process or hold funds, so no waiting around for payouts!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="mint-setup-grid" style="margin-bottom: 1rem;">
+                            <div class="mint-setup-option">
+                                <div class="option-title">🪪 Payout Wallet</div>
+                                <div class="option-desc">Supporters can pay in USDC or USDT. You receive directly to this address.</div>
+                                <small>Supported: Solana, Polygon, Base, Tron, Ethereum, BSC</small>
+                                <div style="display: grid; gap: 0.6rem;">
+                                    <label style="font-size: 0.8125rem; color: var(--text-secondary);">Wallet address</label>
+                                    <input type="text" placeholder="0x... or wallet address" style="width: 100%; padding: 0.65rem 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.875rem;">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                        <div>
+                                            <label style="font-size: 0.75rem; color: var(--text-secondary);">Network</label>
+                                            <select style="width: 100%; padding: 0.55rem 0.65rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.8125rem;">
+                                                <option>Solana</option>
+                                                <option>Polygon</option>
+                                                <option>Base</option>
+                                                <option>Tron</option>
+                                                <option>Ethereum</option>
+                                                <option>BSC</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style="font-size: 0.75rem; color: var(--text-secondary);">Preferred stablecoin</label>
+                                            <select style="width: 100%; padding: 0.55rem 0.65rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.8125rem;">
+                                                <option>USDC</option>
+                                                <option>USDT</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn-primary">💾 Save Wallet</button>
+                            </div>
+                            <div class="mint-setup-option">
+                                <div class="option-title">🏦 Payout Bank</div>
+                                <div class="option-desc">Optional fallback if a supporter can't use wallet.</div>
+                                <small>Choose your bank country</small>
+                                <div style="display: grid; gap: 0.6rem;">
+                                    <label style="font-size: 0.8125rem; color: var(--text-secondary);">Bank country</label>
+                                    <select style="width: 100%; padding: 0.65rem 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.875rem;">
+                                        <option>Thailand</option>
+                                        <option>Singapore</option>
+                                        <option>United States</option>
+                                        <option>United Kingdom</option>
+                                        <option>Japan</option>
+                                        <option>Australia</option>
+                                    </select>
+                                </div>
+                                <div style="display: grid; gap: 0.6rem;">
+                                    <div>
+                                        <label style="font-size: 0.75rem; color: var(--text-secondary);">Bank name</label>
+                                        <select style="width: 100%; padding: 0.55rem 0.65rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.8125rem;">
+                                            <option>SCB (Siam Commercial Bank)</option>
+                                            <option>Kasikorn (KBank)</option>
+                                            <option>Bangkok Bank</option>
+                                            <option>Krungthai (KTB)</option>
+                                            <option>Krungsri (BAY)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 0.75rem; color: var(--text-secondary);">Account holder name</label>
+                                        <input type="text" placeholder="e.g., Creative Studio" style="width: 100%; padding: 0.55rem 0.65rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.8125rem;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size: 0.75rem; color: var(--text-secondary);">Account number</label>
+                                        <input type="text" placeholder="e.g., 123-4-56789-0" style="width: 100%; padding: 0.55rem 0.65rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.8125rem;">
+                                    </div>
+                                </div>
+                                <button class="btn-secondary">💾 Save Bank</button>
+                            </div>
+                        </div>
+                        <div class="mint-setup-faq">
+                            <details>
+                                <summary>Why do I need a payment method?</summary>
+                                <p>Your bio link is payment-first. Connect a wallet so supporters can mint you instantly, then your page becomes sell-ready.</p>
+                            </details>
+                            <details>
+                                <summary>Can I change my wallet later?</summary>
+                                <p>Yes. You can update your receiving wallet at any time, and new mints will route to the latest address.</p>
+                            </details>
+                            <details>
+                                <summary>I don't have a wallet yet.</summary>
+                                <p>No problem. Start with bank details, or create a wallet in a minute and connect it here.</p>
+                            </details>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <p class="stat-label">Total Sales</p>
-                    <p class="stat-value">142</p>
-                    <p class="stat-change">↑ 8% from last month</p>
-                </div>
-                <div class="stat-card">
-                    <p class="stat-label">Page Views</p>
-                    <p class="stat-value">3,521</p>
-                    <p class="stat-change">↑ 24% from last month</p>
-                </div>
-                <div class="stat-card">
-                    <p class="stat-label">Conversion Rate</p>
-                    <p class="stat-value">4.03%</p>
-                    <p class="stat-change negative">↓ 2% from last month</p>
-                </div>
-            </div>
 
             <!-- Quick Actions -->
             <div class="dashboard-card">
@@ -580,7 +740,7 @@
             </div>
 
             <!-- Appearance Settings -->
-            <div class="dashboard-card" id="appearanceSection">
+            <div class="dashboard-card is-collapsed" id="appearanceSection" data-accordion>
                 <div class="card-header">
                     <div>
                         <h2 class="card-title">Appearance</h2>
@@ -590,7 +750,7 @@
                         💾 Save Appearance
                     </button>
                 </div>
-                <div class="card-body">
+                <div class="card-body accordion-body">
                     <div class="appearance-block">
                         <h3 class="block-title">Theme</h3>
                         <div class="theme-grid">
@@ -800,7 +960,7 @@
             </div>
 
             <!-- Profile Settings -->
-            <div class="dashboard-card" id="profileSettingsSection">
+            <div class="dashboard-card is-collapsed" id="profileSettingsSection" data-accordion>
                 <div class="card-header">
                     <div>
                         <h2 class="card-title">Profile Settings</h2>
@@ -810,7 +970,7 @@
                         💾 Save Profile
                     </button>
                 </div>
-                <div class="card-body">
+                <div class="card-body accordion-body">
                     <div class="profile-upload">
                         <div class="profile-avatar-preview">
                             <img id="avatarPreview" src="https://api.dicebear.com/7.x/avataaars/svg?seed=creative" alt="Profile">
@@ -865,7 +1025,7 @@
             </div>
 
             <!-- Affiliate Links Section -->
-            <div class="dashboard-card" id="affiliateLinksSection">
+            <div class="dashboard-card is-collapsed" id="affiliateLinksSection" data-accordion>
                 <div class="card-header">
                     <div>
                         <h2 class="card-title">Your Affiliate Links</h2>
@@ -875,7 +1035,7 @@
                         ➕ Add Affiliate Link
                     </button>
                 </div>
-                <div class="card-body" style="padding: 0;">
+                <div class="card-body accordion-body" style="padding: 0;">
                     <table class="products-table">
                         <thead>
                             <tr>
@@ -978,14 +1138,14 @@
             </div>
 
             <!-- Products Table -->
-            <div class="dashboard-card">
+            <div class="dashboard-card is-collapsed" data-accordion>
                 <div class="card-header">
                     <h2 class="card-title">Your Products</h2>
                     <button class="btn-primary" onclick="openAddProductModal()">
                         ➕ Add Product
                     </button>
                 </div>
-                <div class="card-body" style="padding: 0;">
+                <div class="card-body accordion-body" style="padding: 0;">
                     <table class="products-table" id="productsTable">
                         <thead>
                             <tr>
@@ -1080,7 +1240,7 @@
             </div>
 
             <!-- Quick Links Section -->
-            <div class="dashboard-card" id="quickLinksSection">
+            <div class="dashboard-card is-collapsed" id="quickLinksSection" data-accordion>
                 <div class="card-header">
                     <div>
                         <h2 class="card-title">Your Quick Links</h2>
@@ -1090,7 +1250,7 @@
                         ➕ Add Link
                     </button>
                 </div>
-                <div class="card-body" style="padding: 0;">
+                <div class="card-body accordion-body" style="padding: 0;">
                     <table class="products-table" id="linksTable">
                         <thead>
                             <tr>
@@ -1107,12 +1267,12 @@
             </div>
 
             <!-- Recent Sales -->
-            <div class="dashboard-card">
+            <div class="dashboard-card is-collapsed" data-accordion>
                 <div class="card-header">
                     <h2 class="card-title">Recent Sales</h2>
                     <a href="#" style="color: var(--primary); font-size: 0.875rem; font-weight: 500;">View All →</a>
                 </div>
-                <div class="card-body">
+                <div class="card-body accordion-body">
                     <div class="sales-list">
                         <div class="sale-item" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; border-bottom: 1px solid var(--border-color);">
                             <div>
@@ -1147,11 +1307,11 @@
             </div>
 
             <!-- Payment Details -->
-                <div class="dashboard-card" id="paymentDetailsSection">
+                <div class="dashboard-card is-collapsed" id="paymentDetailsSection" data-accordion>
                     <div class="card-header">
                         <h2 class="card-title">Payment Details</h2>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body accordion-body">
                         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                             <div>
                                 <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 0.25rem;">Receive payments directly to your account</p>
@@ -1217,26 +1377,27 @@
                     </div>
                 </div>
 
-                <!-- Quick Stats under preview -->
-                <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
-                    <p style="font-size: 0.8125rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.75rem;">📊 Today's Stats</p>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                        <div>
-                            <p style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">127</p>
-                            <p style="font-size: 0.75rem; color: var(--text-muted);">Views</p>
-                        </div>
-                        <div>
-                            <p style="font-size: 1.25rem; font-weight: 700; color: var(--accent);">$89</p>
-                            <p style="font-size: 0.75rem; color: var(--text-muted);">Revenue</p>
-                        </div>
-                        <div>
-                            <p style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">5</p>
-                            <p style="font-size: 0.75rem; color: var(--text-muted);">Sales</p>
-                        </div>
-                        <div>
-                            <p style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">3.9%</p>
-                            <p style="font-size: 0.75rem; color: var(--text-muted);">Conv. Rate</p>
-                        </div>
+                <!-- Key Stats under preview -->
+                <div class="stats-grid" style="margin-top: 1rem;">
+                    <div class="stat-card">
+                        <p class="stat-label">Total Revenue</p>
+                        <p class="stat-value">$2,847</p>
+                        <p class="stat-change">↑ 12% from last month</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-label">Total Sales</p>
+                        <p class="stat-value">142</p>
+                        <p class="stat-change">↑ 8% from last month</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-label">Page Views</p>
+                        <p class="stat-value">3,521</p>
+                        <p class="stat-change">↑ 24% from last month</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-label">Conversion Rate</p>
+                        <p class="stat-value">4.03%</p>
+                        <p class="stat-change negative">↓ 2% from last month</p>
                     </div>
                 </div>
             </div>
@@ -2342,9 +2503,23 @@
             }
         }
 
+        function initAccordionToggles() {
+            document.querySelectorAll('.dashboard-card[data-accordion] .card-header').forEach((header) => {
+                header.addEventListener('click', (event) => {
+                    if (event.target.closest('button, a, input, select, textarea, label')) {
+                        return;
+                    }
+                    const card = header.closest('.dashboard-card');
+                    if (!card) return;
+                    card.classList.toggle('is-collapsed');
+                });
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             loadAppearanceSettings();
             loadProfileSettings();
+            initAccordionToggles();
 
             const iframe = document.getElementById('previewIframe');
             if (iframe) {
