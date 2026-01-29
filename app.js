@@ -40,6 +40,7 @@ const defaultLinks = [
 
 const profile = storage.get("wemint_profile", defaultProfile);
 const links = storage.get("wemint_links", defaultLinks);
+const socialLinks = storage.get("wemint_social_links", {});
 
 function escapeHTML(str) {
   const div = document.createElement("div");
@@ -69,6 +70,11 @@ const elements = {
   profileMetaInput: document.getElementById("profileMetaInput"),
   closeProfileBtn: document.getElementById("closeProfileBtn"),
   bannerText: document.getElementById("bannerText"),
+  socialModal: document.getElementById("socialModal"),
+  socialModalTitle: document.getElementById("socialModalTitle"),
+  socialForm: document.getElementById("socialForm"),
+  socialUrl: document.getElementById("socialUrl"),
+  closeSocialBtn: document.getElementById("closeSocialBtn"),
 };
 
 let editingId = null;
@@ -77,6 +83,7 @@ let openLayoutId = null;
 function saveAll() {
   storage.set("wemint_profile", profile);
   storage.set("wemint_links", links);
+  storage.set("wemint_social_links", socialLinks);
 }
 
 function renderProfile() {
@@ -84,6 +91,36 @@ function renderProfile() {
   elements.profileMeta.textContent = profile.bio;
   elements.previewName.textContent = profile.name;
   elements.previewBio.textContent = profile.bio;
+}
+
+function renderSocialSlots() {
+  document.querySelectorAll(".social-slot").forEach((slot) => {
+    const key = slot.dataset.platform;
+    const url = socialLinks[key];
+    if (url) {
+      slot.classList.add("is-filled");
+      slot.setAttribute("title", url);
+    } else {
+      slot.classList.remove("is-filled");
+      slot.removeAttribute("title");
+    }
+  });
+}
+
+let activeSocialSlot = null;
+
+function openSocialModal(slot) {
+  activeSocialSlot = slot;
+  const label = slot.dataset.label || "social";
+  elements.socialModalTitle.textContent = `Add ${label} link`;
+  const currentUrl = socialLinks[slot.dataset.platform] || "";
+  elements.socialUrl.value = currentUrl;
+  elements.socialModal.classList.add("is-open");
+}
+
+function closeSocialModal() {
+  elements.socialModal.classList.remove("is-open");
+  activeSocialSlot = null;
 }
 
 function createLayoutPanel(link) {
@@ -416,14 +453,34 @@ function initEvents() {
     renderProfile();
     closeProfileModal();
   });
+
+  document.querySelectorAll(".social-slot").forEach((slot) => {
+    slot.addEventListener("click", () => openSocialModal(slot));
+  });
+
+  elements.closeSocialBtn.addEventListener("click", closeSocialModal);
+  elements.socialModal.addEventListener("click", (event) => {
+    if (event.target === elements.socialModal) closeSocialModal();
+  });
+
+  elements.socialForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!activeSocialSlot) return;
+    const url = elements.socialUrl.value.trim();
+    socialLinks[activeSocialSlot.dataset.platform] = url;
+    saveAll();
+    renderSocialSlots();
+    closeSocialModal();
+  });
 }
 
 function initBannerCycle() {
   if (!elements.bannerText) return;
   const messages = [
-    "Landing Page Never Be This Simple",
-    "Try Pro - For Bespoke Branding",
+    "It Worth To Be Here",
+    "For Bespoke Design for Brand - Try Premium",
     "Build For Global Economy",
+    "Web2 Maximized - Web3 Friendly",
   ];
   let index = 0;
   elements.bannerText.textContent = messages[index];
@@ -444,6 +501,7 @@ function init() {
   renderLinks();
   renderPreview();
   initEvents();
+  renderSocialSlots();
   initBannerCycle();
 }
 

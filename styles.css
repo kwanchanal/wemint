@@ -108,6 +108,8 @@ textarea {
   display: flex;
   gap: 12px;
   align-items: center;
+  justify-content: space-between;
+  padding: 6px 0 12px;
 }
 
 .brand-info {
@@ -130,15 +132,17 @@ textarea {
 }
 
 .brand-handle {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 14px;
+  color: #1f2328;
 }
 
 .brand-avatar {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  border: 1px solid var(--line);
-  background: var(--card);
+  border: 2px solid #b9b9b9;
+  background: #fff;
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -146,7 +150,8 @@ textarea {
 }
 
 .brand-avatar .material-symbols-outlined {
-  font-size: 18px;
+  font-size: 14px;
+  font-variation-settings: "wght" 600, "FILL" 0;
 }
 
 /* ── Nav ── */
@@ -328,7 +333,7 @@ textarea {
   background: #e5e1da;
   display: grid;
   place-items: center;
-  font-size: 28px;
+  color: #1f1f1f;
   flex-shrink: 0;
 }
 
@@ -356,23 +361,50 @@ textarea {
 
 .profile-icons {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
-.badge {
-  width: 28px;
-  height: 28px;
-  border-radius: 10px;
-  background: #f2efe9;
+.social-slot {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #f4f1ec;
   display: grid;
   place-items: center;
-  font-size: 14px;
-  line-height: 1;
+  cursor: pointer;
+  padding: 0;
 }
 
-.badge-empty {
-  background: #e8e5df;
+.social-slot.is-empty {
+  background: #efebe6;
+  color: #a5abb1;
+}
+
+.social-slot.is-filled {
+  background: #ffffff;
+}
+
+.social-emoji {
+  font-size: 18px;
+}
+
+.social-plus {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  color: #6b6f76;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 600;
 }
 
 /* ── CTA ── */
@@ -861,7 +893,7 @@ textarea {
 }
 
 .phone-brand-icon .material-symbols-outlined {
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .phone-scroll {
@@ -915,10 +947,13 @@ textarea {
   display: grid;
   place-items: center;
   margin-bottom: 2px;
+  color: #dff4e7;
 }
 
-.phone-avatar .material-symbols-outlined {
-  font-size: 24px;
+.avatar-icon {
+  width: 35px;
+  height: 35px;
+  fill: currentColor;
 }
 
 .phone-links {
