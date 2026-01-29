@@ -774,45 +774,6 @@
             font-weight: 600;
         }
 
-        .section-divider {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin: 0.25rem 0 0.75rem;
-        }
-
-        .section-divider::before,
-        .section-divider::after {
-            content: "";
-            flex: 1;
-            height: 2px;
-            background: #111111;
-            opacity: 0.25;
-            border-radius: 999px;
-        }
-
-        .section-divider-badge {
-            background: #111111;
-            color: #ffffff;
-            border-radius: 999px;
-            padding: 0.4rem 0.8rem;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .section-divider-copy {
-            text-align: center;
-            margin-top: 0.5rem;
-            color: var(--text-secondary);
-            font-size: 0.8125rem;
-        }
-
-        .section-divider.identity {
-            margin-bottom: 0.5rem;
-        }
 
         /* Responsive - hide preview on smaller screens */
         @media (max-width: 1200px) {
@@ -1136,12 +1097,6 @@
                 </div>
 
             <!-- Appearance Settings -->
-            <div>
-                <div class="section-divider identity">
-                    <span class="section-divider-badge">SHOW WHO YOU ARE</span>
-                </div>
-            </div>
-
             <div class="dashboard-card is-collapsed" id="appearanceSection" data-accordion>
                 <div class="card-header">
                     <div>

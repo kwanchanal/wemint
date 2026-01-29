@@ -43,6 +43,10 @@
     --radius-xl: 1rem;
     --radius-full: 9999px;
 
+    /* Ticket scallops */
+    --ticket-scallop-radius: 8px;
+    --ticket-scallop-step: 24px;
+
     /* Transitions */
     --transition-fast: 150ms ease;
     --transition-base: 200ms ease;
@@ -156,14 +160,14 @@ input {
 }
 
 .profile-avatar {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     margin: 0 auto var(--spacing-md);
     border-radius: var(--radius-full);
     overflow: hidden;
-    border: 4px solid var(--bg-secondary);
-    box-shadow: var(--shadow-lg);
-    background: var(--bg-secondary);
+    border: none;
+    box-shadow: none;
+    background: transparent;
 }
 
 .profile-avatar img {
@@ -173,23 +177,37 @@ input {
 }
 
 .profile-name {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
     color: var(--bg-secondary);
     margin-bottom: var(--spacing-xs);
 }
 
 .profile-handle {
-    font-size: 0.875rem;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.85);
     margin-bottom: var(--spacing-sm);
 }
 
 .profile-bio {
-    font-size: 0.9375rem;
+    font-size: 0.95rem;
     color: rgba(255, 255, 255, 0.9);
     max-width: 300px;
     margin: 0 auto var(--spacing-md);
+}
+
+.profile-header .social-links {
+    gap: 0.6rem;
+}
+
+.profile-header .social-icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.profile-header .social-icon:hover {
+    background: rgba(255, 255, 255, 0.28);
 }
 
 .social-links {
@@ -277,15 +295,26 @@ section {
 }
 
 .card-shape-ticket .ticket-pass {
-    display: block;
-    background: var(--theme-bg, #6b6bd6);
+    display: none;
+}
+
+.ticket-card {
+    display: none;
+    background: #ffffff;
     overflow: visible;
     box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     position: relative;
     border: none;
     z-index: 1;
-    --r: 10px;
-    --s: 28px;
+    --r: var(--ticket-scallop-radius);
+    --s: var(--ticket-scallop-step);
+}
+
+.card-shape-ticket .ticket-card {
+    display: block;
+}
+
+.ticket-card.scallop-both {
     -webkit-mask:
         radial-gradient(var(--r) at var(--r) 0, transparent 99%, #000) calc(var(--s) / -2) 0 / var(--s) 51% repeat-x,
         radial-gradient(var(--r) at var(--r) 100%, transparent 99%, #000) calc(var(--s) / -2) 100% / var(--s) 51% repeat-x;
@@ -294,8 +323,28 @@ section {
         radial-gradient(var(--r) at var(--r) 100%, transparent 99%, #000) calc(var(--s) / -2) 100% / var(--s) 51% repeat-x;
 }
 
+.ticket-card.scallop-top {
+    -webkit-mask:
+        radial-gradient(var(--r) at var(--r) 0, transparent 99%, #000) calc(var(--s) / -2) 0 / var(--s) 51% repeat-x,
+        linear-gradient(#000 0 0);
+    mask:
+        radial-gradient(var(--r) at var(--r) 0, transparent 99%, #000) calc(var(--s) / -2) 0 / var(--s) 51% repeat-x,
+        linear-gradient(#000 0 0);
+}
+
+.ticket-card.scallop-bottom {
+    -webkit-mask:
+        radial-gradient(var(--r) at var(--r) 100%, transparent 99%, #000) calc(var(--s) / -2) 100% / var(--s) 51% repeat-x,
+        linear-gradient(#000 0 0);
+    mask:
+        radial-gradient(var(--r) at var(--r) 100%, transparent 99%, #000) calc(var(--s) / -2) 100% / var(--s) 51% repeat-x,
+        linear-gradient(#000 0 0);
+}
+
 .ticket-wrap {
     position: relative;
+    display: grid;
+    gap: 1.25rem;
 }
 
 /* Hide the span-based scallops */
@@ -305,14 +354,77 @@ section {
 }
 
 .ticket-header {
-    background-color: var(--primary);
-    background-image: radial-gradient(circle at 14px 0, transparent 12px, var(--primary) 13px);
-    background-size: 28px 16px;
-    background-repeat: repeat-x;
-    background-position: top left;
     padding: 2.3rem 1.25rem 1.25rem;
     color: #ffffff;
     position: relative;
+}
+
+.ticket-profile-card {
+    background: transparent;
+    color: #ffffff;
+}
+
+.ticket-profile-card .ticket-header {
+    background: transparent;
+}
+
+.ticket-mint-card {
+    background: #ffffff;
+    color: var(--text-primary);
+}
+
+.ticket-profile-card .ticket-hero,
+.ticket-profile-card .ticket-header-top {
+    display: none;
+}
+
+.ticket-profile-card .ticket-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.6rem;
+}
+
+.ticket-profile-card .ticket-avatar {
+    width: 92px;
+    height: 92px;
+    margin: 0;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.15);
+    display: block;
+}
+
+.ticket-profile-card .ticket-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ticket-profile-card .ticket-name {
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.ticket-profile-card .ticket-handle {
+    font-size: 0.95rem;
+    opacity: 0.9;
+}
+
+.ticket-profile-card .ticket-bio {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    max-width: 260px;
+    margin: 0 auto;
+}
+
+.ticket-profile-card .ticket-info {
+    padding-right: 0;
+}
+
+.ticket-profile-card .ticket-social {
+    justify-content: center;
 }
 
 .ticket-header-top {
@@ -398,6 +510,10 @@ section {
 
 .card-shape-ticket .ticket-avatar {
     display: none;
+}
+
+.card-shape-ticket .ticket-profile-card .ticket-avatar {
+    display: block;
 }
 
 .ticket-avatar img {
@@ -656,8 +772,8 @@ section {
     margin-top: 1.25rem;
     margin-bottom: 1.5rem;
     border: none;
-    --r: 8px;
-    --s: 24px;
+    --r: var(--ticket-scallop-radius);
+    --s: var(--ticket-scallop-step);
     -webkit-mask:
         radial-gradient(var(--r) at var(--r) 0, transparent 99%, #000) calc(var(--s) / -2) 0 / var(--s) 51% repeat-x,
         radial-gradient(var(--r) at var(--r) 100%, transparent 99%, #000) calc(var(--s) / -2) 100% / var(--s) 51% repeat-x;
@@ -1448,50 +1564,6 @@ section {
 }
 
 /* ========================================
-   Email Section
-   ======================================== */
-
-.email-description {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin-bottom: var(--spacing-md);
-}
-
-.email-form {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-
-.email-form input {
-    flex: 1;
-    padding: var(--spacing-md);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    font-size: 0.875rem;
-    transition: var(--transition-base);
-}
-
-.email-form input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-.email-form button {
-    padding: var(--spacing-md) var(--spacing-lg);
-    background: var(--primary);
-    color: white;
-    font-size: 0.875rem;
-    font-weight: 600;
-    border-radius: var(--radius-md);
-    transition: var(--transition-base);
-    white-space: nowrap;
-}
-
-.email-form button:hover {
-    background: var(--primary-dark);
-}
-
-/* ========================================
    Footer
    ======================================== */
 
@@ -2013,14 +2085,6 @@ section {
         grid-template-columns: 1fr;
     }
 
-    .email-form {
-        flex-direction: column;
-    }
-
-    .email-form button {
-        width: 100%;
-    }
-
     .form-row {
         grid-template-columns: 1fr;
     }
@@ -2042,7 +2106,7 @@ section {
 
 /* Sidebar */
 .sidebar {
-    width: 240px;
+    width: 200px;
     background: var(--bg-secondary);
     border-right: 1px solid var(--border-color);
     padding: var(--spacing-lg);
@@ -2096,7 +2160,7 @@ section {
 /* Main Content */
 .main-content {
     flex: 1;
-    margin-left: 240px;
+    margin-left: 200px;
     padding: var(--spacing-xl);
 }
 
