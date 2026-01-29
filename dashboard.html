@@ -60,7 +60,7 @@
               <span class="material-symbols-outlined">palette</span>
               Appearance
             </div>
-            <button class="nav-link">+ Design</button>
+            <button class="nav-link" id="openDesignBtn">+ Design</button>
           </div>
         </nav>
       </aside>
@@ -245,6 +245,59 @@
             <input id="socialUrl" name="url" type="url" required placeholder="https://" />
           </div>
           <button class="primary" type="submit">Save</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="designModal" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Design</h3>
+          <button class="icon-btn" id="closeDesignBtn">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <form id="designForm">
+          <div class="field">
+            <label for="profileImageUrl">Profile image URL</label>
+            <input id="profileImageUrl" name="profileImageUrl" type="url" placeholder="https://" />
+          </div>
+          <div class="field">
+            <label for="backgroundImageUrl">Background image URL</label>
+            <input id="backgroundImageUrl" name="backgroundImageUrl" type="url" placeholder="https://" />
+          </div>
+          <div class="field">
+            <label for="backgroundColor">Background color</label>
+            <div class="color-input">
+              <input id="backgroundColor" name="backgroundColor" type="text" placeholder="#0b201b" />
+              <input id="backgroundColorPicker" type="color" value="#0b201b" aria-label="Pick background color" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="buttonColor">Button color</label>
+            <div class="color-input">
+              <input id="buttonColor" name="buttonColor" type="text" placeholder="#75d9a0" />
+              <input id="buttonColorPicker" type="color" value="#75d9a0" aria-label="Pick button color" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="profileFontColor">Profile font color</label>
+            <div class="color-input">
+              <input id="profileFontColor" name="profileFontColor" type="text" placeholder="#dff4e7" />
+              <input id="profileFontColorPicker" type="color" value="#dff4e7" aria-label="Pick profile font color" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="buttonFontColor">Button font color</label>
+            <div class="color-input">
+              <input id="buttonFontColor" name="buttonFontColor" type="text" placeholder="#0b201b" />
+              <input id="buttonFontColorPicker" type="color" value="#0b201b" aria-label="Pick button font color" />
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="ghost" type="button" id="resetDesignBtn">Reset</button>
+            <button class="primary" type="submit">Save</button>
+          </div>
         </form>
       </div>
     </div>

@@ -41,6 +41,14 @@ const defaultLinks = [
 const profile = storage.get("wemint_profile", defaultProfile);
 const links = storage.get("wemint_links", defaultLinks);
 const socialLinks = storage.get("wemint_social_links", {});
+const appearance = storage.get("wemint_appearance", {
+  profileImageUrl: "",
+  backgroundImageUrl: "",
+  backgroundColor: "#0b201b",
+  buttonColor: "#75d9a0",
+  profileFontColor: "#dff4e7",
+  buttonFontColor: "#0b201b",
+});
 
 function escapeHTML(str) {
   const div = document.createElement("div");
@@ -75,6 +83,21 @@ const elements = {
   socialForm: document.getElementById("socialForm"),
   socialUrl: document.getElementById("socialUrl"),
   closeSocialBtn: document.getElementById("closeSocialBtn"),
+  openDesignBtn: document.getElementById("openDesignBtn"),
+  designModal: document.getElementById("designModal"),
+  designForm: document.getElementById("designForm"),
+  closeDesignBtn: document.getElementById("closeDesignBtn"),
+  profileImageUrl: document.getElementById("profileImageUrl"),
+  backgroundImageUrl: document.getElementById("backgroundImageUrl"),
+  backgroundColor: document.getElementById("backgroundColor"),
+  buttonColor: document.getElementById("buttonColor"),
+  profileFontColor: document.getElementById("profileFontColor"),
+  buttonFontColor: document.getElementById("buttonFontColor"),
+  backgroundColorPicker: document.getElementById("backgroundColorPicker"),
+  buttonColorPicker: document.getElementById("buttonColorPicker"),
+  profileFontColorPicker: document.getElementById("profileFontColorPicker"),
+  buttonFontColorPicker: document.getElementById("buttonFontColorPicker"),
+  resetDesignBtn: document.getElementById("resetDesignBtn"),
 };
 
 let editingId = null;
@@ -84,6 +107,7 @@ function saveAll() {
   storage.set("wemint_profile", profile);
   storage.set("wemint_links", links);
   storage.set("wemint_social_links", socialLinks);
+  storage.set("wemint_appearance", appearance);
 }
 
 function renderProfile() {
@@ -91,6 +115,68 @@ function renderProfile() {
   elements.profileMeta.textContent = profile.bio;
   elements.previewName.textContent = profile.name;
   elements.previewBio.textContent = profile.bio;
+}
+
+function applyAppearance() {
+  const phone = document.querySelector(".phone");
+  if (phone) {
+    phone.style.setProperty("--phone-profile-color", appearance.profileFontColor || "#dff4e7");
+    phone.style.setProperty("--phone-button-color", appearance.buttonColor || "#75d9a0");
+    phone.style.setProperty("--phone-button-text", appearance.buttonFontColor || "#0b201b");
+    phone.style.setProperty("--phone-link-color", appearance.buttonColor || "#75d9a0");
+    phone.style.setProperty("--phone-link-text", appearance.buttonFontColor || "#0b201b");
+    phone.style.backgroundColor = appearance.backgroundColor || "#0b201b";
+    phone.style.backgroundImage = appearance.backgroundImageUrl
+      ? `url(${appearance.backgroundImageUrl})`
+      : "none";
+  }
+
+  document.querySelectorAll(".profile-avatar, .phone-avatar").forEach((avatar) => {
+    avatar.style.backgroundImage = appearance.profileImageUrl
+      ? `url(${appearance.profileImageUrl})`
+      : "none";
+    avatar.style.backgroundSize = "cover";
+    avatar.style.backgroundPosition = "center";
+    avatar.style.backgroundRepeat = "no-repeat";
+  });
+}
+
+function openDesignModal() {
+  elements.profileImageUrl.value = appearance.profileImageUrl || "";
+  elements.backgroundImageUrl.value = appearance.backgroundImageUrl || "";
+  elements.backgroundColor.value = appearance.backgroundColor || "";
+  elements.buttonColor.value = appearance.buttonColor || "";
+  elements.profileFontColor.value = appearance.profileFontColor || "";
+  elements.buttonFontColor.value = appearance.buttonFontColor || "";
+  if (elements.backgroundColorPicker) {
+    elements.backgroundColorPicker.value = appearance.backgroundColor || "#0b201b";
+  }
+  if (elements.buttonColorPicker) {
+    elements.buttonColorPicker.value = appearance.buttonColor || "#75d9a0";
+  }
+  if (elements.profileFontColorPicker) {
+    elements.profileFontColorPicker.value = appearance.profileFontColor || "#dff4e7";
+  }
+  if (elements.buttonFontColorPicker) {
+    elements.buttonFontColorPicker.value = appearance.buttonFontColor || "#0b201b";
+  }
+  elements.designModal.classList.add("is-open");
+}
+
+function resetAppearance() {
+  appearance.profileImageUrl = "";
+  appearance.backgroundImageUrl = "";
+  appearance.backgroundColor = "#0b201b";
+  appearance.buttonColor = "#75d9a0";
+  appearance.profileFontColor = "#dff4e7";
+  appearance.buttonFontColor = "#0b201b";
+  saveAll();
+  applyAppearance();
+  openDesignModal();
+}
+
+function closeDesignModal() {
+  elements.designModal.classList.remove("is-open");
 }
 
 function renderSocialSlots() {
@@ -344,7 +430,7 @@ function renderPreview() {
         btn.className = "phone-link featured";
         const thumbContent = link.thumbnail
           ? `<img src="${escapeHTML(link.thumbnail)}" alt="" />`
-          : `<span class="material-symbols-outlined">image</span>`;
+          : "";
         btn.innerHTML = `
           <div class="phone-link-thumb">${thumbContent}</div>
           <div class="phone-link-bottom">
@@ -472,6 +558,46 @@ function initEvents() {
     renderSocialSlots();
     closeSocialModal();
   });
+
+  elements.openDesignBtn.addEventListener("click", openDesignModal);
+  elements.closeDesignBtn.addEventListener("click", closeDesignModal);
+  elements.designModal.addEventListener("click", (event) => {
+    if (event.target === elements.designModal) closeDesignModal();
+  });
+
+  elements.designForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    appearance.profileImageUrl = elements.profileImageUrl.value.trim();
+    appearance.backgroundImageUrl = elements.backgroundImageUrl.value.trim();
+    appearance.backgroundColor = elements.backgroundColor.value.trim();
+    appearance.buttonColor = elements.buttonColor.value.trim();
+    appearance.profileFontColor = elements.profileFontColor.value.trim();
+    appearance.buttonFontColor = elements.buttonFontColor.value.trim();
+    saveAll();
+    applyAppearance();
+    closeDesignModal();
+  });
+
+  elements.resetDesignBtn.addEventListener("click", resetAppearance);
+
+  const wireColorPicker = (picker, input) => {
+    if (!picker || !input) return;
+    picker.addEventListener("input", () => {
+      input.value = picker.value;
+      input.dispatchEvent(new Event("input"));
+    });
+    input.addEventListener("input", () => {
+      const value = input.value.trim();
+      if (/^#([0-9a-fA-F]{6})$/.test(value)) {
+        picker.value = value;
+      }
+    });
+  };
+
+  wireColorPicker(elements.backgroundColorPicker, elements.backgroundColor);
+  wireColorPicker(elements.buttonColorPicker, elements.buttonColor);
+  wireColorPicker(elements.profileFontColorPicker, elements.profileFontColor);
+  wireColorPicker(elements.buttonFontColorPicker, elements.buttonFontColor);
 }
 
 function initBannerCycle() {
@@ -502,6 +628,7 @@ function init() {
   renderPreview();
   initEvents();
   renderSocialSlots();
+  applyAppearance();
   initBannerCycle();
 }
 
