@@ -201,6 +201,49 @@ textarea {
   color: #0b1b13;
 }
 
+/* ── Sidebar signup box ── */
+.sidebar-signup {
+  margin-top: -6px;
+  border: 2px dashed #73cfa0;
+  border-radius: 26px;
+  padding: 18px;
+  background: #f1f0ec;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 210px;
+  align-self: flex-start;
+}
+
+.signup-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #73cfa0;
+}
+
+.signup-pill {
+  align-self: flex-start;
+  border: none;
+  background: #ffffff;
+  color: #15171a;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 18px;
+  box-shadow: 0 6px 14px rgba(25, 20, 15, 0.08);
+  cursor: pointer;
+}
+
+.signup-copy {
+  margin: 0;
+  color: #73cfa0;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+
 
 /* ── Main ── */
 .main {
