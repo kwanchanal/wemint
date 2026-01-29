@@ -813,11 +813,45 @@ textarea {
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
 }
 
 .footer-brand-mark {
   color: var(--accent);
   display: inline-flex;
+}
+
+.upgrade-tooltip {
+  position: absolute;
+  right: 0;
+  top: -36px;
+  background: #73cfa0;
+  color: #0b1b13;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(25, 20, 15, 0.12);
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+
+.upgrade-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  bottom: -6px;
+  border-width: 6px 6px 0 6px;
+  border-style: solid;
+  border-color: #73cfa0 transparent transparent transparent;
+}
+
+.upgrade-tooltip.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .footer-brand-mark .material-symbols-outlined {

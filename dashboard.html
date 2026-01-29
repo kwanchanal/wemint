@@ -46,7 +46,7 @@
             </div>
             <button class="nav-link">+ Booking</button>
             <button class="nav-link">+ Direct Message</button>
-            <button class="nav-link">+ Paid Collaboration</button>
+            <button class="nav-link">+ Exclusive Contents</button>
           </div>
           <div class="nav-section">
             <div class="nav-title">
@@ -144,13 +144,14 @@
               <input type="checkbox" id="footerSwitch" checked />
               <span class="slider"></span>
             </label>
+            <div class="upgrade-tooltip" id="footerUpgradeTip">Upgrade to Unlock</div>
           </div>
         </section>
       </main>
 
       <aside class="preview">
         <div class="preview-linkbar">
-          <span>wemint.app/khwan</span>
+          <span id="previewUsername">wemint.app/khwan</span>
           <button class="icon-btn" aria-label="Home">
             <span class="material-symbols-outlined">home</span>
           </button>
@@ -206,10 +207,6 @@
             <input id="linkUrl" name="url" type="url" required placeholder="https://" />
           </div>
           <div class="field">
-            <label for="linkBadge">Badge (optional)</label>
-            <input id="linkBadge" name="badge" type="text" placeholder="Featured" />
-          </div>
-          <div class="field">
             <label for="linkThumbnail">Thumbnail</label>
             <input id="linkThumbnail" name="thumbnail" type="text" placeholder="Image URL" />
           </div>
@@ -230,6 +227,10 @@
           <div class="field">
             <label for="profileNameInput">Display name</label>
             <input id="profileNameInput" name="name" type="text" required />
+          </div>
+          <div class="field">
+            <label for="profileUsernameInput">Username</label>
+            <input id="profileUsernameInput" name="username" type="text" placeholder="khwan" />
           </div>
           <div class="field">
             <label for="profileMetaInput">Bio</label>

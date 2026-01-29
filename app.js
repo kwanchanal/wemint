@@ -14,6 +14,7 @@ const storage = {
 
 const defaultProfile = {
   name: "Kwanchanal Geographic",
+  username: "khwan",
   bio: "Bio-native creator · Bangkok",
 };
 
@@ -22,7 +23,6 @@ const defaultLinks = [
     id: crypto.randomUUID(),
     title: "dribbble",
     url: "https://dribbble.com/shots/27030684-Korvex-ai-AI-Auto-UI",
-    badge: "Featured",
     thumbnail: "",
     featured: true,
     enabled: true,
@@ -31,7 +31,6 @@ const defaultLinks = [
     id: crypto.randomUUID(),
     title: "portfolio",
     url: "https://kwanchanal.github.io/hello",
-    badge: "",
     thumbnail: "",
     featured: false,
     enabled: true,
@@ -63,6 +62,7 @@ const elements = {
   profileName: document.getElementById("profileName"),
   profileMeta: document.getElementById("profileMeta"),
   previewBio: document.getElementById("previewBio"),
+  previewLinkbarUser: document.getElementById("previewUsername"),
   linkModal: document.getElementById("linkModal"),
   linkForm: document.getElementById("linkForm"),
   addLinkBtn: document.getElementById("addLinkBtn"),
@@ -75,6 +75,7 @@ const elements = {
   profileModal: document.getElementById("profileModal"),
   profileForm: document.getElementById("profileForm"),
   profileNameInput: document.getElementById("profileNameInput"),
+  profileUsernameInput: document.getElementById("profileUsernameInput"),
   profileMetaInput: document.getElementById("profileMetaInput"),
   closeProfileBtn: document.getElementById("closeProfileBtn"),
   bannerText: document.getElementById("bannerText"),
@@ -98,6 +99,7 @@ const elements = {
   profileFontColorPicker: document.getElementById("profileFontColorPicker"),
   buttonFontColorPicker: document.getElementById("buttonFontColorPicker"),
   resetDesignBtn: document.getElementById("resetDesignBtn"),
+  footerUpgradeTip: document.getElementById("footerUpgradeTip"),
 };
 
 let editingId = null;
@@ -115,6 +117,12 @@ function renderProfile() {
   elements.profileMeta.textContent = profile.bio;
   elements.previewName.textContent = profile.name;
   elements.previewBio.textContent = profile.bio;
+  const username = profile.username ? profile.username.trim() : "";
+  if (elements.previewLinkbarUser) {
+    elements.previewLinkbarUser.textContent = username
+      ? `wemint.app/${username}`
+      : "wemint.app/";
+  }
 }
 
 function applyAppearance() {
@@ -464,7 +472,6 @@ function openModal(id = null) {
   if (link) {
     elements.linkForm.title.value = link.title;
     elements.linkForm.url.value = link.url;
-    elements.linkForm.badge.value = link.badge || "";
     elements.linkForm.thumbnail.value = link.thumbnail || "";
   }
   elements.linkModal.classList.add("is-open");
@@ -476,6 +483,7 @@ function closeModal() {
 
 function openProfileModal() {
   elements.profileNameInput.value = profile.name;
+  elements.profileUsernameInput.value = profile.username || "";
   elements.profileMetaInput.value = profile.bio;
   elements.profileModal.classList.add("is-open");
 }
@@ -501,7 +509,6 @@ function initEvents() {
       id: editingId || crypto.randomUUID(),
       title: formData.get("title"),
       url: formData.get("url"),
-      badge: formData.get("badge"),
       thumbnail: formData.get("thumbnail"),
       featured: false,
       enabled: true,
@@ -522,6 +529,14 @@ function initEvents() {
   });
 
   elements.footerSwitch.addEventListener("change", () => {
+    elements.footerSwitch.checked = true;
+    if (elements.footerUpgradeTip) {
+      elements.footerUpgradeTip.classList.add("is-visible");
+      clearTimeout(elements.footerUpgradeTip._hideTimer);
+      elements.footerUpgradeTip._hideTimer = setTimeout(() => {
+        elements.footerUpgradeTip.classList.remove("is-visible");
+      }, 1600);
+    }
     renderPreview();
   });
 
@@ -534,6 +549,7 @@ function initEvents() {
   elements.profileForm.addEventListener("submit", (event) => {
     event.preventDefault();
     profile.name = elements.profileNameInput.value.trim();
+    profile.username = elements.profileUsernameInput.value.trim();
     profile.bio = elements.profileMetaInput.value.trim();
     saveAll();
     renderProfile();
