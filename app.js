@@ -616,6 +616,16 @@ function initEvents() {
   wireColorPicker(elements.buttonFontColorPicker, elements.buttonFontColor);
 }
 
+function initNavAccordion() {
+  document.querySelectorAll(".nav-title").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const section = btn.closest(".nav-section");
+      if (!section) return;
+      section.classList.toggle("is-collapsed");
+    });
+  });
+}
+
 function initBannerCycle() {
   if (!elements.bannerText) return;
   const messages = [
@@ -645,6 +655,7 @@ function init() {
   initEvents();
   renderSocialSlots();
   applyAppearance();
+  initNavAccordion();
   initBannerCycle();
 }
 
