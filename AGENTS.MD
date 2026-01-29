@@ -167,108 +167,69 @@ Ask: "Does this reduce time-to-first-dollar?"
 
 ### Live Demo
 
-🔗 **https://kwanchanal.github.io/wemintapp/**
+🔗 **https://kwanchanal.github.io/wemint/**
 
 ### Tech Stack
 
 - **Frontend**: Vanilla HTML, CSS, JavaScript
+- **Icons**: Google Material Symbols
+- **Fonts**: Google Sans
 - **Hosting**: GitHub Pages
-- **Storage**: localStorage (for demo purposes)
+- **Storage**: localStorage (demo)
 
 ---
 
 ## Pages & Features
 
-### 1. Bio Page (`index.html`)
+### 1. Dashboard (`dashboard.html`) — One‑Page Control Center (Demo)
 
-The public-facing page that buyers see.
+Creator's main control panel + live bio preview.
 
-**Components:**
-- Profile header (avatar, name, handle, bio)
-- Social links (from creator settings)
-- Mint / Get Minted panel (tip + short message + email)
-- Affiliate links grid with platform badge + Shop Now CTA
-- Products grid with badges (Best Seller, New)
-- Quick links section (from creator settings)
-- Email signup form
+**Core UI**
+- Sidebar with collapsible sections (Biography, Monetize, Interactive, DApp, Appearance)
+- Live phone preview of the bio page
+- Rotating top banner message
+- Sidebar signup card (“Love it? Sign Up…”)
 
-**Payment Flow:**
-- Product detail modal with features & license info
-- Payment modal with wallet‑first options (crypto wallet primary, bank details secondary)
-- Success modal with instant download button
+**Link Management**
+- Add/edit/delete links
+- Enable/disable each link
+- Layout picker (Classic / Featured)
+- Preview updates in real time
 
-### 2. Dashboard (`dashboard.html`) — One‑Page Control Center
+**Profile & Social**
+- Profile edit modal: Display name, Username (preview URL), Bio
+- Social link slots (Instagram, TikTok, YouTube, X, Facebook, Discord)
+- Social link modal (URL input) with localStorage persistence
 
-Creator's main control panel.
+**Design / Appearance**
+- Design modal via “+ Design”
+- Controls:
+  - Profile Image URL
+  - Background Image URL
+  - Background Color (with color picker)
+  - Button Color (links + CTA)
+  - Profile Font Color
+  - Button Font Color
+- Reset to default green theme
 
-**Components:**
-- Stats overview (Revenue, Sales, Views, Conversion Rate)
-- Quick actions (Add Affiliate Link, Add Product, Add Quick Link, Payment)
-- Appearance settings (Theme, Button Color, Font Color, Button Style, Font)
-- Profile settings (avatar, name, username, bio)
-- Social links (icon row + add/edit modal)
-- Section visibility toggles (Affiliate / Products / Quick Links)
-- Affiliate links table (demo data)
-- Products table with edit/delete actions
-- Quick links table with add/edit/toggle
-- Recent sales feed
-- Payment details (direct to creator; wemint never holds funds)
-- Live phone preview of bio page
-
-### 3. Appearance (`appearance.html`) [Legacy/Standalone]
-
-Customize the look and feel of the bio page.
-
-**Features:**
-- **Themes**: 6 pre-built themes
-  - Purple Gradient (default)
-  - Ocean Blue
-  - Fresh Green
-  - Pink Sunset
-  - Dark Mode
-  - Light Mode
-- **Button Color**: preset colors + custom hex input
-- **Font Color**: preset colors + custom hex input
-- **Button Style**: Rounded, Pill, Square
-- **Font**: Inter, Poppins, Roboto, Playfair Display
-
-### 4. Settings (`settings.html`) [Legacy/Standalone]
-
-Manage profile and social links.
-
-**Profile Settings:**
-- Display name
-- Username (changes URL: `/@username`)
-- Profile avatar (upload or remove)
-- Bio (160 character limit)
-
-**Social Links:**
-- Toggle visibility for each platform
-- Custom URL input for each
-- Supported platforms:
-  - Instagram
-  - TikTok
-  - YouTube
-  - X (Twitter)
-  - Facebook
-  - LinkedIn
-  - Website
-  - Email
+**Footer Lock**
+- wemint.app footer toggle is locked
+- Attempt to disable shows tooltip: “Upgrade to Unlock”
 
 ---
 
 ## File Structure
 
 ```
-wemintapp/
-├── index.html          # Bio page (public)
-├── dashboard.html      # Creator dashboard
-├── appearance.html     # Legacy standalone appearance page
-├── settings.html       # Legacy standalone settings page
+wemintv2/
+├── dashboard.html      # Creator dashboard + live preview (demo)
 ├── styles.css          # Global styles
 ├── app.js              # JavaScript functionality
+├── favicon/            # Favicon assets
+│   └── cookie.svg
 ├── AGENTS.MD           # This file
-└── reference/          # UI reference screenshots
+└── image/              # Reference images
 ```
 
 ---
@@ -279,11 +240,10 @@ Settings are stored in `localStorage`:
 
 | Key | Description |
 |-----|-------------|
-| `wemint_profile` | Display name, username, bio, avatar, social links |
-| `wemint_appearance` | Theme, button color, button style, font, font color |
-| `wemint_products` | Products data for dashboard + bio page |
-| `wemint_quick_links` | Quick links data |
-| `wemint_sections` | Section visibility toggles for bio page |
+| `wemint_profile` | Display name, username, bio |
+| `wemint_links` | Links data for dashboard + preview |
+| `wemint_social_links` | Social link URLs by platform |
+| `wemint_appearance` | Colors, images, font colors for preview |
 
 ---
 
@@ -303,7 +263,7 @@ Settings are stored in `localStorage`:
 
 ### Typography
 
-- **Font**: Inter (Google Fonts)
+- **Font**: Google Sans (Google Fonts)
 - **Weights**: 400, 500, 600, 700
 
 ### Visual Direction
@@ -315,9 +275,9 @@ Settings are stored in `localStorage`:
 
 - Cards with subtle shadows
 - Apple-style minimal scrollbars
-- Phone mockup preview
-- Toggle switches for settings
-- Modal system for checkout flow
+- Phone preview mockup
+- Toggle switches
+- Modal system (links, profile, social, design)
 
 ---
 
