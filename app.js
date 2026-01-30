@@ -67,6 +67,7 @@ const elements = {
   linkForm: document.getElementById("linkForm"),
   addLinkBtn: document.getElementById("addLinkBtn"),
   topbarAddBtn: document.getElementById("topbarAddBtn"),
+  sidebarAddBtn: document.getElementById("sidebarAddBtn"),
   closeModalBtn: document.getElementById("closeModalBtn"),
   modalTitle: document.getElementById("modalTitle"),
   footerSwitch: document.getElementById("footerSwitch"),
@@ -89,7 +90,11 @@ const elements = {
   designForm: document.getElementById("designForm"),
   closeDesignBtn: document.getElementById("closeDesignBtn"),
   profileImageUrl: document.getElementById("profileImageUrl"),
+  profileImageFile: document.getElementById("profileImageFile"),
+  profileImageHint: document.getElementById("profileImageHint"),
   backgroundImageUrl: document.getElementById("backgroundImageUrl"),
+  backgroundImageFile: document.getElementById("backgroundImageFile"),
+  backgroundImageHint: document.getElementById("backgroundImageHint"),
   backgroundColor: document.getElementById("backgroundColor"),
   buttonColor: document.getElementById("buttonColor"),
   profileFontColor: document.getElementById("profileFontColor"),
@@ -104,6 +109,7 @@ const elements = {
 
 let editingId = null;
 let openLayoutId = null;
+let draggingLinkId = null;
 
 function saveAll() {
   storage.set("wemint_profile", profile);
@@ -140,18 +146,52 @@ function applyAppearance() {
   }
 
   document.querySelectorAll(".profile-avatar, .phone-avatar").forEach((avatar) => {
-    avatar.style.backgroundImage = appearance.profileImageUrl
-      ? `url(${appearance.profileImageUrl})`
-      : "none";
+    const hasImage = Boolean(appearance.profileImageUrl);
+    avatar.style.backgroundImage = hasImage ? `url(${appearance.profileImageUrl})` : "none";
     avatar.style.backgroundSize = "cover";
     avatar.style.backgroundPosition = "center";
     avatar.style.backgroundRepeat = "no-repeat";
+    avatar.classList.toggle("has-image", hasImage);
   });
 }
 
+function setImageHint(hintEl, message) {
+  if (!hintEl) return;
+  hintEl.textContent = message;
+}
+
+function readImageFile(file, onLoad) {
+  const reader = new FileReader();
+  reader.onload = () => onLoad(reader.result);
+  reader.readAsDataURL(file);
+}
+
 function openDesignModal() {
-  elements.profileImageUrl.value = appearance.profileImageUrl || "";
-  elements.backgroundImageUrl.value = appearance.backgroundImageUrl || "";
+  const profileIsLocal = appearance.profileImageUrl?.startsWith("data:");
+  const backgroundIsLocal = appearance.backgroundImageUrl?.startsWith("data:");
+
+  elements.profileImageUrl.value = profileIsLocal ? "" : appearance.profileImageUrl || "";
+  elements.backgroundImageUrl.value = backgroundIsLocal ? "" : appearance.backgroundImageUrl || "";
+  elements.profileImageUrl.dataset.dirty = "false";
+  elements.backgroundImageUrl.dataset.dirty = "false";
+  if (elements.profileImageFile) elements.profileImageFile.value = "";
+  if (elements.backgroundImageFile) elements.backgroundImageFile.value = "";
+  setImageHint(
+    elements.profileImageHint,
+    profileIsLocal
+      ? "Using local file (stored in browser)."
+      : appearance.profileImageUrl
+      ? "Using URL."
+      : "Supports JPG, PNG, WebP."
+  );
+  setImageHint(
+    elements.backgroundImageHint,
+    backgroundIsLocal
+      ? "Using local file (stored in browser)."
+      : appearance.backgroundImageUrl
+      ? "Using URL."
+      : "Supports JPG, PNG, WebP."
+  );
   elements.backgroundColor.value = appearance.backgroundColor || "";
   elements.buttonColor.value = appearance.buttonColor || "";
   elements.profileFontColor.value = appearance.profileFontColor || "";
@@ -260,10 +300,19 @@ function createLayoutPanel(link) {
     let extraContent = "";
     if (option.id === "featured") {
       extraContent = `
-        <button class="add-thumbnail-btn" type="button">
-          <span class="material-symbols-outlined">add_photo_alternate</span>
-          Add thumbnail
-        </button>
+        <div class="thumbnail-row">
+          <button class="add-thumbnail-btn" type="button">
+            <span class="material-symbols-outlined">add_photo_alternate</span>
+            Add thumbnail
+          </button>
+          <button class="reset-thumbnail-btn" type="button">
+            <span class="material-symbols-outlined">refresh</span>
+            Reset
+          </button>
+          <input class="thumbnail-input" type="file" accept="image/*" />
+        </div>
+        <div class="thumbnail-hint">No thumbnail yet.</div>
+        <div class="thumbnail-preview"></div>
       `;
     }
 
@@ -308,6 +357,57 @@ function createLayoutPanel(link) {
       renderLinks();
     });
   });
+
+  const thumbInput = panel.querySelector(".thumbnail-input");
+  const thumbButton = panel.querySelector(".add-thumbnail-btn");
+  const resetThumbButton = panel.querySelector(".reset-thumbnail-btn");
+  const thumbPreview = panel.querySelector(".thumbnail-preview");
+  const thumbHint = panel.querySelector(".thumbnail-hint");
+
+  const updateThumbnailUI = () => {
+    if (!thumbPreview || !thumbHint) return;
+    if (link.thumbnail) {
+      thumbPreview.innerHTML = `<img src="${escapeHTML(link.thumbnail)}" alt="" />`;
+      thumbHint.textContent = "Thumbnail ready.";
+    } else {
+      thumbPreview.innerHTML = "";
+      thumbHint.textContent = "No thumbnail yet.";
+    }
+  };
+
+  if (thumbButton && thumbInput) {
+    thumbInput.addEventListener("change", () => {
+      const file = thumbInput.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        link.thumbnail = reader.result;
+        saveAll();
+        renderPreview();
+        renderLinks();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    thumbButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      thumbInput.click();
+    });
+  }
+
+  if (resetThumbButton) {
+    resetThumbButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      link.thumbnail = "";
+      saveAll();
+      renderPreview();
+      renderLinks();
+    });
+  }
+
+  updateThumbnailUI();
 
   return panel;
 }
@@ -416,6 +516,46 @@ function renderLinks() {
       }
     });
 
+    const dragHandle = card.querySelector(".link-drag");
+    if (dragHandle) {
+      dragHandle.setAttribute("draggable", "true");
+      dragHandle.addEventListener("dragstart", (event) => {
+        draggingLinkId = link.id;
+        card.classList.add("is-dragging");
+        event.dataTransfer.setData("text/plain", link.id);
+        event.dataTransfer.effectAllowed = "move";
+      });
+      dragHandle.addEventListener("dragend", () => {
+        draggingLinkId = null;
+        card.classList.remove("is-dragging");
+      });
+    }
+
+    card.addEventListener("dragover", (event) => {
+      if (!draggingLinkId || draggingLinkId === link.id) return;
+      event.preventDefault();
+      card.classList.add("drag-over");
+    });
+
+    card.addEventListener("dragleave", () => {
+      card.classList.remove("drag-over");
+    });
+
+    card.addEventListener("drop", (event) => {
+      if (!draggingLinkId || draggingLinkId === link.id) return;
+      event.preventDefault();
+      card.classList.remove("drag-over");
+      const fromIndex = links.findIndex((item) => item.id === draggingLinkId);
+      const toIndex = links.findIndex((item) => item.id === link.id);
+      if (fromIndex < 0 || toIndex < 0) return;
+      const [moved] = links.splice(fromIndex, 1);
+      const insertIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
+      links.splice(insertIndex, 0, moved);
+      saveAll();
+      renderLinks();
+      renderPreview();
+    });
+
     elements.linksList.appendChild(card);
 
     // If layout panel is open for this link, insert it after the card
@@ -472,7 +612,6 @@ function openModal(id = null) {
   if (link) {
     elements.linkForm.title.value = link.title;
     elements.linkForm.url.value = link.url;
-    elements.linkForm.thumbnail.value = link.thumbnail || "";
   }
   elements.linkModal.classList.add("is-open");
 }
@@ -497,6 +636,9 @@ function initEvents() {
   if (elements.topbarAddBtn) {
     elements.topbarAddBtn.addEventListener("click", () => openModal());
   }
+  if (elements.sidebarAddBtn) {
+    elements.sidebarAddBtn.addEventListener("click", () => openModal());
+  }
   elements.closeModalBtn.addEventListener("click", closeModal);
   elements.linkModal.addEventListener("click", (event) => {
     if (event.target === elements.linkModal) closeModal();
@@ -509,7 +651,7 @@ function initEvents() {
       id: editingId || crypto.randomUUID(),
       title: formData.get("title"),
       url: formData.get("url"),
-      thumbnail: formData.get("thumbnail"),
+      thumbnail: editingId ? links.find((item) => item.id === editingId)?.thumbnail || "" : "",
       featured: false,
       enabled: true,
     };
@@ -583,8 +725,12 @@ function initEvents() {
 
   elements.designForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    appearance.profileImageUrl = elements.profileImageUrl.value.trim();
-    appearance.backgroundImageUrl = elements.backgroundImageUrl.value.trim();
+    if (elements.profileImageUrl.dataset.dirty === "true") {
+      appearance.profileImageUrl = elements.profileImageUrl.value.trim();
+    }
+    if (elements.backgroundImageUrl.dataset.dirty === "true") {
+      appearance.backgroundImageUrl = elements.backgroundImageUrl.value.trim();
+    }
     appearance.backgroundColor = elements.backgroundColor.value.trim();
     appearance.buttonColor = elements.buttonColor.value.trim();
     appearance.profileFontColor = elements.profileFontColor.value.trim();
@@ -595,6 +741,52 @@ function initEvents() {
   });
 
   elements.resetDesignBtn.addEventListener("click", resetAppearance);
+
+  elements.profileImageUrl.addEventListener("input", () => {
+    elements.profileImageUrl.dataset.dirty = "true";
+    setImageHint(
+      elements.profileImageHint,
+      elements.profileImageUrl.value.trim() ? "Using URL." : "Supports JPG, PNG, WebP."
+    );
+  });
+
+  elements.backgroundImageUrl.addEventListener("input", () => {
+    elements.backgroundImageUrl.dataset.dirty = "true";
+    setImageHint(
+      elements.backgroundImageHint,
+      elements.backgroundImageUrl.value.trim() ? "Using URL." : "Supports JPG, PNG, WebP."
+    );
+  });
+
+  if (elements.profileImageFile) {
+    elements.profileImageFile.addEventListener("change", () => {
+      const file = elements.profileImageFile.files?.[0];
+      if (!file) return;
+      readImageFile(file, (dataUrl) => {
+        appearance.profileImageUrl = dataUrl;
+        saveAll();
+        applyAppearance();
+        elements.profileImageUrl.value = "";
+        elements.profileImageUrl.dataset.dirty = "false";
+        setImageHint(elements.profileImageHint, "Using local file (stored in browser).");
+      });
+    });
+  }
+
+  if (elements.backgroundImageFile) {
+    elements.backgroundImageFile.addEventListener("change", () => {
+      const file = elements.backgroundImageFile.files?.[0];
+      if (!file) return;
+      readImageFile(file, (dataUrl) => {
+        appearance.backgroundImageUrl = dataUrl;
+        saveAll();
+        applyAppearance();
+        elements.backgroundImageUrl.value = "";
+        elements.backgroundImageUrl.dataset.dirty = "false";
+        setImageHint(elements.backgroundImageHint, "Using local file (stored in browser).");
+      });
+    });
+  }
 
   const wireColorPicker = (picker, input) => {
     if (!picker || !input) return;
