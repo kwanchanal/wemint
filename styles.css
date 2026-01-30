@@ -49,7 +49,7 @@ textarea {
 }
 
 .banner-mark {
-  color: #67c58d;
+  color: #ffffff;
   display: inline-flex;
 }
 
@@ -243,8 +243,8 @@ textarea {
 .signup-pill {
   align-self: flex-start;
   border: none;
-  background: #ffffff;
-  color: #15171a;
+  background: #f2c94c;
+  color: #1d1f23;
   padding: 8px 14px;
   border-radius: 999px;
   font-weight: 700;
@@ -368,11 +368,11 @@ textarea {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: #ffffff;
+  background: #f2c94c;
   display: grid;
   place-items: center;
   font-size: 16px;
-  color: #2f8c63;
+  color: #000000;
   box-shadow: 0 6px 12px rgba(35, 28, 20, 0.08);
 }
 
