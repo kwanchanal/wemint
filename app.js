@@ -629,10 +629,11 @@ function initNavAccordion() {
 function initBannerCycle() {
   if (!elements.bannerText) return;
   const messages = [
-    "It Worth To Be Here",
-    "For Bespoke Design for Brand - Try Premium",
+    "Built For You",
+    "Bespoke Design for Brand - Contact Us",
+    "Your Brand in One-Page",
     "Build For Global Economy",
-    "Web2 Maximized - Web3 Friendly",
+    "Web3 Friendly  - Web2 Mazimize",
   ];
   let index = 0;
   elements.bannerText.textContent = messages[index];
