@@ -2,6 +2,7 @@ const navPills = document.querySelectorAll(".nav-pill");
 const helloWord = document.querySelector(".hello-word");
 const typingText = document.getElementById("typingText");
 const heroSection = document.querySelector(".hero");
+const closingText = document.getElementById("closingText");
 
 /* ── Greeting rotation (Apple-style slide transition) ── */
 const greetings = [
@@ -34,6 +35,26 @@ function rotateGreeting() {
 }
 
 setInterval(rotateGreeting, 2000);
+
+/* ── Closing pill text rotation ── */
+const closingWords = ["Page", "Conversion"];
+let closingIndex = 0;
+
+function rotateClosing() {
+  if (!closingText) return;
+  closingText.classList.add("is-exiting");
+
+  setTimeout(() => {
+    closingIndex = (closingIndex + 1) % closingWords.length;
+    closingText.textContent = closingWords[closingIndex];
+    closingText.classList.remove("is-exiting");
+    closingText.classList.add("is-entering");
+    void closingText.offsetHeight;
+    closingText.classList.remove("is-entering");
+  }, 300);
+}
+
+setInterval(rotateClosing, 1200);
 
 /* ── Typing animation ── */
 const typingMessages = [
