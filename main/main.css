@@ -46,6 +46,15 @@ main {
   max-width: none;
   width: 100%;
   margin: 0;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+              transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hero.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .hero-orbits {
@@ -53,6 +62,16 @@ main {
   inset: 0;
   pointer-events: none;
   z-index: 0;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1),
+              transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: 0.15s;
+}
+
+.hero.is-visible .hero-orbits {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .orbit {
@@ -136,6 +155,15 @@ main {
   text-align: center;
   z-index: 2;
   transform: translateY(-40px);
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1),
+              transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition-delay: 0.2s;
+}
+
+.hero.is-visible .hero-content {
+  opacity: 1;
+  transform: translateY(-40px);
 }
 
 .hello-word {
@@ -164,7 +192,7 @@ main {
 .typing-pill {
   min-width: min(520px, 90vw);
   background: var(--white);
-  padding: 14px 18px 14px 22px;
+  padding: 14px 18px 14px 56px;
   border-radius: 999px;
   box-shadow: var(--shadow);
   display: inline-flex;
@@ -172,11 +200,28 @@ main {
   justify-content: space-between;
   gap: 14px;
   font-weight: 600;
+  position: relative;
+}
+
+.typing-icon {
+  position: absolute;
+  left: 14px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  animation: typing-spin 4s linear infinite;
+}
+
+.typing-icon img {
+  width: 100%;
+  height: 100%;
 }
 
 .typing-text {
   white-space: nowrap;
   overflow: hidden;
+  font-size: 20px;
 }
 
 .typing-action {
@@ -188,7 +233,22 @@ main {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  font-size: 18px;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.typing-action .material-symbols-outlined {
+  font-size: 20px;
+  line-height: 1;
+}
+
+@keyframes typing-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .bento {
@@ -215,10 +275,19 @@ main {
 
 .frame-tile {
   position: relative;
-  border-radius: 18px;
+  border-radius: 28px;
   overflow: hidden;
   background: #ffffff;
-  box-shadow: var(--shadow);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.16);
+  opacity: 0;
+  transform: translateY(18px) scale(0.98);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  will-change: opacity, transform;
+}
+
+.frame-tile.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
 }
 
 .frame-tile.is-square {
@@ -231,6 +300,51 @@ main {
 
 .frame-tile img {
   object-fit: cover;
+}
+
+.frame-2 img {
+  position: absolute;
+  inset: 0;
+}
+
+.frame-2 .frame-base {
+  position: relative;
+  z-index: 1;
+  animation: frame-slide-base 6s ease-in-out infinite;
+}
+
+.frame-2 .frame-swap {
+  z-index: 2;
+  transform: translateY(100%);
+  animation: frame-slide-swap 6s ease-in-out infinite;
+}
+
+@keyframes frame-slide-base {
+  0%,
+  45% {
+    transform: translateY(0);
+  }
+  55%,
+  95% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes frame-slide-swap {
+  0%,
+  45% {
+    transform: translateY(100%);
+  }
+  55%,
+  95% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
 }
 
 .frame-overlay {
@@ -259,31 +373,266 @@ main {
 .frame-13 { grid-column: 8 / span 3;  grid-row: 5 / span 2; }
 .frame-14 { grid-column: 11 / span 2; grid-row: 5 / span 2; }
 
-.overlay-3-1 {
-  bottom: 20px;
+.overlay-3-1,
+.overlay-3-2,
+.overlay-3-3 {
+  top: 50%;
   left: 50%;
-  transform: translateX(-115%);
-  max-width: 28%;
+  width: 26%;
+  height: auto;
+  max-width: none;
+  --tx: -50%;
+  --ty: -50%;
+  transform: translate(var(--tx), var(--ty));
+  animation: orbit-spin var(--spin-duration, 14s) linear infinite;
+  transform-origin: center;
+}
+
+.overlay-3-1 {
+  --spin-duration: 12s;
+  --tx: -165%;
+  --ty: -50%;
 }
 
 .overlay-3-2 {
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: 28%;
+  --spin-duration: 14s;
+  --tx: -50%;
+  --ty: -50%;
 }
 
 .overlay-3-3 {
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(15%);
-  max-width: 28%;
+  --spin-duration: 16s;
+  --tx: 65%;
+  --ty: -50%;
 }
 
 .overlay-5-1 {
   bottom: 14px;
   left: 12px;
   max-width: 70%;
+}
+
+.frame5-swipe {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  z-index: 2;
+  width: calc(100% - 28px);
+  transform: translate(-50%, calc(-50% + 5px));
+}
+
+.frame5-price {
+  background: #f7cd52;
+  color: #111111;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  line-height: 1;
+}
+
+.frame5-track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  background: #f7cd52;
+  --knob-size: 28px;
+  --track-pad: 8px;
+  --track-pad-right: 16px;
+  padding: 8px var(--track-pad-right);
+  min-height: 34px;
+  border-radius: 999px;
+  flex: 1;
+  min-width: 0;
+  color: #111111;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.frame5-text {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0.6;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.frame5-knob {
+  position: absolute;
+  left: var(--track-pad);
+  width: var(--knob-size);
+  height: var(--knob-size);
+  border-radius: 50%;
+  background: #0b0b0b;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  animation: swipe-knob 2.4s ease-in-out infinite;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+.frame5-knob svg {
+  width: 14px;
+  height: 14px;
+}
+
+.frame5-trail {
+  position: absolute;
+  left: var(--track-pad);
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, #fff2b5 0%, #f7cd52 60%, rgba(247, 205, 82, 0.2) 100%);
+  filter: blur(4px);
+  opacity: 0;
+  animation: swipe-trail 2.4s ease-in-out infinite;
+}
+
+@keyframes swipe-knob {
+  0%,
+  20% {
+    transform: translateX(0);
+  }
+  55%,
+  75% {
+    transform: translateX(calc(100% - var(--knob-size) - var(--track-pad) - var(--track-pad-right)));
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes swipe-trail {
+  0%,
+  20% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  30%,
+  75% {
+    transform: translateX(calc(100% - var(--knob-size) - var(--track-pad) - var(--track-pad-right)));
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+}
+
+.overlay-8-globe {
+  width: 80%;
+  height: auto;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.18));
+}
+
+.frame9-instant {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: clamp(14px, 1.8vw, 18px);
+  font-weight: 700;
+  color: #0f172a;
+  background: #ffd94a;
+  padding: 6px 12px;
+  border-radius: 999px;
+  box-shadow: 0 10px 22px rgba(255, 198, 0, 0.45);
+  animation: instant-bounce 1.2s ease-in-out infinite;
+}
+
+.frame8-title {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(18px, 2.2vw, 28px);
+  font-weight: 700;
+  color: #0b0b0b;
+  text-align: center;
+  z-index: 2;
+  text-shadow: 0 3px 10px rgba(255, 255, 255, 0.35);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.frame8-slide {
+  position: absolute;
+  inset: 0;
+  transform: translateX(100%);
+  animation: frame8-slide 5.4s linear infinite;
+}
+
+@keyframes frame8-slide {
+  0% {
+    transform: translateX(100%);
+  }
+  20%,
+  90% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.frame14-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 78% 30%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.6) 25%, rgba(255, 255, 255, 0) 60%);
+  opacity: 0;
+  animation: camera-flash 2.6s ease-in-out infinite;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+@keyframes camera-flash {
+  0%,
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  78% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+  85% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes orbit-spin {
+  from {
+    transform: translate(var(--tx), var(--ty)) rotate(0deg);
+  }
+  to {
+    transform: translate(var(--tx), var(--ty)) rotate(360deg);
+  }
+}
+
+@keyframes instant-bounce {
+  0%,
+  100% {
+    transform: translateY(-50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50%) scale(1.12);
+    opacity: 0.9;
+  }
 }
 
 .closing {
@@ -339,7 +688,7 @@ main {
 }
 
 
-@media (max-width: 980px) {
+@media (max-width: 1024px) {
   main {
     padding: 24px 18px 60px;
     gap: 60px;
@@ -374,6 +723,34 @@ main {
   .frame-12 { grid-column: 5 / span 2; grid-row: 8 / span 2; }
   .frame-13 { grid-column: 1 / span 3; grid-row: 10 / span 2; }
   .frame-14 { grid-column: 4 / span 3; grid-row: 10 / span 2; }
+}
+
+@media (max-width: 1024px) and (min-width: 641px) {
+  .bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: auto;
+    padding-top: 18px;
+  }
+
+  .frame-tile {
+    grid-column: auto / span 1 !important;
+    grid-row: auto / span 1 !important;
+  }
+
+  .frame-tile.is-square,
+  .frame-tile.is-row-height,
+  .frame-tile.is-wide {
+    aspect-ratio: auto;
+  }
+
+  .frame-tile.is-square {
+    aspect-ratio: 1 / 1;
+  }
+
+  .frame-tile.is-row-height,
+  .frame-tile.is-wide {
+    aspect-ratio: 3 / 2;
+  }
 }
 
 @media (max-width: 640px) {
@@ -419,14 +796,24 @@ main {
   }
 
   .bento {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-rows: 140px;
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
     padding-top: 16px;
   }
 
   .frame-tile {
     grid-column: auto / span 1 !important;
     grid-row: auto / span 1 !important;
+  }
+
+  .frame-tile.is-square,
+  .frame-tile.is-row-height,
+  .frame-tile.is-wide {
+    aspect-ratio: auto;
+  }
+
+  .frame-tile img {
+    height: auto;
   }
 
   .frame-tile img,

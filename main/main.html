@@ -11,6 +11,10 @@
       href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_forward"
+    />
     <link rel="stylesheet" href="main.css" />
   </head>
   <body>
@@ -34,8 +38,13 @@
         <div class="hero-content">
           <h1 id="hero-title" class="hello-word">Hello</h1>
           <div class="typing-pill" aria-live="polite">
+            <span class="typing-icon" aria-hidden="true">
+              <img src="../favicon/main-2.svg" alt="" />
+            </span>
             <span class="typing-text" id="typingText">what can I help you today?</span>
-            <span class="typing-action" aria-hidden="true">→</span>
+            <span class="typing-action" aria-hidden="true">
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </span>
           </div>
         </div>
       </section>
@@ -44,10 +53,11 @@
         <div class="frame-tile frame-1">
           <img src="../image/frame/frame1.png" alt="" />
         </div>
-        <div class="frame-tile frame-2">
-          <img src="../image/frame/frame2.png" alt="" />
+        <div class="frame-tile frame-2 is-wide">
+          <img class="frame-base" src="../image/frame/frame2.png" alt="" />
+          <img class="frame-swap" src="../image/frame/frame2-1.png" alt="" />
         </div>
-        <div class="frame-tile frame-3">
+        <div class="frame-tile frame-3 is-wide">
           <img src="../image/frame/frame3.png" alt="" />
           <img class="frame-overlay overlay-3-1" src="../image/frame/frame3-1.png" alt="" />
           <img class="frame-overlay overlay-3-2" src="../image/frame/frame3-2.png" alt="" />
@@ -56,21 +66,42 @@
         <div class="frame-tile frame-4">
           <img src="../image/frame/frame4.png" alt="" />
         </div>
-        <div class="frame-tile frame-5">
+        <div class="frame-tile frame-5 is-wide">
           <img src="../image/frame/frame5.png" alt="" />
-          <img class="frame-overlay overlay-5-1" src="../image/frame/frame5-1.png" alt="" />
+          <div class="frame5-swipe" aria-hidden="true">
+            <span class="frame5-price">10$</span>
+            <div class="frame5-track">
+              <span class="frame5-text">Swipe to Send</span>
+              <span class="frame5-trail" aria-hidden="true"></span>
+              <span class="frame5-knob">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M5 12h12m0 0l-4-4m4 4l-4 4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+            </div>
+          </div>
         </div>
         <div class="frame-tile frame-6">
           <img src="../image/frame/frame7.png" alt="" />
         </div>
         <div class="frame-tile frame-7">
           <img src="../image/frame/frame8.png" alt="" />
+          <img class="frame-overlay overlay-8-globe" src="../image/frame/rotating-globe.gif" alt="" />
         </div>
-        <div class="frame-tile frame-8">
-          <img src="../image/frame/frame9.png" alt="" />
+        <div class="frame-tile frame-8 is-wide">
+          <img class="frame8-slide" src="../image/frame/frame9.png" alt="" />
+          <span class="frame8-title">Who You Are</span>
         </div>
-        <div class="frame-tile frame-9">
+        <div class="frame-tile frame-9 is-wide">
           <img src="../image/frame/frame6.png" alt="" />
+          <span class="frame9-instant">Instant!</span>
         </div>
         <div class="frame-tile frame-10 is-square">
           <img src="../image/frame/frame10.png" alt="" />
@@ -86,6 +117,7 @@
         </div>
         <div class="frame-tile frame-14 is-square">
           <img src="../image/frame/frame14.png" alt="" />
+          <span class="frame14-flash" aria-hidden="true"></span>
         </div>
       </section>
 

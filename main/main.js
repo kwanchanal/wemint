@@ -1,6 +1,7 @@
 const navPills = document.querySelectorAll(".nav-pill");
 const helloWord = document.querySelector(".hello-word");
 const typingText = document.getElementById("typingText");
+const heroSection = document.querySelector(".hero");
 
 /* ── Greeting rotation (Apple-style slide transition) ── */
 const greetings = [
@@ -72,6 +73,13 @@ function runTyping() {
 }
 
 setTimeout(runTyping, 800);
+
+/* ── Hero intro ── */
+if (heroSection) {
+  window.requestAnimationFrame(() => {
+    heroSection.classList.add("is-visible");
+  });
+}
 
 /* ── Nav pills ── */
 navPills.forEach((pill) => {
@@ -186,6 +194,47 @@ navPills.forEach((pill) => {
   }
 
   requestAnimationFrame(animate);
+})();
+
+/* ── Bento scroll reveal ── */
+(function initBentoReveal() {
+  const tiles = document.querySelectorAll(".frame-tile");
+  if (!tiles.length) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+        }
+      });
+    },
+    {
+      root: null,
+      threshold: 0.2,
+      rootMargin: "0px 0px -10% 0px",
+    }
+  );
+
+  tiles.forEach((tile) => observer.observe(tile));
+})();
+
+/* ── Frame 8 slider (no overlap) ── */
+(function initFrame8Slider() {
+  const slide = document.querySelector(".frame-8 .frame8-slide");
+  if (!slide) return;
+  const sources = [
+    "../image/frame/frame9.png",
+    "../image/frame/frame9-1.png",
+    "../image/frame/frame9-2.png",
+    "../image/frame/frame9-3.png",
+  ];
+  let index = 0;
+
+  slide.addEventListener("animationiteration", () => {
+    index = (index + 1) % sources.length;
+    slide.src = sources[index];
+  });
 })();
 
 /* ── Connecting orbit lines (SVG) ── */
