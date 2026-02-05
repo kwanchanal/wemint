@@ -23,6 +23,9 @@ const backButton = document.getElementById('btn-back');
 const formSection = document.querySelector('[data-step="form"]');
 const reviewSection = document.querySelector('[data-step="review"]');
 const previewCard = document.querySelector('.preview-card');
+const sidebar = document.querySelector('.sidebar');
+const sheetOpen = document.getElementById('sheet-open');
+const sheetClose = document.getElementById('sheet-close');
 
 const defaultName = 'Kwanchanal Geographic';
 const defaultDetail = 'Scuba Diving School and Recreation\nlocated in Koh Tao, Thailand';
@@ -155,6 +158,21 @@ qrUpload.addEventListener('change', () => {
 });
 
 updatePreview();
+
+function toggleSheet(open) {
+  if (!window.matchMedia('(max-width: 900px)').matches) return;
+  document.body.classList.toggle('sheet-open', open);
+}
+
+if (sheetOpen) {
+  sheetOpen.addEventListener('click', () => toggleSheet(true));
+}
+
+if (sheetClose) {
+  sheetClose.addEventListener('click', () => toggleSheet(false));
+}
+
+window.addEventListener('resize', () => toggleSheet(false));
 
 cropApply.addEventListener('click', () => {
   if (!cropper || !cropTarget) {

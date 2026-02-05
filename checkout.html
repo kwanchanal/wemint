@@ -27,9 +27,15 @@
             </h1>
             <p class="muted">By wemint</p>
           </div>
+          <button class="sheet-close" id="sheet-close" type="button" aria-label="Close">
+            <span class="material-symbols-outlined">close</span>
+          </button>
         </header>
 
         <div class="sidebar__body">
+          <div class="sheet-handle" aria-hidden="true">
+            <span></span>
+          </div>
           <div class="sidebar__section" data-step="form">
             <section class="block">
               <div class="block__head">
@@ -144,6 +150,9 @@
       </aside>
 
       <main class="canvas">
+        <button class="sheet-toggle" id="sheet-open" type="button">
+          Build Your Own Link
+        </button>
         <div class="phone">
           <div class="preview-card">
             <img class="preview-card__bg" src="asset/phone-bg2.png" alt="" />

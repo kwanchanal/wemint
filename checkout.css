@@ -58,6 +58,8 @@ body {
   gap: 6px;
   padding: 28px 24px 22px;
   border-bottom: 1px solid var(--border);
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
 }
 
 .sidebar__logo {
@@ -72,6 +74,10 @@ body {
   font-size: 16px;
   font-weight: 500;
   flex-shrink: 0;
+  display: none;
+}
+
+.sheet-close {
   display: none;
 }
 
@@ -149,6 +155,17 @@ body {
   scrollbar-color: #c6cbd6 transparent;
   flex: 1;
   min-height: 0;
+}
+
+.sheet-handle {
+  display: none;
+}
+
+.sheet-handle span {
+  width: 52px;
+  height: 6px;
+  border-radius: 999px;
+  background: #e1e4ea;
 }
 
 .sidebar__section {
@@ -918,6 +935,103 @@ body {
   .canvas {
     height: auto;
     overflow: visible;
+  }
+}
+
+@media (max-width: 900px) {
+  body {
+    overflow: hidden;
+  }
+
+  .app {
+    grid-template-columns: 1fr;
+    height: 100vh;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    height: 70vh;
+    max-height: 90vh;
+    border-radius: 24px 24px 0 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 0;
+    z-index: 5;
+    box-shadow: 0 -16px 36px rgba(18, 20, 24, 0.12);
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+    will-change: transform;
+  }
+
+  body.sheet-open .sidebar {
+    transform: translateY(0);
+  }
+
+  .sidebar__header {
+    padding: 18px 20px 14px;
+  }
+
+  .sidebar__body {
+    padding: 10px 20px 18px;
+  }
+
+  .sidebar__footer {
+    padding: 12px 20px 18px;
+  }
+
+  .canvas {
+    height: 100vh;
+    overflow: hidden;
+    padding: 24px 16px 32px;
+  }
+
+  .canvas::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 18, 0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 4;
+  }
+
+  body.sheet-open .canvas::after {
+    opacity: 1;
+  }
+
+  .sheet-toggle {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 24px;
+    z-index: 3;
+    border: 0;
+    background: #1c1f24;
+    color: #fff;
+    padding: 12px 18px;
+    border-radius: 999px;
+    font-size: 14px;
+    box-shadow: 0 10px 24px rgba(18, 20, 24, 0.2);
+  }
+
+  body.sheet-open .sheet-toggle {
+    display: none;
+  }
+
+  .sheet-close {
+    border: 0;
+    background: #f3f4f6;
+    border-radius: 999px;
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    margin-left: auto;
   }
 }
 
