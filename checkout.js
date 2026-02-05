@@ -4,9 +4,11 @@ const messageInput = document.getElementById('message');
 const receiveToggle = document.getElementById('receive');
 const previewName = document.getElementById('preview-name');
 const previewDetail = document.getElementById('preview-detail');
+const previewMessage = document.getElementById('preview-message');
 
 const defaultName = 'Kwanchanae Geographic';
 const defaultDetail = 'Scuba Diving School and Recreation\nlocated in Koh Tao, Thailand';
+const defaultMessage = "It's Kwan! Thank You For Support 🙏🏻";
 
 function updatePreview() {
   const detail = detailInput.value.trim();
@@ -14,18 +16,9 @@ function updatePreview() {
 
   previewName.textContent = detail ? detail.split(',')[0].slice(0, 40) : defaultName;
 
-  if (!receiveToggle.checked) {
-    previewDetail.textContent = defaultDetail;
-    return;
-  }
+  previewDetail.textContent = defaultDetail;
 
-  if (message) {
-    previewDetail.textContent = message;
-  } else if (detail) {
-    previewDetail.textContent = detail;
-  } else {
-    previewDetail.textContent = defaultDetail;
-  }
+  previewMessage.textContent = message || defaultMessage;
 }
 
 [walletInput, detailInput, messageInput, receiveToggle].forEach((el) => {
