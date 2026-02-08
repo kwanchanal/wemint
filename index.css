@@ -1193,13 +1193,13 @@ body.is-ready section {
   }
 
   .price-card__sticker {
-    top: -46px;
-    right: -24px;
+    top: -120px;
+    right: -10px;
     transform: rotate(6deg);
   }
 
   .price-card__sticker.right {
-    top: -62px;
+    top: -74px;
     right: -120px;
     width: 500px;
     transform: rotate(-6deg);
