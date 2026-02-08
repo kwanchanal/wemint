@@ -639,7 +639,7 @@ body {
   position: relative;
   z-index: 1;
   height: 100%;
-  padding: 3em 1.4em 24em;
+  padding: 2em 1.4em 24em;
   display: flex;
   flex-direction: column;
   align-items: center;

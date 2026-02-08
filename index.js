@@ -11,9 +11,46 @@ document.addEventListener("DOMContentLoaded", () => {
   initGlobe();
   initOrbits();
   initYouWord();
+  initCurrencyWord();
   initContactTyping();
   initNavMenu();
+  initScrollReveal();
 });
+
+function initScrollReveal() {
+  const targets = document.querySelectorAll(
+    ".hero__content .hero__brand, .hero__content .btn, .message h2, .message .btn, .link-types__intro > *:not(img), .link-card__head h3"
+  );
+
+  if (!targets.length) {
+    return;
+  }
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if (reduceMotion.matches) {
+    targets.forEach((el) => el.classList.add("is-visible"));
+    return;
+  }
+
+  targets.forEach((el) => el.classList.add("reveal"));
+
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-visible");
+        obs.unobserve(entry.target);
+      });
+    },
+    {
+      root: null,
+      threshold: 0.15,
+      rootMargin: "0px 0px -10% 0px",
+    }
+  );
+
+  targets.forEach((el) => observer.observe(el));
+}
 
 function initGlobe() {
   const canvas = document.querySelector(".globe-canvas");
@@ -463,6 +500,38 @@ function initYouWord() {
       youWord.classList.add("is-entering");
       void youWord.offsetHeight;
       youWord.classList.remove("is-entering");
+    }, 350);
+  };
+
+  window.setInterval(rotate, interval);
+}
+
+function initCurrencyWord() {
+  const currencyWord = document.getElementById("currencyWord");
+  if (!currencyWord) {
+    return;
+  }
+
+  const words = ["$USD", "$USDT", "$USDC"];
+  let index = 0;
+  const interval = 2200;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+  if (reduceMotion.matches) {
+    currencyWord.textContent = words[0];
+    return;
+  }
+
+  const rotate = () => {
+    currencyWord.classList.add("is-exiting");
+
+    window.setTimeout(() => {
+      index = (index + 1) % words.length;
+      currencyWord.textContent = words[index];
+      currencyWord.classList.remove("is-exiting");
+      currencyWord.classList.add("is-entering");
+      void currencyWord.offsetHeight;
+      currencyWord.classList.remove("is-entering");
     }, 350);
   };
 
