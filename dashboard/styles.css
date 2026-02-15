@@ -1291,12 +1291,6 @@ textarea {
   margin-top: 4px;
 }
 
-.inbox-library-group-title {
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 600;
-}
-
 .inbox-library-item {
   border: none;
   background: transparent;
@@ -1332,6 +1326,57 @@ textarea {
   width: 18px;
   height: 18px;
   accent-color: var(--primary);
+}
+
+.inbox-choice-list {
+  display: grid;
+  gap: 8px;
+}
+
+.inbox-choice-row {
+  display: grid;
+  grid-template-columns: 1fr 28px;
+  gap: 8px;
+  align-items: center;
+}
+
+.inbox-choice-input {
+  border: 1px solid var(--input);
+  border-radius: calc(var(--radius) - 2px);
+  padding: 10px 12px;
+  font-family: inherit;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 14px;
+}
+
+.inbox-choice-remove {
+  border: none;
+  background: transparent;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inbox-choice-remove:hover {
+  background: var(--secondary);
+  color: #cc4450;
+}
+
+.inbox-add-choice-btn {
+  border: none;
+  background: transparent;
+  color: #6d4be0;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  padding: 2px 0 0;
+  cursor: pointer;
 }
 
 .inbox-tab-panel {
@@ -2137,6 +2182,164 @@ textarea {
   border-radius: 10px;
   padding: 6px 8px;
   font-size: 11px;
+}
+
+.sheet-date-picker {
+  position: relative;
+}
+
+.sheet-date-trigger {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 8px;
+  font-size: 11px;
+  background: #fff;
+  color: var(--foreground);
+  text-align: left;
+  cursor: pointer;
+}
+
+.sheet-date-popover {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  z-index: 5;
+}
+
+.sheet-date-head {
+  display: grid;
+  grid-template-columns: 24px 1fr 24px;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.sheet-date-month {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.sheet-date-nav {
+  border: none;
+  background: transparent;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sheet-date-nav .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.sheet-date-nav:hover {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+.sheet-date-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.sheet-date-weekdays span {
+  text-align: center;
+  font-size: 9px;
+  color: var(--muted-foreground);
+}
+
+.sheet-date-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.sheet-date-day,
+.sheet-date-blank {
+  height: 24px;
+}
+
+.sheet-date-day {
+  border: none;
+  border-radius: 7px;
+  font-size: 10px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.sheet-date-day:hover {
+  background: var(--secondary);
+}
+
+.sheet-date-day.is-selected {
+  background: #111;
+  color: #fff;
+}
+
+.sheet-field textarea,
+.sheet-field select {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-family: inherit;
+  background: #fff;
+}
+
+.sheet-field textarea {
+  min-height: 56px;
+  resize: vertical;
+}
+
+.sheet-phone-row {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 6px;
+}
+
+.sheet-phone-row select,
+.sheet-phone-row input {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-family: inherit;
+  background: #fff;
+}
+
+.sheet-choice-group {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px;
+  display: grid;
+  gap: 6px;
+}
+
+.sheet-choice-group legend {
+  font-size: 10px;
+  color: var(--muted-foreground);
+  padding: 0 4px;
+}
+
+.sheet-choice-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--foreground);
 }
 
 .sheet-submit {

@@ -102,6 +102,28 @@ function prettyFieldType(type) {
   return map[type] || "Short answer";
 }
 
+function isChoiceType(type) {
+  return type === "single_choice" || type === "checkboxes" || type === "dropdown";
+}
+
+function normalizeChoices(choices) {
+  if (!Array.isArray(choices)) return [];
+  return choices
+    .map((choice) => String(choice || "").trim())
+    .filter(Boolean);
+}
+
+inboxFormFields = inboxFormFields.map((field) => {
+  const nextType = field?.type || "text";
+  return {
+    id: field?.id || crypto.randomUUID(),
+    label: String(field?.label || "Untitled"),
+    required: Boolean(field?.required),
+    type: nextType,
+    choices: isChoiceType(nextType) ? normalizeChoices(field?.choices) : [],
+  };
+});
+
 const elements = {
   linksList: document.getElementById("linksList"),
   previewLinks: document.getElementById("previewLinks"),
@@ -190,6 +212,9 @@ const elements = {
   inboxFieldTypeSelect: document.getElementById("inboxFieldTypeSelect"),
   inboxFieldLabelInput: document.getElementById("inboxFieldLabelInput"),
   inboxFieldRequiredInput: document.getElementById("inboxFieldRequiredInput"),
+  inboxFieldChoicesSection: document.getElementById("inboxFieldChoicesSection"),
+  inboxChoiceList: document.getElementById("inboxChoiceList"),
+  inboxAddChoiceBtn: document.getElementById("inboxAddChoiceBtn"),
   inboxFieldConfigBackBtn: document.getElementById("inboxFieldConfigBackBtn"),
   dismissInboxFieldConfigBtn: document.getElementById("dismissInboxFieldConfigBtn"),
   sidebar: document.getElementById("sidebar"),
@@ -209,6 +234,8 @@ let inboxTab = "forms";
 let cropper = null;
 let cropCallback = null;
 let preferredFieldType = "text";
+let draftChoiceOptions = [];
+let didBindDatePickerOutsideClick = false;
 
 const CROP_RATIOS = {
   profile: 1,
@@ -664,6 +691,129 @@ function renderInboxBanner() {
   });
 }
 
+function formatDateValue(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatDatePretty(value) {
+  if (!value) return "Select date";
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return "Select date";
+  return new Intl.DateTimeFormat("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
+function renderDatePickerCalendar(picker) {
+  if (!picker) return;
+  const year = Number(picker.dataset.viewYear);
+  const month = Number(picker.dataset.viewMonth);
+  const monthLabel = picker.querySelector(".sheet-date-month");
+  const grid = picker.querySelector(".sheet-date-grid");
+  const trigger = picker.querySelector(".sheet-date-trigger");
+  if (!monthLabel || !grid || !trigger) return;
+
+  const currentMonthDate = new Date(year, month, 1);
+  monthLabel.textContent = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric",
+  }).format(currentMonthDate);
+  trigger.textContent = formatDatePretty(picker.dataset.selectedDate || "");
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const selected = picker.dataset.selectedDate || "";
+
+  let cells = "";
+  for (let i = 0; i < firstDay; i += 1) {
+    cells += `<span class="sheet-date-blank" aria-hidden="true"></span>`;
+  }
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const value = formatDateValue(new Date(year, month, day));
+    const isSelected = selected === value;
+    cells += `
+      <button class="sheet-date-day${isSelected ? " is-selected" : ""}" type="button" data-date-value="${value}">
+        ${day}
+      </button>
+    `;
+  }
+
+  grid.innerHTML = cells;
+  grid.querySelectorAll(".sheet-date-day").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      picker.dataset.selectedDate = btn.dataset.dateValue || "";
+      picker.querySelector(".sheet-date-popover")?.setAttribute("hidden", "true");
+      renderDatePickerCalendar(picker);
+    });
+  });
+}
+
+function wirePreviewDatePickers() {
+  const pickers = elements.previewInboxForm?.querySelectorAll(".sheet-date-picker") || [];
+  pickers.forEach((picker) => {
+    if (!picker.dataset.viewYear || !picker.dataset.viewMonth) {
+      const now = new Date();
+      picker.dataset.viewYear = String(now.getFullYear());
+      picker.dataset.viewMonth = String(now.getMonth());
+    }
+    const trigger = picker.querySelector(".sheet-date-trigger");
+    const popover = picker.querySelector(".sheet-date-popover");
+    const prevBtn = picker.querySelector(".sheet-date-prev");
+    const nextBtn = picker.querySelector(".sheet-date-next");
+    if (!trigger || !popover || !prevBtn || !nextBtn) return;
+
+    renderDatePickerCalendar(picker);
+
+    trigger.addEventListener("click", () => {
+      const isHidden = popover.hasAttribute("hidden");
+      pickers.forEach((item) => {
+        item.querySelector(".sheet-date-popover")?.setAttribute("hidden", "true");
+      });
+      if (isHidden) {
+        popover.removeAttribute("hidden");
+      }
+    });
+
+    prevBtn.addEventListener("click", () => {
+      let year = Number(picker.dataset.viewYear);
+      let month = Number(picker.dataset.viewMonth) - 1;
+      if (month < 0) {
+        month = 11;
+        year -= 1;
+      }
+      picker.dataset.viewYear = String(year);
+      picker.dataset.viewMonth = String(month);
+      renderDatePickerCalendar(picker);
+    });
+
+    nextBtn.addEventListener("click", () => {
+      let year = Number(picker.dataset.viewYear);
+      let month = Number(picker.dataset.viewMonth) + 1;
+      if (month > 11) {
+        month = 0;
+        year += 1;
+      }
+      picker.dataset.viewYear = String(year);
+      picker.dataset.viewMonth = String(month);
+      renderDatePickerCalendar(picker);
+    });
+  });
+
+  if (didBindDatePickerOutsideClick) return;
+  didBindDatePickerOutsideClick = true;
+  document.addEventListener("click", (event) => {
+    if (event.target.closest(".sheet-date-picker")) return;
+    document
+      .querySelectorAll(".sheet-date-popover")
+      .forEach((popover) => popover.setAttribute("hidden", "true"));
+  });
+}
+
 function renderPreviewInboxForm() {
   if (!elements.previewInboxForm) return;
 
@@ -678,8 +828,82 @@ function renderPreviewInboxForm() {
       return `
         <label class="sheet-field">
           <span>${safeLabel}</span>
-          <input type="date" ${isRequired} />
+          <div class="sheet-date-picker" data-field-id="${escapeHTML(field.id)}">
+            <button class="sheet-date-trigger" type="button">Select date</button>
+            <div class="sheet-date-popover" hidden>
+              <div class="sheet-date-head">
+                <button class="sheet-date-nav sheet-date-prev" type="button" aria-label="Previous month">
+                  <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <span class="sheet-date-month"></span>
+                <button class="sheet-date-nav sheet-date-next" type="button" aria-label="Next month">
+                  <span class="material-symbols-outlined">chevron_right</span>
+                </button>
+              </div>
+              <div class="sheet-date-weekdays">
+                <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+              </div>
+              <div class="sheet-date-grid"></div>
+            </div>
+          </div>
         </label>
+      `;
+    }
+
+    if (field.type === "textarea") {
+      return `
+        <label class="sheet-field">
+          <span>${safeLabel}</span>
+          <textarea placeholder="${safePlaceholder}" ${isRequired}></textarea>
+        </label>
+      `;
+    }
+
+    if (field.type === "dropdown") {
+      const options = normalizeChoices(field.choices);
+      const optionHTML = options.map((choice) => `<option>${escapeHTML(choice)}</option>`).join("");
+      return `
+        <label class="sheet-field">
+          <span>${safeLabel}</span>
+          <select ${isRequired}>
+            <option value="">Select</option>
+            ${optionHTML}
+          </select>
+        </label>
+      `;
+    }
+
+    if (field.type === "tel") {
+      return `
+        <label class="sheet-field">
+          <span>${safeLabel}</span>
+          <div class="sheet-phone-row">
+            <select aria-label="Country code">
+              <option value="+66">+66</option>
+              <option value="+1">+1</option>
+              <option value="+44">+44</option>
+            </select>
+            <input type="tel" placeholder="Phone number" ${isRequired} />
+          </div>
+        </label>
+      `;
+    }
+
+    if (field.type === "single_choice" || field.type === "checkboxes") {
+      const options = normalizeChoices(field.choices);
+      const inputType = field.type === "single_choice" ? "radio" : "checkbox";
+      const groupName = `preview-${field.id}`;
+      const optionsHTML = options.map((choice, index) => `
+        <label class="sheet-choice-item">
+          <input type="${inputType}" name="${escapeHTML(groupName)}" ${isRequired && index === 0 ? "required" : ""} />
+          <span>${escapeHTML(choice)}</span>
+        </label>
+      `).join("");
+      return `
+        <fieldset class="sheet-choice-group">
+          <legend>${safeLabel}</legend>
+          ${optionsHTML}
+        </fieldset>
       `;
     }
 
@@ -699,6 +923,7 @@ function renderPreviewInboxForm() {
       By submitting, you agree to wemint.link's T&amp;Cs and Privacy Notice.
     </p>
   `;
+  wirePreviewDatePickers();
 }
 
 function renderInboxFormEditor() {
@@ -772,6 +997,7 @@ function openInboxFieldLibraryModal() {
 
 function openInboxFieldConfigModal(type = "text", label = "") {
   preferredFieldType = type;
+  draftChoiceOptions = isChoiceType(preferredFieldType) ? ["Option 1", "Option 2"] : [];
   if (elements.inboxFieldTypeSelect) {
     elements.inboxFieldTypeSelect.value = preferredFieldType;
   }
@@ -781,48 +1007,77 @@ function openInboxFieldConfigModal(type = "text", label = "") {
   if (elements.inboxFieldRequiredInput) {
     elements.inboxFieldRequiredInput.checked = false;
   }
+  renderChoiceInputs();
   closeSimpleModal(elements.inboxFieldLibraryModal);
   openSimpleModal(elements.inboxFieldConfigModal);
+}
+
+function renderChoiceInputs() {
+  const section = elements.inboxFieldChoicesSection;
+  const list = elements.inboxChoiceList;
+  if (!section || !list) return;
+  const isChoiceField = isChoiceType(preferredFieldType);
+  section.hidden = !isChoiceField;
+  if (!isChoiceField) {
+    list.innerHTML = "";
+    return;
+  }
+  if (!draftChoiceOptions.length) {
+    draftChoiceOptions = ["Option 1"];
+  }
+  list.innerHTML = draftChoiceOptions.map((choice, index) => `
+    <div class="inbox-choice-row" data-choice-index="${index}">
+      <input class="inbox-choice-input" type="text" value="${escapeHTML(choice)}" placeholder="Option ${index + 1}" />
+      <button class="inbox-choice-remove" type="button" aria-label="Remove option ${index + 1}">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+  `).join("");
+
+  list.querySelectorAll(".inbox-choice-row").forEach((row) => {
+    const index = Number(row.dataset.choiceIndex);
+    const input = row.querySelector(".inbox-choice-input");
+    const removeBtn = row.querySelector(".inbox-choice-remove");
+    if (input) {
+      input.addEventListener("input", () => {
+        draftChoiceOptions[index] = input.value;
+      });
+    }
+    if (removeBtn) {
+      removeBtn.addEventListener("click", () => {
+        if (draftChoiceOptions.length <= 1) return;
+        draftChoiceOptions.splice(index, 1);
+        renderChoiceInputs();
+      });
+    }
+  });
 }
 
 function renderInboxFieldLibrary(searchQuery = "") {
   if (!elements.inboxFieldLibraryList) return;
   const q = searchQuery.trim().toLowerCase();
   const options = [
-    { type: "text", label: "Your Message", section: "Suggestions" },
-    { type: "text", label: "Country", section: "Suggestions" },
-    { type: "date", label: "Date of birth", section: "Suggestions" },
-    { type: "textarea", label: "Message", section: "Suggestions" },
-    { type: "text", label: "Short answer", section: "Write your own" },
-    { type: "textarea", label: "Paragraph", section: "Write your own" },
-    { type: "single_choice", label: "Single choice", section: "Write your own" },
-    { type: "checkboxes", label: "Checkboxes", section: "Write your own" },
-    { type: "dropdown", label: "Dropdown", section: "Write your own" },
-    { type: "date", label: "Date", section: "Write your own" },
+    { type: "text", label: "Your Message" },
+    { type: "text", label: "Country" },
+    { type: "date", label: "Date of birth" },
+    { type: "textarea", label: "Message" },
+    { type: "text", label: "Short answer" },
+    { type: "textarea", label: "Paragraph" },
+    { type: "single_choice", label: "Single choice" },
+    { type: "checkboxes", label: "Checkboxes" },
+    { type: "dropdown", label: "Dropdown" },
+    { type: "date", label: "Date" },
   ];
 
   const filtered = options.filter((item) => !q || item.label.toLowerCase().includes(q));
-  const grouped = filtered.reduce((acc, item) => {
-    if (!acc[item.section]) acc[item.section] = [];
-    acc[item.section].push(item);
-    return acc;
-  }, {});
-
-  const sectionOrder = ["Suggestions", "Write your own"];
   let html = "";
-  sectionOrder.forEach((section) => {
-    const list = grouped[section];
-    if (!list?.length) return;
-    html += `<div class="inbox-library-group-title">${escapeHTML(section)}</div>`;
-    list.forEach((item, index) => {
-      const itemId = `${section}-${index}`;
-      html += `
-        <button class="inbox-library-item" type="button" data-item-id="${escapeHTML(itemId)}">
-          <span>${escapeHTML(item.label)}</span>
-          <span class="material-symbols-outlined">add</span>
-        </button>
-      `;
-    });
+  filtered.forEach((item, index) => {
+    html += `
+      <button class="inbox-library-item" type="button" data-item-id="${index}">
+        <span>${escapeHTML(item.label)}</span>
+        <span class="material-symbols-outlined">add</span>
+      </button>
+    `;
   });
 
   if (!html) {
@@ -1445,9 +1700,21 @@ function initEvents() {
   if (elements.inboxFieldTypeSelect) {
     elements.inboxFieldTypeSelect.addEventListener("change", () => {
       preferredFieldType = elements.inboxFieldTypeSelect.value;
+      if (!isChoiceType(preferredFieldType)) {
+        draftChoiceOptions = [];
+      } else if (!draftChoiceOptions.length) {
+        draftChoiceOptions = ["Option 1", "Option 2"];
+      }
+      renderChoiceInputs();
       if (elements.inboxFieldLabelInput && !elements.inboxFieldLabelInput.value.trim()) {
         elements.inboxFieldLabelInput.value = prettyFieldType(preferredFieldType);
       }
+    });
+  }
+  if (elements.inboxAddChoiceBtn) {
+    elements.inboxAddChoiceBtn.addEventListener("click", () => {
+      draftChoiceOptions.push(`Option ${draftChoiceOptions.length + 1}`);
+      renderChoiceInputs();
     });
   }
   if (elements.inboxFieldConfigForm) {
@@ -1457,15 +1724,19 @@ function initEvents() {
       const rawLabel = elements.inboxFieldLabelInput?.value || "";
       const label = rawLabel.trim() || prettyFieldType(type);
       const isRequired = Boolean(elements.inboxFieldRequiredInput?.checked);
-      const suggestedInputType = type === "single_choice" || type === "checkboxes" || type === "dropdown"
-        ? "text"
-        : type;
+      const choices = isChoiceType(type)
+        ? normalizeChoices(draftChoiceOptions)
+        : [];
+      if (isChoiceType(type) && choices.length === 0) {
+        return;
+      }
 
       const newField = {
         id: crypto.randomUUID(),
-        type: suggestedInputType,
+        type,
         label,
         required: isRequired,
+        choices,
       };
       inboxFormFields.push(newField);
       saveAll();
