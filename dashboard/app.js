@@ -54,6 +54,16 @@ if (typeof inboxLayout.featured === "boolean") {
     thumbnail: inboxLayout.thumbnail || "",
   };
 }
+const defaultInboxFields = [
+  { id: "inbox-name", label: "Name", required: false, type: "text" },
+  { id: "inbox-email", label: "Email address", required: true, type: "email" },
+  { id: "inbox-phone", label: "Phone number", required: true, type: "tel" },
+  { id: "inbox-booking", label: "Booking Date", required: true, type: "date" },
+];
+let inboxFormFields = storage.get("wemint_inbox_fields", defaultInboxFields);
+if (!Array.isArray(inboxFormFields) || inboxFormFields.length === 0) {
+  inboxFormFields = [...defaultInboxFields];
+}
 const defaultAppearance = {
   profileImageUrl: "",
   backgroundImageUrl: "",
@@ -76,6 +86,20 @@ function escapeHTML(str) {
   const div = document.createElement("div");
   div.textContent = str;
   return div.innerHTML;
+}
+
+function prettyFieldType(type) {
+  const map = {
+    text: "Short answer",
+    textarea: "Paragraph",
+    single_choice: "Single choice",
+    checkboxes: "Checkboxes",
+    dropdown: "Dropdown",
+    date: "Date",
+    email: "Email",
+    tel: "Phone",
+  };
+  return map[type] || "Short answer";
 }
 
 const elements = {
@@ -104,12 +128,14 @@ const elements = {
   inboxSwitch: document.getElementById("inboxSwitch"),
   inboxTitle: document.getElementById("inboxTitle"),
   inboxEditBtn: document.getElementById("inboxEditBtn"),
+  inboxEditFormBtn: document.getElementById("inboxEditFormBtn"),
   inboxLayoutBody: document.getElementById("inboxLayoutBody"),
   previewInboxBanner: document.getElementById("previewInboxBanner"),
   previewInboxSheet: document.getElementById("previewInboxSheet"),
   previewInboxSheetBackdrop: document.getElementById("previewInboxSheetBackdrop"),
   previewInboxSheetClose: document.getElementById("previewInboxSheetClose"),
   previewInboxSheetTitle: document.getElementById("previewInboxSheetTitle"),
+  previewInboxForm: document.getElementById("previewInboxForm"),
   previewCta: document.getElementById("previewCta"),
   editProfileBtn: document.getElementById("editProfileBtn"),
   profileModal: document.getElementById("profileModal"),
@@ -148,6 +174,24 @@ const elements = {
   closeCropBtn: document.getElementById("closeCropBtn"),
   cropCancelBtn: document.getElementById("cropCancelBtn"),
   cropSaveBtn: document.getElementById("cropSaveBtn"),
+  inboxFormModal: document.getElementById("inboxFormModal"),
+  inboxFormRows: document.getElementById("inboxFormRows"),
+  closeInboxFormBtn: document.getElementById("closeInboxFormBtn"),
+  dismissInboxFormBtn: document.getElementById("dismissInboxFormBtn"),
+  inboxAddFieldBtn: document.getElementById("inboxAddFieldBtn"),
+  inboxFormDoneBtn: document.getElementById("inboxFormDoneBtn"),
+  inboxFieldLibraryModal: document.getElementById("inboxFieldLibraryModal"),
+  inboxFieldLibraryList: document.getElementById("inboxFieldLibraryList"),
+  inboxFieldSearchInput: document.getElementById("inboxFieldSearchInput"),
+  inboxFieldLibraryBackBtn: document.getElementById("inboxFieldLibraryBackBtn"),
+  dismissInboxFieldLibraryBtn: document.getElementById("dismissInboxFieldLibraryBtn"),
+  inboxFieldConfigModal: document.getElementById("inboxFieldConfigModal"),
+  inboxFieldConfigForm: document.getElementById("inboxFieldConfigForm"),
+  inboxFieldTypeSelect: document.getElementById("inboxFieldTypeSelect"),
+  inboxFieldLabelInput: document.getElementById("inboxFieldLabelInput"),
+  inboxFieldRequiredInput: document.getElementById("inboxFieldRequiredInput"),
+  inboxFieldConfigBackBtn: document.getElementById("inboxFieldConfigBackBtn"),
+  dismissInboxFieldConfigBtn: document.getElementById("dismissInboxFieldConfigBtn"),
   sidebar: document.getElementById("sidebar"),
   sidebarToggle: document.getElementById("sidebarToggle"),
   sidebarOverlay: document.getElementById("sidebarOverlay"),
@@ -164,6 +208,7 @@ let inboxOpen = false;
 let inboxTab = "forms";
 let cropper = null;
 let cropCallback = null;
+let preferredFieldType = "text";
 
 const CROP_RATIOS = {
   profile: 1,
@@ -180,6 +225,7 @@ function saveAll() {
   storage.set("wemint_inbox_position", inboxPosition);
   storage.set("wemint_inbox_name", inboxName);
   storage.set("wemint_inbox_layout", inboxLayout);
+  storage.set("wemint_inbox_fields", inboxFormFields);
 }
 
 function renderProfile() {
@@ -618,6 +664,182 @@ function renderInboxBanner() {
   });
 }
 
+function renderPreviewInboxForm() {
+  if (!elements.previewInboxForm) return;
+
+  const fieldsHTML = inboxFormFields.map((field) => {
+    const labelSuffix = field.required ? "(required)" : "(optional)";
+    const label = `${field.label} ${labelSuffix}`;
+    const safeLabel = escapeHTML(label);
+    const safePlaceholder = escapeHTML(field.label);
+    const isRequired = field.required ? "required" : "";
+
+    if (field.type === "date") {
+      return `
+        <label class="sheet-field">
+          <span>${safeLabel}</span>
+          <input type="date" ${isRequired} />
+        </label>
+      `;
+    }
+
+    const inputType = field.type === "email" ? "email" : field.type === "tel" ? "tel" : "text";
+    return `
+      <label class="sheet-field">
+        <span>${safeLabel}</span>
+        <input type="${inputType}" placeholder="${safePlaceholder}" ${isRequired} />
+      </label>
+    `;
+  }).join("");
+
+  elements.previewInboxForm.innerHTML = `
+    ${fieldsHTML}
+    <button class="sheet-submit" type="button" disabled>Send</button>
+    <p class="sheet-footnote">
+      By submitting, you agree to wemint.link's T&amp;Cs and Privacy Notice.
+    </p>
+  `;
+}
+
+function renderInboxFormEditor() {
+  if (!elements.inboxFormRows) return;
+  elements.inboxFormRows.innerHTML = inboxFormFields.map((field) => `
+    <div class="inbox-form-row" data-field-id="${escapeHTML(field.id)}">
+      <span class="material-symbols-outlined inbox-row-drag">drag_indicator</span>
+      <span class="inbox-row-label">${escapeHTML(field.label)}</span>
+      <input class="inbox-row-required" type="checkbox" ${field.required ? "checked" : ""} aria-label="Required ${escapeHTML(field.label)}" />
+      <button class="inbox-row-remove" type="button" aria-label="Remove ${escapeHTML(field.label)}">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+  `).join("");
+
+  elements.inboxFormRows.querySelectorAll(".inbox-form-row").forEach((row) => {
+    const id = row.dataset.fieldId;
+    const requiredInput = row.querySelector(".inbox-row-required");
+    const removeBtn = row.querySelector(".inbox-row-remove");
+
+    if (requiredInput) {
+      requiredInput.addEventListener("change", () => {
+        const target = inboxFormFields.find((field) => field.id === id);
+        if (!target) return;
+        target.required = requiredInput.checked;
+        saveAll();
+        renderPreviewInboxForm();
+      });
+    }
+
+    if (removeBtn) {
+      removeBtn.addEventListener("click", () => {
+        if (inboxFormFields.length <= 1) return;
+        inboxFormFields = inboxFormFields.filter((field) => field.id !== id);
+        saveAll();
+        renderInboxFormEditor();
+        renderPreviewInboxForm();
+      });
+    }
+  });
+}
+
+function openSimpleModal(modal) {
+  if (!modal) return;
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+function closeSimpleModal(modal) {
+  if (!modal) return;
+  modal.classList.remove("is-open");
+  modal.setAttribute("aria-hidden", "true");
+}
+
+function closeAllInboxFormModals() {
+  closeSimpleModal(elements.inboxFormModal);
+  closeSimpleModal(elements.inboxFieldLibraryModal);
+  closeSimpleModal(elements.inboxFieldConfigModal);
+}
+
+function openInboxFormModal() {
+  renderInboxFormEditor();
+  openSimpleModal(elements.inboxFormModal);
+}
+
+function openInboxFieldLibraryModal() {
+  closeSimpleModal(elements.inboxFormModal);
+  openSimpleModal(elements.inboxFieldLibraryModal);
+  renderInboxFieldLibrary(elements.inboxFieldSearchInput?.value || "");
+}
+
+function openInboxFieldConfigModal(type = "text", label = "") {
+  preferredFieldType = type;
+  if (elements.inboxFieldTypeSelect) {
+    elements.inboxFieldTypeSelect.value = preferredFieldType;
+  }
+  if (elements.inboxFieldLabelInput) {
+    elements.inboxFieldLabelInput.value = label || prettyFieldType(preferredFieldType);
+  }
+  if (elements.inboxFieldRequiredInput) {
+    elements.inboxFieldRequiredInput.checked = false;
+  }
+  closeSimpleModal(elements.inboxFieldLibraryModal);
+  openSimpleModal(elements.inboxFieldConfigModal);
+}
+
+function renderInboxFieldLibrary(searchQuery = "") {
+  if (!elements.inboxFieldLibraryList) return;
+  const q = searchQuery.trim().toLowerCase();
+  const options = [
+    { type: "text", label: "Your Message", section: "Suggestions" },
+    { type: "text", label: "Country", section: "Suggestions" },
+    { type: "date", label: "Date of birth", section: "Suggestions" },
+    { type: "textarea", label: "Message", section: "Suggestions" },
+    { type: "text", label: "Short answer", section: "Write your own" },
+    { type: "textarea", label: "Paragraph", section: "Write your own" },
+    { type: "single_choice", label: "Single choice", section: "Write your own" },
+    { type: "checkboxes", label: "Checkboxes", section: "Write your own" },
+    { type: "dropdown", label: "Dropdown", section: "Write your own" },
+    { type: "date", label: "Date", section: "Write your own" },
+  ];
+
+  const filtered = options.filter((item) => !q || item.label.toLowerCase().includes(q));
+  const grouped = filtered.reduce((acc, item) => {
+    if (!acc[item.section]) acc[item.section] = [];
+    acc[item.section].push(item);
+    return acc;
+  }, {});
+
+  const sectionOrder = ["Suggestions", "Write your own"];
+  let html = "";
+  sectionOrder.forEach((section) => {
+    const list = grouped[section];
+    if (!list?.length) return;
+    html += `<div class="inbox-library-group-title">${escapeHTML(section)}</div>`;
+    list.forEach((item, index) => {
+      const itemId = `${section}-${index}`;
+      html += `
+        <button class="inbox-library-item" type="button" data-item-id="${escapeHTML(itemId)}">
+          <span>${escapeHTML(item.label)}</span>
+          <span class="material-symbols-outlined">add</span>
+        </button>
+      `;
+    });
+  });
+
+  if (!html) {
+    html = `<div class="inbox-panel-desc">No field found.</div>`;
+  }
+
+  elements.inboxFieldLibraryList.innerHTML = html;
+
+  elements.inboxFieldLibraryList.querySelectorAll(".inbox-library-item").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const text = btn.querySelector("span")?.textContent?.trim() || "Short answer";
+      const selected = options.find((item) => item.label === text);
+      openInboxFieldConfigModal(selected?.type || "text", selected?.label || text);
+    });
+  });
+}
+
 function renderInboxLayoutOptions() {
   if (!elements.inboxLayoutBody) return;
 
@@ -778,13 +1000,13 @@ function renderLinks() {
         <div class="link-info">
           <div class="link-title-row">
             <span class="link-title">${safeTitle}</span>
-            <button class="icon-btn-sm edit-link-btn" aria-label="Edit title">
+            <button class="icon-btn-sm edit-title-btn" aria-label="Edit title">
               <span class="material-symbols-outlined">edit</span>
             </button>
           </div>
           <div class="link-url-row">
             <span class="link-url">${displayUrl}</span>
-            <button class="icon-btn-sm edit-link-btn" aria-label="Edit URL">
+            <button class="icon-btn-sm edit-url-btn" aria-label="Edit URL">
               <span class="material-symbols-outlined">edit</span>
             </button>
           </div>
@@ -836,10 +1058,72 @@ function renderLinks() {
         renderPreview();
       });
 
-    // Edit button events
-    card.querySelectorAll(".edit-link-btn").forEach((btn) => {
-      btn.addEventListener("click", () => openModal(link.id));
-    });
+    // Inline edit handlers (same behavior pattern as Inbox title edit)
+    const startInlineEdit = ({ selector, value, className, onCommit }) => {
+      const currentNode = card.querySelector(selector);
+      if (!currentNode) return;
+      const currentValue = value;
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = currentValue;
+      input.className = className;
+      currentNode.replaceWith(input);
+      input.focus();
+      input.select();
+
+      const commit = () => {
+        onCommit(input.value, currentValue);
+      };
+
+      input.addEventListener("blur", commit);
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          input.blur();
+        }
+        if (event.key === "Escape") {
+          event.preventDefault();
+          input.value = currentValue;
+          input.blur();
+        }
+      });
+    };
+
+    const editTitleBtn = card.querySelector(".edit-title-btn");
+    if (editTitleBtn) {
+      editTitleBtn.addEventListener("click", () => {
+        startInlineEdit({
+          selector: ".link-title",
+          value: link.title || "",
+          className: "inbox-title-input",
+          onCommit: (nextValue, fallbackValue) => {
+            const next = nextValue.trim() || fallbackValue || "Untitled";
+            link.title = next;
+            saveAll();
+            renderLinks();
+            renderPreview();
+          },
+        });
+      });
+    }
+
+    const editUrlBtn = card.querySelector(".edit-url-btn");
+    if (editUrlBtn) {
+      editUrlBtn.addEventListener("click", () => {
+        startInlineEdit({
+          selector: ".link-url",
+          value: link.url || "",
+          className: "inbox-title-input link-url-input",
+          onCommit: (nextValue, fallbackValue) => {
+            const next = nextValue.trim() || fallbackValue || "https://";
+            link.url = next;
+            saveAll();
+            renderLinks();
+            renderPreview();
+          },
+        });
+      });
+    }
 
     // Layout toggle button
     card.querySelector(".layout-toggle-btn").addEventListener("click", () => {
@@ -923,6 +1207,7 @@ function renderPreview() {
     });
 
   renderInboxBanner();
+  renderPreviewInboxForm();
   elements.previewCta.style.display = elements.footerSwitch.checked
     ? "block"
     : "none";
@@ -1118,6 +1403,85 @@ function initEvents() {
       });
     });
   }
+
+  if (elements.inboxEditFormBtn) {
+    elements.inboxEditFormBtn.addEventListener("click", openInboxFormModal);
+  }
+  if (elements.inboxAddFieldBtn) {
+    elements.inboxAddFieldBtn.addEventListener("click", openInboxFieldLibraryModal);
+  }
+  if (elements.closeInboxFormBtn) {
+    elements.closeInboxFormBtn.addEventListener("click", closeAllInboxFormModals);
+  }
+  if (elements.dismissInboxFormBtn) {
+    elements.dismissInboxFormBtn.addEventListener("click", closeAllInboxFormModals);
+  }
+  if (elements.inboxFormDoneBtn) {
+    elements.inboxFormDoneBtn.addEventListener("click", closeAllInboxFormModals);
+  }
+  if (elements.inboxFieldLibraryBackBtn) {
+    elements.inboxFieldLibraryBackBtn.addEventListener("click", () => {
+      closeSimpleModal(elements.inboxFieldLibraryModal);
+      openInboxFormModal();
+    });
+  }
+  if (elements.dismissInboxFieldLibraryBtn) {
+    elements.dismissInboxFieldLibraryBtn.addEventListener("click", closeAllInboxFormModals);
+  }
+  if (elements.inboxFieldConfigBackBtn) {
+    elements.inboxFieldConfigBackBtn.addEventListener("click", () => {
+      closeSimpleModal(elements.inboxFieldConfigModal);
+      openInboxFieldLibraryModal();
+    });
+  }
+  if (elements.dismissInboxFieldConfigBtn) {
+    elements.dismissInboxFieldConfigBtn.addEventListener("click", closeAllInboxFormModals);
+  }
+  if (elements.inboxFieldSearchInput) {
+    elements.inboxFieldSearchInput.addEventListener("input", () => {
+      renderInboxFieldLibrary(elements.inboxFieldSearchInput.value);
+    });
+  }
+  if (elements.inboxFieldTypeSelect) {
+    elements.inboxFieldTypeSelect.addEventListener("change", () => {
+      preferredFieldType = elements.inboxFieldTypeSelect.value;
+      if (elements.inboxFieldLabelInput && !elements.inboxFieldLabelInput.value.trim()) {
+        elements.inboxFieldLabelInput.value = prettyFieldType(preferredFieldType);
+      }
+    });
+  }
+  if (elements.inboxFieldConfigForm) {
+    elements.inboxFieldConfigForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const type = elements.inboxFieldTypeSelect?.value || "text";
+      const rawLabel = elements.inboxFieldLabelInput?.value || "";
+      const label = rawLabel.trim() || prettyFieldType(type);
+      const isRequired = Boolean(elements.inboxFieldRequiredInput?.checked);
+      const suggestedInputType = type === "single_choice" || type === "checkboxes" || type === "dropdown"
+        ? "text"
+        : type;
+
+      const newField = {
+        id: crypto.randomUUID(),
+        type: suggestedInputType,
+        label,
+        required: isRequired,
+      };
+      inboxFormFields.push(newField);
+      saveAll();
+      renderInboxFormEditor();
+      renderPreviewInboxForm();
+      closeSimpleModal(elements.inboxFieldConfigModal);
+      openInboxFormModal();
+    });
+  }
+
+  [elements.inboxFormModal, elements.inboxFieldLibraryModal, elements.inboxFieldConfigModal].forEach((modal) => {
+    if (!modal) return;
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) closeAllInboxFormModals();
+    });
+  });
 
   if (elements.previewInboxSheetClose) {
     elements.previewInboxSheetClose.addEventListener("click", () => setInboxSheetOpen(false));
