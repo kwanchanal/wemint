@@ -14,30 +14,11 @@ const storage = {
 
 const defaultProfile = {
   name: "Kwanchanal Grographic",
-  username: "kwan",
+  username: "yours",
   bio: "Retired designer turned FinTech Product Manager, Mostly underwater",
 };
 
-const defaultLinks = [
-  {
-    id: crypto.randomUUID(),
-    title: "founder",
-    hasUrl: true,
-    url: "https://wemint.link",
-    thumbnail: "",
-    featured: false,
-    enabled: true,
-  },
-  {
-    id: crypto.randomUUID(),
-    title: "portfolio",
-    hasUrl: true,
-    url: "https://kwanchanal.github.io/hello",
-    thumbnail: "../mockup/featured-portfolio.png",
-    featured: true,
-    enabled: true,
-  },
-];
+const defaultLinks = [];
 const DEFAULT_PORTFOLIO_THUMBNAIL = "../mockup/featured-portfolio.png";
 
 const FORCE_PROFILE_MOCK = false;
