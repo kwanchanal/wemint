@@ -20,6 +20,10 @@ const defaultProfile = {
 
 const defaultLinks = [];
 const DEFAULT_PORTFOLIO_THUMBNAIL = "";
+const retiredMockLinkTitles = new Set([
+  "dribbble",
+  "portfolio",
+]);
 const retiredAssetPaths = new Set([
   "mockup/featured-portfolio.png",
   "mockup/banner-1.png",
@@ -36,7 +40,10 @@ function sanitizeRetiredAssetPath(value) {
 const FORCE_PROFILE_MOCK = false;
 const FORCE_APPEARANCE_MOCK = true;
 const profile = FORCE_PROFILE_MOCK ? { ...defaultProfile } : storage.get("wemint_profile", defaultProfile);
-const links = storage.get("wemint_links", defaultLinks);
+const savedLinks = storage.get("wemint_links", defaultLinks);
+const links = Array.isArray(savedLinks)
+  ? savedLinks.filter((link) => !retiredMockLinkTitles.has(String(link?.title || "").trim().toLowerCase()))
+  : defaultLinks;
 const socialLinks = storage.get("wemint_social_links", {});
 
 if (Array.isArray(links)) {
@@ -47,6 +54,9 @@ if (Array.isArray(links)) {
     link.hasUrl = nextHasUrl;
     link.thumbnail = sanitizeRetiredAssetPath(link?.thumbnail);
   });
+  if (savedLinks.length !== links.length) {
+    storage.set("wemint_links", links);
+  }
 }
 
 // Keep existing user data, but backfill a portfolio thumbnail only when a valid default exists.
