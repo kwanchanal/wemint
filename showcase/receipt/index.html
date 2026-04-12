@@ -1,0 +1,1337 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>receipt</title>
+    <link rel="icon" type="image/png" href="../../favicon/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f4f4f2;
+        --bg-soft: #faf9f7;
+        --ink: #121212;
+        --muted: #6c6c70;
+        --line: rgba(18, 18, 18, 0.1);
+        --line-strong: rgba(18, 18, 18, 0.18);
+        --paper: #fffefa;
+        --paper-shadow: rgba(15, 15, 15, 0.12);
+        --accent: #101010;
+        --accent-soft: rgba(16, 16, 16, 0.06);
+        --sheet: rgba(255, 255, 255, 0.84);
+        --sheet-blur: 22px;
+        --radius-xl: 42px;
+        --radius-lg: 28px;
+        --radius-md: 20px;
+        --radius-sm: 14px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+
+      body {
+        font-family: "IBM Plex Mono", monospace;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top, rgba(255, 255, 255, 0.95), transparent 28%),
+          radial-gradient(circle at bottom right, rgba(255, 214, 160, 0.16), transparent 22%),
+          linear-gradient(180deg, #f8f8f6 0%, #efefec 100%);
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        border: 0;
+        cursor: pointer;
+      }
+
+      .receipt-page {
+        width: min(1200px, 100%);
+        margin: 0 auto;
+        padding: 24px 20px 72px;
+      }
+
+      .receipt-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+
+      .receipt-nav-back,
+      .receipt-nav-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border-radius: 999px;
+        color: var(--ink);
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.72);
+        box-shadow: 0 12px 32px rgba(17, 17, 17, 0.06);
+        backdrop-filter: blur(18px);
+      }
+
+      .receipt-nav-status {
+        color: var(--muted);
+      }
+
+      .receipt-layout {
+        display: grid;
+        grid-template-columns: minmax(340px, 520px) minmax(300px, 1fr);
+        gap: 28px;
+        align-items: start;
+      }
+
+      .stage-shell {
+        position: sticky;
+        top: 20px;
+        padding: 18px;
+        border-radius: 44px;
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
+      }
+
+      .phone {
+        position: relative;
+        width: min(100%, 410px);
+        margin: 0 auto;
+        min-height: 820px;
+        border-radius: 54px;
+        background: transparent;
+        box-shadow:
+          0 0 0 8px #080808,
+          0 22px 80px rgba(15, 15, 15, 0.18);
+        overflow: hidden;
+      }
+
+      .phone::before {
+        content: "";
+        position: absolute;
+        top: 16px;
+        left: 50%;
+        width: 150px;
+        height: 34px;
+        margin-left: -75px;
+        border-radius: 999px;
+        background: #101010;
+        z-index: 7;
+      }
+
+      .phone::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: 9px;
+        width: 130px;
+        height: 5px;
+        margin-left: -65px;
+        border-radius: 999px;
+        background: rgba(17, 17, 17, 0.9);
+        z-index: 7;
+      }
+
+      .phone-chrome {
+        position: absolute;
+        top: 18px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 28px;
+        font-size: 15px;
+        font-weight: 600;
+        z-index: 7;
+      }
+
+      .status-icons {
+        display: inline-flex;
+        gap: 7px;
+        align-items: center;
+      }
+
+      .status-pill,
+      .status-bar,
+      .status-battery {
+        display: inline-block;
+        border-radius: 999px;
+        background: #111;
+      }
+
+      .status-pill {
+        width: 5px;
+        height: 5px;
+      }
+
+      .status-bar {
+        width: 17px;
+        height: 10px;
+      }
+
+      .status-battery {
+        width: 22px;
+        height: 10px;
+      }
+
+      .phone-screen {
+        position: relative;
+        height: 100%;
+        min-height: 820px;
+        padding: 70px 14px 72px;
+      }
+
+      .screen-stage {
+        position: relative;
+        height: 100%;
+        min-height: 678px;
+        border-radius: 36px;
+        background: transparent;
+        overflow: hidden;
+      }
+
+      .printer {
+        position: absolute;
+        top: 18px;
+        left: 16px;
+        right: 16px;
+        z-index: 5;
+      }
+
+      .printer-top {
+        position: relative;
+        height: 24px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #3d3d40 0%, #1f1f22 100%);
+        box-shadow: inset 0 2px 2px rgba(255, 255, 255, 0.12);
+      }
+
+      .printer-top::after {
+        content: "";
+        position: absolute;
+        top: 7px;
+        left: 22px;
+        right: 22px;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .printer-mouth {
+        position: relative;
+        width: calc(100% - 28px);
+        height: 20px;
+        margin: -4px auto 0;
+        border-radius: 0 0 12px 12px;
+        background: linear-gradient(180deg, rgba(20, 20, 20, 0.6), rgba(30, 30, 30, 0));
+      }
+
+      .receipt-window {
+        position: relative;
+        width: calc(100% - 34px);
+        height: 600px;
+        margin: 16px auto 0;
+        overflow: hidden;
+      }
+
+      .receipt-roll {
+        position: absolute;
+        top: -18px;
+        left: 50%;
+        width: 86%;
+        height: 94px;
+        margin-left: -43%;
+        border-radius: 0 0 18px 18px;
+        background: linear-gradient(180deg, #ffffff 0%, #f1f1ef 100%);
+        box-shadow:
+          0 8px 18px rgba(15, 15, 15, 0.08),
+          inset 0 -1px 0 rgba(17, 17, 17, 0.08);
+        transform-origin: top center;
+        transition: opacity 320ms ease;
+      }
+
+      .receipt-paper {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        width: 86%;
+        margin-left: -43%;
+        height: 0;
+        background: linear-gradient(180deg, #fffffd 0%, #f7f5ef 100%);
+        border-radius: 0 0 24px 24px;
+        box-shadow: 0 10px 22px rgba(15, 15, 15, 0.07);
+        overflow: hidden;
+        transition: height 2200ms cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .receipt-paper::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(to bottom, rgba(17, 17, 17, 0.024) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(17, 17, 17, 0.02) 1px, transparent 1px);
+        background-size: 100% 24px, 16.6% 100%;
+        pointer-events: none;
+      }
+
+      .receipt-scroll {
+        position: absolute;
+        inset: 0;
+        padding: 28px 18px 170px;
+        overflow-y: auto;
+        scrollbar-width: none;
+        opacity: 0;
+        transform: translateY(-26px);
+        transition:
+          opacity 420ms ease 520ms,
+          transform 420ms ease 520ms;
+      }
+
+      .receipt-scroll::-webkit-scrollbar {
+        display: none;
+      }
+
+      body.is-printed .receipt-paper {
+        height: 560px;
+      }
+
+      body.is-printed .receipt-scroll {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      body.is-printed .receipt-roll {
+        opacity: 0.15;
+      }
+
+      .receipt-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .receipt-meta {
+        display: grid;
+        gap: 10px;
+        padding-bottom: 16px;
+        border-bottom: 1px dashed var(--line-strong);
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .receipt-brand {
+        margin-bottom: 18px;
+        text-align: center;
+      }
+
+      .receipt-brand-mark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 54px;
+        height: 54px;
+        margin-bottom: 12px;
+        border-radius: 16px;
+        background: rgba(17, 17, 17, 0.04);
+        box-shadow:
+          0 6px 18px rgba(15, 15, 15, 0.08),
+          inset 0 0 0 1px rgba(17, 17, 17, 0.06);
+        font-size: 20px;
+      }
+
+      .receipt-brand h1 {
+        margin: 0;
+        font-size: 34px;
+        letter-spacing: -0.04em;
+        font-weight: 600;
+      }
+
+      .receipt-brand p {
+        margin: 8px 0 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .receipt-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 18px;
+        font-size: 12px;
+      }
+
+      .receipt-table th,
+      .receipt-table td {
+        padding: 9px 0;
+        border-bottom: 1px dashed rgba(17, 17, 17, 0.11);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .receipt-table th:last-child,
+      .receipt-table td:last-child {
+        text-align: right;
+      }
+
+      .receipt-table th {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted);
+      }
+
+      .receipt-table input {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--ink);
+        font: inherit;
+      }
+
+      body.is-editing .receipt-table input {
+        background: rgba(17, 17, 17, 0.03);
+        border-color: rgba(17, 17, 17, 0.08);
+      }
+
+      .qty-input {
+        max-width: 44px;
+      }
+
+      .price-input {
+        max-width: 72px;
+        text-align: right;
+      }
+
+      .line-action {
+        display: none;
+        width: 28px;
+        height: 28px;
+        margin-left: 8px;
+        border-radius: 999px;
+        background: rgba(17, 17, 17, 0.05);
+        color: var(--ink);
+      }
+
+      body.is-editing .line-action,
+      body.is-editing .item-row-edit .line-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .receipt-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 18px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(17, 17, 17, 0.14);
+        font-size: 13px;
+      }
+
+      .receipt-total strong {
+        font-size: 26px;
+        letter-spacing: -0.04em;
+      }
+
+      .qr-section {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px dashed var(--line-strong);
+      }
+
+      .qr-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 18px;
+        background: rgba(17, 17, 17, 0.03);
+      }
+
+      .qr-image {
+        width: 140px;
+        height: 140px;
+        border-radius: 18px;
+        background: #fff;
+        object-fit: cover;
+        box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.08);
+      }
+
+      .qr-copy {
+        margin: 0;
+        font-size: 11px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .bottom-sheet {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 6;
+        padding: 12px 18px 28px;
+        border-radius: 32px 32px 0 0;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow:
+          0 -18px 46px rgba(15, 15, 15, 0.14),
+          inset 0 1px 0 rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(26px);
+        transform: translateY(calc(100% - 36px));
+        opacity: 0;
+        transition:
+          transform 520ms cubic-bezier(0.2, 0.92, 0.2, 1),
+          opacity 240ms ease;
+      }
+
+      body.sheet-available .bottom-sheet {
+        opacity: 1;
+      }
+
+      body.show-sheet .bottom-sheet {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .bottom-sheet-handle {
+        display: block;
+        width: 42px;
+        height: 5px;
+        padding: 0;
+        border: 0;
+        margin: 0 auto 16px;
+        border-radius: 999px;
+        background: rgba(17, 17, 17, 0.18);
+      }
+
+      .bottom-sheet h2 {
+        margin: 0;
+        font-size: 24px;
+        letter-spacing: -0.04em;
+      }
+
+      .bottom-sheet p {
+        margin: 8px 0 0;
+        font-size: 12px;
+        line-height: 1.5;
+        color: var(--muted);
+      }
+
+      .sheet-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .primary-btn,
+      .secondary-btn,
+      .ghost-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 48px;
+        padding: 12px 18px;
+        border-radius: 999px;
+        font-size: 13px;
+        transition: transform 180ms ease, background 180ms ease, opacity 180ms ease;
+      }
+
+      .primary-btn:hover,
+      .secondary-btn:hover,
+      .ghost-btn:hover {
+        transform: translateY(-1px);
+      }
+
+      .primary-btn {
+        background: #111;
+        color: #fff;
+      }
+
+      .secondary-btn {
+        background: rgba(17, 17, 17, 0.08);
+        color: #111;
+      }
+
+      .ghost-btn {
+        background: transparent;
+        color: var(--muted);
+      }
+
+      .control-panel {
+        display: grid;
+        gap: 18px;
+      }
+
+      .panel-card {
+        padding: 22px;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.72);
+        box-shadow:
+          0 20px 60px rgba(15, 15, 15, 0.08),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+      }
+
+      .panel-card h2,
+      .panel-card h3 {
+        margin: 0;
+        font-size: 22px;
+        letter-spacing: -0.04em;
+      }
+
+      .panel-card p {
+        margin: 10px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.22em;
+        color: var(--muted);
+      }
+
+      .hero-title {
+        max-width: 14ch;
+        font-size: clamp(40px, 7vw, 78px);
+        line-height: 0.94;
+      }
+
+      .hero-actions,
+      .share-actions,
+      .edit-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .field-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .field {
+        display: grid;
+        gap: 8px;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      .field label,
+      .toggle-row span {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--muted);
+      }
+
+      .field input {
+        width: 100%;
+        min-height: 44px;
+        padding: 10px 14px;
+        border: 1px solid rgba(17, 17, 17, 0.08);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.74);
+      }
+
+      .toggle-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid rgba(17, 17, 17, 0.08);
+      }
+
+      .switch {
+        position: relative;
+        display: inline-flex;
+        width: 52px;
+        height: 32px;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .switch-slider {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        background: rgba(17, 17, 17, 0.12);
+        transition: background 180ms ease;
+      }
+
+      .switch-slider::after {
+        content: "";
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        transition: transform 180ms ease;
+      }
+
+      .switch input:checked + .switch-slider {
+        background: #111;
+      }
+
+      .switch input:checked + .switch-slider::after {
+        transform: translateX(20px);
+      }
+
+      .inline-note {
+        margin-top: 14px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(17, 17, 17, 0.04);
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .share-link-box {
+        display: flex;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .share-link-box input {
+        flex: 1;
+        min-height: 46px;
+        padding: 10px 14px;
+        border: 1px solid rgba(17, 17, 17, 0.08);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.78);
+      }
+
+      .share-link-box button {
+        min-width: 112px;
+      }
+
+      .status-chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .status-chip {
+        padding: 10px 12px;
+        border-radius: 999px;
+        background: rgba(17, 17, 17, 0.05);
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .item-row-edit {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .receipt-footer-space {
+        height: 8px;
+      }
+
+      @media (max-width: 980px) {
+        .receipt-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .stage-shell {
+          position: static;
+        }
+
+        .control-panel {
+          order: -1;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .receipt-page {
+          padding: 16px 14px 44px;
+        }
+
+        .receipt-nav {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .field-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .phone {
+          min-height: 760px;
+          border-radius: 44px;
+        }
+
+        .phone-screen,
+        .screen-stage {
+          min-height: 620px;
+        }
+
+        .receipt-window {
+          height: 532px;
+        }
+
+        body.is-printed .receipt-paper {
+          height: 510px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="receipt-page">
+      <nav class="receipt-nav" aria-label="Showcase navigation">
+        <a class="receipt-nav-back" href="../../discover.html">Back to discover</a>
+        <div class="receipt-nav-status">receipt / showcase html</div>
+      </nav>
+
+      <div class="receipt-layout">
+        <section class="stage-shell">
+          <div class="phone" aria-label="Receipt stage preview">
+            <div class="phone-chrome">
+              <span>9:41</span>
+              <div class="status-icons" aria-hidden="true">
+                <span class="status-pill"></span>
+                <span class="status-bar"></span>
+                <span class="status-battery"></span>
+              </div>
+            </div>
+
+            <div class="phone-screen">
+              <div class="screen-stage">
+                <div class="printer" aria-hidden="true">
+                  <div class="printer-top"></div>
+                  <div class="printer-mouth"></div>
+                </div>
+
+                <div class="receipt-window">
+                  <div class="receipt-roll"></div>
+                  <div class="receipt-paper" id="receiptPaper">
+                    <div class="receipt-scroll" id="receiptScroll">
+                      <div class="receipt-content" id="captureTarget">
+                        <div class="receipt-brand">
+                          <div class="receipt-brand-mark">=^.^=</div>
+                          <h1>receipt</h1>
+                          <p>One receipt. One reveal. One tiny whimsical proof.</p>
+                        </div>
+
+                        <div class="receipt-meta">
+                          <div>Order ID <strong id="orderIdText">R-8041</strong></div>
+                          <div>Timestamp <strong id="timestampText">2026-04-09 21:41</strong></div>
+                          <div>Table <strong id="tableText">07</strong></div>
+                        </div>
+
+                        <table class="receipt-table" aria-label="Receipt items">
+                          <thead>
+                            <tr>
+                              <th>Item</th>
+                              <th>Detail</th>
+                              <th>Unit</th>
+                              <th>THB</th>
+                            </tr>
+                          </thead>
+                          <tbody id="itemsBody"></tbody>
+                        </table>
+
+                        <div class="receipt-total">
+                          <span>Total</span>
+                          <strong id="totalText">165 THB</strong>
+                        </div>
+
+                        <section class="qr-section" id="qrSection">
+                          <div class="qr-card">
+                            <img class="qr-image" id="qrImage" src="../../social-icons/qr-mock.svg" alt="Payment QR code" />
+                            <p class="qr-copy">Scan to pay or swap in your own code in edit mode.</p>
+                          </div>
+                        </section>
+                        <div class="receipt-footer-space"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <aside class="bottom-sheet" id="bottomSheet" aria-label="Edit mode prompt">
+              <div class="bottom-sheet-handle" aria-hidden="true"></div>
+              <h2>Make your own receipt</h2>
+              <p>
+                You reached the end of the print. Now turn it into your own little artifact: edit rows, upload
+                your QR, and publish a shareable receipt.
+              </p>
+              <div class="sheet-actions">
+                <button class="primary-btn" id="editModeBtn" type="button">Enter edit mode</button>
+                <button class="secondary-btn" id="dismissSheetBtn" type="button">Keep browsing</button>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="control-panel">
+          <article class="panel-card hidden" id="editPanel">
+            <div class="eyebrow">Concept</div>
+            <h2 class="hero-title">Apple corporate restraint, then a small whimsical wink.</h2>
+            <p>
+              The page begins in reverse: first the polished end-state, then the maker controls. A thermal printer
+              appears, the paper unfurls, the order reveals itself, and only at the bottom does the interface invite
+              the user to make one.
+            </p>
+            <div class="status-chip-row">
+              <span class="status-chip">IBM Plex Mono</span>
+              <span class="status-chip">Receipt reveal animation</span>
+              <span class="status-chip">Editable line items</span>
+              <span class="status-chip">Share-ready receipt</span>
+            </div>
+          </article>
+
+          <article class="panel-card hidden" id="sharePanel">
+            <div class="eyebrow">Edit Mode</div>
+            <h3>Receipt details</h3>
+            <div class="field-grid">
+              <div class="field">
+                <label for="orderIdInput">Order ID</label>
+                <input id="orderIdInput" type="text" value="R-8041" />
+              </div>
+              <div class="field">
+                <label for="timestampInput">Timestamp</label>
+                <input id="timestampInput" type="text" value="2026-04-09 21:41" />
+              </div>
+              <div class="field">
+                <label for="tableInput">Table no.</label>
+                <input id="tableInput" type="text" value="07" />
+              </div>
+              <div class="field">
+                <label for="receiptTitleInput">Title</label>
+                <input id="receiptTitleInput" type="text" value="receipt" />
+              </div>
+            </div>
+
+            <div class="edit-actions">
+              <button class="secondary-btn" id="addItemBtn" type="button">Add item</button>
+              <button class="ghost-btn" id="resetItemsBtn" type="button">Reset sample order</button>
+            </div>
+
+            <div class="toggle-row">
+              <span>Show payment QR</span>
+              <label class="switch">
+                <input id="qrToggle" type="checkbox" checked />
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+
+            <div class="edit-actions">
+              <button class="secondary-btn" id="uploadQrBtn" type="button">Upload QR code</button>
+              <button class="ghost-btn" id="resetQrBtn" type="button">Reset QR</button>
+              <input id="qrFileInput" class="hidden" type="file" accept="image/*" />
+            </div>
+
+            <div class="inline-note">
+              In edit mode, every line item becomes editable inline inside the receipt itself. Add, remove, or tweak
+              rows directly where the content lives.
+            </div>
+          </article>
+
+          <article class="panel-card">
+            <div class="eyebrow">Share</div>
+            <h3>Download or share a unique receipt URL</h3>
+            <p>
+              This showcase uses a generated URL stub in the format <code>[uniqueid].wemint.app</code> so the share
+              moment already feels productized even before backend wiring exists.
+            </p>
+
+            <div class="share-link-box">
+              <input id="shareUrlInput" type="text" readonly value="rcpt8041.wemint.app" />
+              <button class="secondary-btn" id="copyLinkBtn" type="button">Copy link</button>
+            </div>
+
+            <div class="share-actions">
+              <button class="primary-btn" id="downloadBtn" type="button">Download image</button>
+              <button class="secondary-btn" id="shareBtn" type="button">Share receipt</button>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+
+    <script>
+      const defaultItems = [
+        { item: "1", detail: "Iced coffee oat milk no syrup", unit: 1, price: 65 },
+        { item: "2", detail: "Tiramisu", unit: 1, price: 90 },
+        { item: "3", detail: "Kitty tips", unit: 1, price: 10 },
+      ];
+
+      const state = {
+        title: "receipt",
+        orderId: "R-8041",
+        timestamp: "2026-04-09 21:41",
+        table: "07",
+        items: defaultItems.map((item) => ({ ...item })),
+        qrEnabled: true,
+        qrSrc: "../../social-icons/qr-mock.svg",
+        customQr: false,
+        editMode: false,
+        shareId: `rcpt${Math.random().toString(36).slice(2, 8)}`,
+      };
+
+      const elements = {
+        body: document.body,
+        receiptScroll: document.getElementById("receiptScroll"),
+        bottomSheet: document.getElementById("bottomSheet"),
+        itemsBody: document.getElementById("itemsBody"),
+        totalText: document.getElementById("totalText"),
+        orderIdText: document.getElementById("orderIdText"),
+        timestampText: document.getElementById("timestampText"),
+        tableText: document.getElementById("tableText"),
+        qrSection: document.getElementById("qrSection"),
+        qrImage: document.getElementById("qrImage"),
+        orderIdInput: document.getElementById("orderIdInput"),
+        timestampInput: document.getElementById("timestampInput"),
+        tableInput: document.getElementById("tableInput"),
+        receiptTitleInput: document.getElementById("receiptTitleInput"),
+        editModeBtn: document.getElementById("editModeBtn"),
+        dismissSheetBtn: document.getElementById("dismissSheetBtn"),
+        editPanel: document.getElementById("editPanel"),
+        sharePanel: document.getElementById("sharePanel"),
+        addItemBtn: document.getElementById("addItemBtn"),
+        resetItemsBtn: document.getElementById("resetItemsBtn"),
+        qrToggle: document.getElementById("qrToggle"),
+        uploadQrBtn: document.getElementById("uploadQrBtn"),
+        resetQrBtn: document.getElementById("resetQrBtn"),
+        qrFileInput: document.getElementById("qrFileInput"),
+        shareUrlInput: document.getElementById("shareUrlInput"),
+        copyLinkBtn: document.getElementById("copyLinkBtn"),
+        downloadBtn: document.getElementById("downloadBtn"),
+        shareBtn: document.getElementById("shareBtn"),
+        captureTarget: document.getElementById("captureTarget"),
+      };
+
+      function formatPrice(value) {
+        const price = Number(value) || 0;
+        return `${price.toLocaleString("en-US")} THB`;
+      }
+
+      function totalAmount() {
+        return state.items.reduce((sum, item) => sum + ((Number(item.unit) || 0) * (Number(item.price) || 0)), 0);
+      }
+
+      function renderMeta() {
+        document.title = state.title || "receipt";
+        elements.orderIdText.textContent = state.orderId || "-";
+        elements.timestampText.textContent = state.timestamp || "-";
+        elements.tableText.textContent = state.table || "-";
+        const heading = document.querySelector(".receipt-brand h1");
+        if (heading) heading.textContent = state.title || "receipt";
+        elements.totalText.textContent = formatPrice(totalAmount());
+        elements.shareUrlInput.value = `${state.shareId}.wemint.app`;
+      }
+
+      function createCellInput(value, className, onInput) {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = className;
+        input.value = value;
+        input.addEventListener("input", onInput);
+        return input;
+      }
+
+      function renderItems() {
+        elements.itemsBody.innerHTML = "";
+        state.items.forEach((item, index) => {
+          const row = document.createElement("tr");
+          row.className = state.editMode ? "item-row-edit" : "";
+
+          const itemCell = document.createElement("td");
+          const detailCell = document.createElement("td");
+          const unitCell = document.createElement("td");
+          const priceCell = document.createElement("td");
+
+          if (state.editMode) {
+            itemCell.appendChild(
+              createCellInput(item.item, "", (event) => {
+                state.items[index].item = event.target.value;
+              })
+            );
+            detailCell.appendChild(
+              createCellInput(item.detail, "", (event) => {
+                state.items[index].detail = event.target.value;
+              })
+            );
+            unitCell.appendChild(
+              createCellInput(String(item.unit), "qty-input", (event) => {
+                state.items[index].unit = event.target.value;
+                renderMeta();
+              })
+            );
+
+            const priceWrap = document.createElement("div");
+            priceWrap.className = "item-row-edit";
+            priceWrap.appendChild(
+              createCellInput(String(item.price), "price-input", (event) => {
+                state.items[index].price = event.target.value;
+                renderMeta();
+              })
+            );
+
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className = "line-action";
+            removeBtn.textContent = "−";
+            removeBtn.setAttribute("aria-label", `Remove item ${index + 1}`);
+            removeBtn.addEventListener("click", () => {
+              state.items.splice(index, 1);
+              renderItems();
+              renderMeta();
+            });
+            priceWrap.appendChild(removeBtn);
+            priceCell.appendChild(priceWrap);
+          } else {
+            itemCell.textContent = item.item;
+            detailCell.textContent = item.detail;
+            unitCell.textContent = item.unit;
+            priceCell.textContent = `${(Number(item.unit) || 0) * (Number(item.price) || 0)}`;
+          }
+
+          row.append(itemCell, detailCell, unitCell, priceCell);
+          elements.itemsBody.appendChild(row);
+        });
+      }
+
+      function renderQr() {
+        elements.qrSection.classList.toggle("hidden", !state.qrEnabled);
+        elements.qrImage.src = state.qrSrc;
+      }
+
+      function renderEditMode() {
+        elements.body.classList.toggle("is-editing", state.editMode);
+        elements.editPanel.classList.toggle("hidden", !state.editMode);
+        elements.sharePanel.classList.toggle("hidden", !state.editMode);
+      }
+
+      function renderAll() {
+        renderMeta();
+        renderItems();
+        renderQr();
+        renderEditMode();
+      }
+
+      function showSheet() {
+        if (state.editMode) return;
+        elements.body.classList.add("sheet-available");
+        elements.body.classList.add("show-sheet");
+      }
+
+      function hideSheet() {
+        elements.body.classList.remove("show-sheet");
+      }
+
+      function setSheetAvailable(value) {
+        elements.body.classList.toggle("sheet-available", value);
+        if (!value) {
+          hideSheet();
+        }
+      }
+
+      function enterEditMode() {
+        state.editMode = true;
+        hideSheet();
+        renderAll();
+      }
+
+      function resetItems() {
+        state.items = defaultItems.map((item) => ({ ...item }));
+        renderAll();
+      }
+
+      function readFileAsDataUrl(file, onLoad) {
+        const reader = new FileReader();
+        reader.onload = () => onLoad(reader.result);
+        reader.readAsDataURL(file);
+      }
+
+      async function copyLink() {
+        const value = elements.shareUrlInput.value;
+        try {
+          await navigator.clipboard.writeText(value);
+          elements.copyLinkBtn.textContent = "Copied";
+        } catch {
+          elements.copyLinkBtn.textContent = "Copy failed";
+        }
+        setTimeout(() => {
+          elements.copyLinkBtn.textContent = "Copy link";
+        }, 1400);
+      }
+
+      async function downloadReceipt() {
+        const canvas = await html2canvas(elements.captureTarget, {
+          backgroundColor: "#fffefa",
+          scale: 2,
+        });
+        const link = document.createElement("a");
+        link.download = `${state.shareId}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      }
+
+      async function shareReceipt() {
+        const shareUrl = `https://${elements.shareUrlInput.value}`;
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: state.title || "receipt",
+              text: "Take a look at my receipt.",
+              url: shareUrl,
+            });
+            return;
+          } catch {
+            // Fall through to copy.
+          }
+        }
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          elements.shareBtn.textContent = "Link copied";
+        } catch {
+          elements.shareBtn.textContent = "Share unavailable";
+        }
+        setTimeout(() => {
+          elements.shareBtn.textContent = "Share receipt";
+        }, 1400);
+      }
+
+      elements.orderIdInput.addEventListener("input", (event) => {
+        state.orderId = event.target.value;
+        renderMeta();
+      });
+
+      elements.timestampInput.addEventListener("input", (event) => {
+        state.timestamp = event.target.value;
+        renderMeta();
+      });
+
+      elements.tableInput.addEventListener("input", (event) => {
+        state.table = event.target.value;
+        renderMeta();
+      });
+
+      elements.receiptTitleInput.addEventListener("input", (event) => {
+        state.title = event.target.value;
+        renderMeta();
+      });
+
+      elements.editModeBtn.addEventListener("click", enterEditMode);
+      elements.dismissSheetBtn.addEventListener("click", () => {
+        hideSheet();
+      });
+      elements.addItemBtn.addEventListener("click", () => {
+        state.editMode = true;
+        state.items.push({
+          item: String(state.items.length + 1),
+          detail: "New delightful line",
+          unit: 1,
+          price: 0,
+        });
+        renderAll();
+      });
+
+      elements.resetItemsBtn.addEventListener("click", resetItems);
+
+      elements.qrToggle.addEventListener("change", (event) => {
+        state.qrEnabled = event.target.checked;
+        renderQr();
+      });
+
+      elements.uploadQrBtn.addEventListener("click", () => {
+        elements.qrFileInput.click();
+      });
+
+      elements.qrFileInput.addEventListener("change", () => {
+        const file = elements.qrFileInput.files?.[0];
+        if (!file) return;
+        readFileAsDataUrl(file, (dataUrl) => {
+          state.qrSrc = dataUrl;
+          state.customQr = true;
+          renderQr();
+        });
+      });
+
+      elements.resetQrBtn.addEventListener("click", () => {
+        state.qrSrc = "../../social-icons/qr-mock.svg";
+        state.customQr = false;
+        elements.qrFileInput.value = "";
+        renderQr();
+      });
+
+      elements.copyLinkBtn.addEventListener("click", copyLink);
+      elements.downloadBtn.addEventListener("click", downloadReceipt);
+      elements.shareBtn.addEventListener("click", shareReceipt);
+
+      elements.receiptScroll.addEventListener("scroll", () => {
+        const threshold = 18;
+        const atBottom =
+          elements.receiptScroll.scrollTop + elements.receiptScroll.clientHeight >=
+          elements.receiptScroll.scrollHeight - threshold;
+        if (atBottom) {
+          showSheet();
+        } else {
+          setSheetAvailable(false);
+        }
+      });
+
+      renderAll();
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          elements.body.classList.add("is-printed");
+        }, 260);
+      });
+    </script>
+  </body>
+</html>

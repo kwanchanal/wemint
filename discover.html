@@ -13,6 +13,153 @@
       .material-symbols-outlined {
         font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
       }
+
+      .discover-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+        gap: 24px;
+        align-content: start;
+        padding: 36px;
+      }
+
+      .showcase-card {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(245, 241, 235, 0.94)),
+          radial-gradient(circle at top left, rgba(245, 176, 65, 0.22), transparent 45%);
+        border: 1px solid rgba(17, 24, 39, 0.08);
+        border-radius: 28px;
+        padding: 18px;
+        box-shadow: 0 22px 48px rgba(15, 23, 42, 0.08);
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .showcase-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 28px 64px rgba(15, 23, 42, 0.12);
+      }
+
+      .showcase-card-visual {
+        position: relative;
+        min-height: 240px;
+        border-radius: 22px;
+        overflow: hidden;
+        padding: 18px;
+        background:
+          radial-gradient(circle at top, rgba(255, 248, 220, 0.96), transparent 38%),
+          linear-gradient(160deg, #2e241d 0%, #16100b 55%, #100d0a 100%);
+      }
+
+      .showcase-card-glow {
+        position: absolute;
+        inset: auto -18% -22% auto;
+        width: 190px;
+        height: 190px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255, 205, 118, 0.42), transparent 70%);
+        filter: blur(8px);
+      }
+
+      .showcase-card-ticket {
+        position: relative;
+        width: 100%;
+        max-width: 245px;
+        margin: 12px auto 0;
+        padding: 16px 16px 20px;
+        border-radius: 18px;
+        background: linear-gradient(180deg, #fffdf8 0%, #f8f2e6 100%);
+        box-shadow:
+          0 14px 30px rgba(0, 0, 0, 0.24),
+          inset 0 0 0 1px rgba(60, 34, 8, 0.08);
+        color: #2e241d;
+        transform: rotate(-5deg);
+      }
+
+      .showcase-card-ticket::before,
+      .showcase-card-ticket::after {
+        content: "";
+        position: absolute;
+        top: 42%;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: #1b1410;
+      }
+
+      .showcase-card-ticket::before {
+        left: -11px;
+      }
+
+      .showcase-card-ticket::after {
+        right: -11px;
+      }
+
+      .showcase-card-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: #8f6b3e;
+      }
+
+      .showcase-card-title {
+        margin: 12px 0 6px;
+        font-size: 30px;
+        line-height: 0.95;
+        font-weight: 800;
+      }
+
+      .showcase-card-lines {
+        display: grid;
+        gap: 7px;
+        margin-top: 16px;
+      }
+
+      .showcase-card-lines span {
+        display: block;
+        height: 7px;
+        border-radius: 999px;
+        background: rgba(46, 36, 29, 0.1);
+      }
+
+      .showcase-card-lines span:nth-child(1) { width: 82%; }
+      .showcase-card-lines span:nth-child(2) { width: 100%; }
+      .showcase-card-lines span:nth-child(3) { width: 68%; }
+
+      .showcase-card-copy {
+        display: grid;
+        gap: 6px;
+        padding: 18px 4px 2px;
+      }
+
+      .showcase-card-copy strong {
+        font-size: 20px;
+        letter-spacing: -0.03em;
+      }
+
+      .showcase-card-copy p {
+        margin: 0;
+        color: #4b5563;
+        line-height: 1.5;
+      }
+
+      .showcase-card-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 4px 0;
+        color: #6b7280;
+        font-size: 13px;
+      }
+
+      @media (max-width: 720px) {
+        .discover-gallery {
+          padding: 20px;
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
     <link rel="stylesheet" href="styles.css" />
   </head>
@@ -33,7 +180,7 @@
             </a>
           </div>
           <div class="nav-section">
-            <button class="nav-title" type="button">Your Ad</button>
+            <button class="nav-title" type="button">Main</button>
             <div class="nav-items">
               <a class="nav-link" href="index.html">
                 <span class="material-symbols-outlined nav-icon">badge</span>
@@ -81,7 +228,30 @@
 
       <main class="main canvas-main" aria-label="Discover workspace">
         <div class="canvas-area">
-          <div class="canvas-elements"></div>
+          <section class="discover-gallery" aria-label="Showcase gallery">
+            <a class="showcase-card" href="showcase/receipt/index.html">
+              <div class="showcase-card-visual">
+                <div class="showcase-card-glow" aria-hidden="true"></div>
+                <div class="showcase-card-ticket" aria-hidden="true">
+                  <div class="showcase-card-label">Showcase 01</div>
+                  <div class="showcase-card-title">receipt</div>
+                  <div class="showcase-card-lines">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+              </div>
+              <div class="showcase-card-copy">
+                <strong>Receipt</strong>
+                <p>A warm, editorial mini-site built like a collectible proof of taste, detail, and identity.</p>
+              </div>
+              <div class="showcase-card-meta">
+                <span>Open showcase</span>
+                <span class="material-symbols-outlined" aria-hidden="true">north_east</span>
+              </div>
+            </a>
+          </section>
         </div>
         <div class="canvas-toolbar">
           <div class="canvas-toolbar-group">
