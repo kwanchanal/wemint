@@ -237,6 +237,7 @@ const elements = {
   addLinkFeatureBtn: document.getElementById("addLinkFeatureBtn"),
   addLinkBtn: document.getElementById("addLinkBtn"),
   topbarAddBtn: document.getElementById("topbarAddBtn"),
+  topbarPromptText: document.getElementById("topbarPromptText"),
   sidebarAddBtn: document.getElementById("sidebarAddBtn"),
   closeModalBtn: document.getElementById("closeModalBtn"),
   modalTitle: document.getElementById("modalTitle"),
@@ -1773,64 +1774,13 @@ function renderLinks() {
 }
 
 function renderPreview() {
+  if (!elements.previewLinks) return;
   elements.previewLinks.innerHTML = "";
-  const order = getCombinedOrder();
-  order.forEach((itemId) => {
-    if (itemId === "banner") {
-      const shouldShowBanner = renderPreviewBannerMarquee();
-      if (shouldShowBanner && elements.previewBannerMarquee) {
-        elements.previewLinks.appendChild(elements.previewBannerMarquee);
-      }
-      return;
-    }
-    if (itemId === "inbox") {
-      if (!elements.inboxSwitch?.checked) {
-        setInboxSheetOpen(false);
-        return;
-      }
-      if (inboxLayout.type !== "banner") {
-        const inboxItem = document.createElement("div");
-        inboxItem.className = "phone-link inbox";
-        inboxItem.innerHTML = `
-          <span>${escapeHTML(inboxName)}</span>
-        `;
-        inboxItem.addEventListener("click", () => setInboxSheetOpen(true));
-        elements.previewLinks.appendChild(inboxItem);
-      }
-      renderInboxBanner();
-      return;
-    }
-    const link = links.find((entry) => entry.id === itemId);
-    if (!link || !link.enabled) return;
-      const btn = document.createElement("div");
-      const safeTitle = escapeHTML(link.title);
-
-      if (link.featured) {
-        btn.className = "phone-link featured";
-        const thumbContent = link.thumbnail
-          ? `<img src="${escapeHTML(link.thumbnail)}" alt="" />`
-          : "";
-        btn.innerHTML = `
-          <div class="phone-link-thumb">${thumbContent}</div>
-          <div class="phone-link-bottom">
-            <span>${safeTitle}</span>
-            <span class="phone-link-more"><span class="material-symbols-outlined">more_vert</span></span>
-          </div>
-        `;
-      } else {
-        btn.className = "phone-link";
-        btn.innerHTML = `
-          <div class="phone-link-icon"><span class="material-symbols-outlined">star_shine</span></div>
-          <span>${safeTitle}</span>
-          <span class="phone-link-more"><span class="material-symbols-outlined">more_vert</span></span>
-        `;
-      }
-
-      elements.previewLinks.appendChild(btn);
-    });
-
-  renderInboxBanner();
-  renderPreviewInboxForm();
+  setInboxSheetOpen(false);
+  if (elements.previewInboxBanner) {
+    elements.previewInboxBanner.className = "phone-bottom-banner";
+    elements.previewInboxBanner.innerHTML = "";
+  }
   if (elements.previewCta) {
     elements.previewCta.style.display = elements.footerSwitch && !elements.footerSwitch.checked ? "none" : "block";
   }
@@ -2498,6 +2448,62 @@ function initBannerCycle() {
   }, 2000);
 }
 
+function initTopbarTypewriter() {
+  const el = elements.topbarPromptText;
+  if (!el) return;
+
+  const phrases = [
+    "Tell The World What You Do",
+    "Instagram Reels",
+    "Facebook Post",
+    "TikTok Shop Link",
+    "YouTube Video",
+    "Product Page",
+    "Event Registration",
+    "Google Form",
+  ];
+  const typeDelay = 70;
+  const deleteDelay = 40;
+  const holdDelay = 1200;
+  const resetDelay = 400;
+  let phraseIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+
+  const tick = () => {
+    const phrase = phrases[phraseIndex];
+    el.textContent = phrase.slice(0, charIndex);
+    if (elements.topbarAddBtn) {
+      elements.topbarAddBtn.setAttribute("aria-label", `Create link: ${phrase}`);
+    }
+
+    if (!isDeleting && charIndex < phrase.length) {
+      charIndex += 1;
+      setTimeout(tick, typeDelay);
+      return;
+    }
+
+    if (!isDeleting) {
+      isDeleting = true;
+      setTimeout(tick, holdDelay);
+      return;
+    }
+
+    if (charIndex > 0) {
+      charIndex -= 1;
+      setTimeout(tick, deleteDelay);
+      return;
+    }
+
+    isDeleting = false;
+    phraseIndex = (phraseIndex + 1) % phrases.length;
+    setTimeout(tick, resetDelay);
+  };
+
+  el.textContent = "";
+  tick();
+}
+
 function init() {
   if (FORCE_PROFILE_MOCK) {
     storage.set("wemint_profile", defaultProfile);
@@ -2513,6 +2519,7 @@ function init() {
   applyAppearance();
   initNavAccordion();
   initBannerCycle();
+  initTopbarTypewriter();
   if (FORCE_PROFILE_MOCK) {
     openProfileModal();
   }

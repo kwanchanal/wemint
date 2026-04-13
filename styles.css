@@ -792,6 +792,38 @@ textarea {
   box-shadow: var(--shadow-xs);
 }
 
+.typewriter-wrap {
+  display: inline-block;
+  min-width: 190px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.typewriter-text {
+  display: inline;
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  width: 1px;
+  height: 1.15em;
+  margin-left: 2px;
+  background: currentColor;
+  vertical-align: -0.16em;
+  animation: typewriter-cursor-blink 1.05s steps(1, end) infinite;
+}
+
+@keyframes typewriter-cursor-blink {
+  0%,
+  52% {
+    opacity: 1;
+  }
+  53%,
+  100% {
+    opacity: 0;
+  }
+}
+
 /* ── Hidden sections for simplified dashboard ── */
 .profile-card,
 #inboxSection,
