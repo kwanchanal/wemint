@@ -3982,7 +3982,7 @@ textarea {
     flex-wrap: nowrap;
   }
 
-  .link-tool-icons .icon-btn-sm:not(.layout-toggle-btn) {
+  .link-tool-icons .icon-btn-sm:not(.layout-toggle-btn):not(.link-delete) {
     display: none;
   }
 
