@@ -29,6 +29,7 @@ const REQUIRED_DEFAULT_LINKS = [
     featured: false,
     enabled: true,
     locked: true,
+    alwaysEnabled: true,
   },
   {
     id: "default-art-collection",
@@ -440,7 +441,7 @@ const elements = {
 };
 
 let editingId = null;
-let openLayoutId = null;
+let openLayoutId = "default-portfolio";
 let draggingItemId = null;
 let inboxOpen = false;
 let inboxTab = "forms";
@@ -1684,6 +1685,10 @@ function renderLinks() {
     card
       .querySelector(".link-right .switch input")
       .addEventListener("change", (event) => {
+        if (link.alwaysEnabled) {
+          event.target.checked = true;
+          return;
+        }
         link.enabled = event.target.checked;
         saveAll();
         renderPreview();
