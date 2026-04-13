@@ -18,11 +18,35 @@ const defaultProfile = {
   bio: "Retired designer turned FinTech Product Manager, Mostly underwater",
 };
 
-const defaultLinks = [];
+const REQUIRED_DEFAULT_LINKS = [
+  {
+    id: "default-portfolio",
+    title: "Portfolio",
+    hasUrl: true,
+    url: "https://kwanchanal.github.io/hello/",
+    shortCode: "PL2TSH5",
+    thumbnail: "",
+    featured: false,
+    enabled: true,
+    locked: true,
+  },
+  {
+    id: "default-art-collection",
+    title: "Art Collection",
+    hasUrl: true,
+    url: "https://kwanchanal.github.io/mintable-collection/",
+    shortCode: "49BJ5U",
+    thumbnail: "",
+    featured: false,
+    enabled: true,
+    locked: true,
+  },
+];
+const REQUIRED_DEFAULT_LINK_IDS = new Set(REQUIRED_DEFAULT_LINKS.map((link) => link.id));
+const defaultLinks = REQUIRED_DEFAULT_LINKS.map((link) => ({ ...link }));
 const DEFAULT_PORTFOLIO_THUMBNAIL = "";
 const retiredMockLinkTitles = new Set([
   "dribbble",
-  "portfolio",
 ]);
 const retiredAssetPaths = new Set([
   "mockup/featured-portfolio.png",
@@ -42,9 +66,65 @@ const FORCE_APPEARANCE_MOCK = true;
 const profile = FORCE_PROFILE_MOCK ? { ...defaultProfile } : storage.get("wemint_profile", defaultProfile);
 const savedLinks = storage.get("wemint_links", defaultLinks);
 const links = Array.isArray(savedLinks)
-  ? savedLinks.filter((link) => !retiredMockLinkTitles.has(String(link?.title || "").trim().toLowerCase()))
+  ? savedLinks.filter((link) => {
+      if (REQUIRED_DEFAULT_LINK_IDS.has(link?.id)) return true;
+      return !retiredMockLinkTitles.has(String(link?.title || "").trim().toLowerCase());
+    })
   : defaultLinks;
 const socialLinks = storage.get("wemint_social_links", {});
+
+function ensureRequiredDefaultLinks() {
+  if (!Array.isArray(links)) return;
+  let didChange = false;
+  REQUIRED_DEFAULT_LINKS.forEach((requiredLink, targetIndex) => {
+    const requiredTitle = requiredLink.title.trim().toLowerCase();
+    const requiredUrl = requiredLink.url.trim().toLowerCase();
+    const requiredShortCode = requiredLink.shortCode.trim().toLowerCase();
+    const existingIndex = links.findIndex((link) => {
+      const title = String(link?.title || "").trim().toLowerCase();
+      const url = String(link?.url || "").trim().toLowerCase();
+      const shortCode = String(link?.shortCode || "").trim().toLowerCase();
+      return link?.id === requiredLink.id
+        || title === requiredTitle
+        || url === requiredUrl
+        || shortCode === requiredShortCode;
+    });
+    if (existingIndex >= 0) {
+      const [existingLink] = links.splice(existingIndex, 1);
+      links.splice(targetIndex, 0, {
+        ...existingLink,
+        ...requiredLink,
+      });
+      didChange = didChange
+        || existingIndex !== targetIndex
+        || Object.entries(requiredLink).some(([key, value]) => existingLink[key] !== value);
+      return;
+    }
+    links.splice(targetIndex, 0, { ...requiredLink });
+    didChange = true;
+  });
+  for (let index = links.length - 1; index >= REQUIRED_DEFAULT_LINKS.length; index -= 1) {
+    const link = links[index];
+    const duplicateDefaultLink = REQUIRED_DEFAULT_LINKS.some((requiredLink) => {
+      const title = String(link?.title || "").trim().toLowerCase();
+      const url = String(link?.url || "").trim().toLowerCase();
+      const shortCode = String(link?.shortCode || "").trim().toLowerCase();
+      return link?.id === requiredLink.id
+        || title === requiredLink.title.trim().toLowerCase()
+        || url === requiredLink.url.trim().toLowerCase()
+        || shortCode === requiredLink.shortCode.trim().toLowerCase();
+    });
+    if (duplicateDefaultLink) {
+      links.splice(index, 1);
+      didChange = true;
+    }
+  }
+  if (didChange) {
+    storage.set("wemint_links", links);
+  }
+}
+
+ensureRequiredDefaultLinks();
 
 if (Array.isArray(links)) {
   const existingCodes = new Set();
@@ -219,6 +299,18 @@ inboxFormFields = inboxFormFields.map((field) => {
 });
 
 const elements = {
+  appShell: document.getElementById("appShell"),
+  adPanel: document.getElementById("adPanel"),
+  adPanelClose: document.getElementById("adPanelClose"),
+  adYouWord: document.getElementById("adYouWord"),
+  adContactTrigger: document.getElementById("adContactTrigger"),
+  adContactBackdrop: document.getElementById("adContactBackdrop"),
+  adContactSheet: document.getElementById("adContactSheet"),
+  adContactClose: document.getElementById("adContactClose"),
+  adContactForm: document.getElementById("adContactForm"),
+  adContactEmail: document.getElementById("adContactEmail"),
+  adContactMessage: document.getElementById("adContactMessage"),
+  adContactNote: document.getElementById("adContactNote"),
   linksList: document.getElementById("linksList"),
   previewLinks: document.getElementById("previewLinks"),
   previewName: document.getElementById("previewName"),
@@ -1587,6 +1679,13 @@ function renderLinks() {
       : safeUrl;
     const shortLink = getShortLink(link);
     const isLayoutOpen = openLayoutId === link.id;
+    const isLockedDefault = Boolean(link.locked);
+    const editLockedAttrs = isLockedDefault
+      ? 'disabled aria-disabled="true" title="Sign up to edit default links"'
+      : "";
+    const deleteLockedAttrs = isLockedDefault
+      ? 'disabled aria-disabled="true" title="Sign up to delete default links"'
+      : "";
 
     card.innerHTML = `
       <div class="link-row">
@@ -1596,7 +1695,7 @@ function renderLinks() {
         <div class="link-info">
           <div class="link-title-row">
             <span class="link-title">${safeTitle}</span>
-            <button class="icon-btn-sm edit-title-btn" aria-label="Edit title">
+            <button class="icon-btn-sm edit-title-btn" aria-label="Edit title" ${editLockedAttrs}>
               <span class="material-symbols-outlined">edit</span>
             </button>
           </div>
@@ -1608,7 +1707,7 @@ function renderLinks() {
           </div>
           <div class="link-url-row">
             <span class="link-url${hasUrl ? "" : " is-empty"}">${displayUrl}</span>
-            <button class="icon-btn-sm edit-url-btn" aria-label="Edit URL">
+            <button class="icon-btn-sm edit-url-btn" aria-label="Edit URL" ${editLockedAttrs}>
               <span class="material-symbols-outlined">edit</span>
             </button>
           </div>
@@ -1645,7 +1744,7 @@ function renderLinks() {
             0 clicks
           </span>
         </div>
-        <button class="icon-btn-sm link-delete" aria-label="Delete">
+        <button class="icon-btn-sm link-delete" aria-label="Delete" ${deleteLockedAttrs}>
           <span class="material-symbols-outlined">delete</span>
         </button>
       </div>
@@ -1694,6 +1793,7 @@ function renderLinks() {
     const editTitleBtn = card.querySelector(".edit-title-btn");
     if (editTitleBtn) {
       editTitleBtn.addEventListener("click", () => {
+        if (isLockedDefault) return;
         startInlineEdit({
           selector: ".link-title",
           value: link.title || "",
@@ -1726,6 +1826,7 @@ function renderLinks() {
     const editUrlBtn = card.querySelector(".edit-url-btn");
     if (editUrlBtn) {
       editUrlBtn.addEventListener("click", () => {
+        if (isLockedDefault) return;
         startInlineEdit({
           selector: ".link-url",
           value: link.url || "",
@@ -1750,6 +1851,7 @@ function renderLinks() {
 
     // Delete event
     card.querySelector(".link-delete").addEventListener("click", () => {
+      if (isLockedDefault) return;
       const index = links.findIndex((item) => item.id === link.id);
       if (index > -1) {
         links.splice(index, 1);
@@ -1789,8 +1891,12 @@ function renderPreview() {
 function openModal(id = null) {
   editingId = id;
   const isEdit = Boolean(id);
-  elements.modalTitle.textContent = isEdit ? "Edit box" : "Add box";
   const link = links.find((item) => item.id === id);
+  if (link?.locked) {
+    editingId = null;
+    return;
+  }
+  elements.modalTitle.textContent = isEdit ? "Edit box" : "Add box";
   elements.linkForm.reset();
   if (elements.linkHasUrlToggle) {
     elements.linkHasUrlToggle.checked = link
@@ -1899,6 +2005,55 @@ async function downloadPreviewImage() {
 }
 
 function initEvents() {
+  if (elements.adPanel && elements.appShell) {
+    const syncAdPanelState = () => {
+      const isMobileAd = window.matchMedia("(max-width: 1024px), (hover: none), (pointer: coarse)").matches;
+      const isDismissed = sessionStorage.getItem("openlink_ad_panel_dismissed") === "true";
+      const shouldHide = isMobileAd && isDismissed;
+      elements.adPanel.classList.toggle("is-hidden", shouldHide);
+      elements.appShell.classList.toggle("is-ad-dismissed", !isMobileAd && shouldHide);
+    };
+    syncAdPanelState();
+    window.addEventListener("resize", syncAdPanelState);
+  }
+  if (elements.adPanelClose && elements.adPanel && elements.appShell) {
+    elements.adPanelClose.addEventListener("click", () => {
+      sessionStorage.setItem("openlink_ad_panel_dismissed", "true");
+      elements.adPanel.classList.add("is-hidden");
+      elements.appShell.classList.remove("is-ad-dismissed");
+    });
+  }
+  const setAdContactSheetOpen = (value) => {
+    elements.adContactSheet?.classList.toggle("is-open", value);
+    elements.adContactBackdrop?.classList.toggle("is-open", value);
+    elements.adContactSheet?.setAttribute("aria-hidden", String(!value));
+    elements.adContactBackdrop?.setAttribute("aria-hidden", String(!value));
+    if (value) {
+      window.setTimeout(() => elements.adContactEmail?.focus(), 120);
+    }
+  };
+  if (elements.adContactTrigger) {
+    elements.adContactTrigger.addEventListener("click", () => setAdContactSheetOpen(true));
+  }
+  if (elements.adContactClose) {
+    elements.adContactClose.addEventListener("click", () => setAdContactSheetOpen(false));
+  }
+  if (elements.adContactBackdrop) {
+    elements.adContactBackdrop.addEventListener("click", () => setAdContactSheetOpen(false));
+  }
+  if (elements.adContactForm) {
+    elements.adContactForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const email = elements.adContactEmail?.value.trim() || "";
+      const message = elements.adContactMessage?.value.trim() || "";
+      const subject = encodeURIComponent("OP4N.LINK contact");
+      const body = encodeURIComponent(`Email: ${email}\n\nMessage:\n${message}`);
+      if (elements.adContactNote) {
+        elements.adContactNote.textContent = "Opening your email app...";
+      }
+      window.location.href = `mailto:hello@op4n.link?subject=${subject}&body=${body}`;
+    });
+  }
   if (elements.addLinkFeatureBtn) {
     elements.addLinkFeatureBtn.addEventListener("click", openLinkModal);
   }
@@ -1950,6 +2105,11 @@ function initEvents() {
 
   elements.linkForm.addEventListener("submit", (event) => {
     event.preventDefault();
+    if (editingId && links.find((item) => item.id === editingId)?.locked) {
+      editingId = null;
+      closeModal();
+      return;
+    }
     const formData = new FormData(elements.linkForm);
     const urlValue = String(formData.get("url") || "").trim();
     const hasUrl = Boolean(urlValue);
@@ -2504,6 +2664,37 @@ function initTopbarTypewriter() {
   tick();
 }
 
+function initAdYouWord() {
+  const el = elements.adYouWord;
+  if (!el) return;
+
+  const words = [
+    "YOU",
+    "คุณ",
+    "你",
+    "당신",
+    "あなた",
+    "тебя",
+    "tú",
+    "te",
+    "toi",
+    "ʻoe",
+  ];
+  let index = 0;
+
+  window.setInterval(() => {
+    el.classList.add("is-exiting");
+    window.setTimeout(() => {
+      index = (index + 1) % words.length;
+      el.textContent = words[index];
+      el.classList.remove("is-exiting");
+      el.classList.add("is-entering");
+      void el.offsetHeight;
+      el.classList.remove("is-entering");
+    }, 350);
+  }, 2000);
+}
+
 function init() {
   if (FORCE_PROFILE_MOCK) {
     storage.set("wemint_profile", defaultProfile);
@@ -2520,6 +2711,7 @@ function init() {
   initNavAccordion();
   initBannerCycle();
   initTopbarTypewriter();
+  initAdYouWord();
   if (FORCE_PROFILE_MOCK) {
     openProfileModal();
   }

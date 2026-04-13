@@ -37,7 +37,7 @@
 
     <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
 
-    <div class="app-shell">
+    <div class="app-shell" id="appShell">
       <aside class="sidebar" id="sidebar">
         <nav class="nav">
           <div class="nav-section">
@@ -320,37 +320,55 @@
         </div>
       </main>
 
-      <aside class="preview">
-        <div class="preview-linkbar">
-          <span id="previewUsername">wemint.app/yours</span>
-          <div class="preview-linkbar-actions">
-            <button class="icon-btn" aria-label="Home">
-              <span class="material-symbols-outlined">home</span>
-            </button>
-            <button class="icon-btn" id="downloadPreviewBtn" aria-label="Download preview">
-              <span class="material-symbols-outlined">download</span>
-            </button>
+      <aside class="ad-panel" id="adPanel" aria-label="openlink Assist">
+        <div class="ad-panel-header">
+          <div class="ad-panel-title">
+            <span class="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
+            <span>openlink Assist</span>
+          </div>
+          <button class="ad-panel-close" id="adPanelClose" type="button" aria-label="Close ad panel">
+            <span class="material-symbols-outlined" aria-hidden="true">close</span>
+          </button>
+        </div>
+
+        <div class="ad-message-stack" aria-label="Message preview carousel">
+          <div class="ad-message-track">
+            <img src="message-icons/message1.png" alt="Message preview 1" />
+            <img src="message-icons/message2.png" alt="Message preview 2" />
+            <img src="message-icons/message3.png" alt="Message preview 3" />
+            <img src="message-icons/message4.png" alt="Message preview 4" />
+            <img src="message-icons/message5.png" alt="Message preview 5" />
+            <img src="message-icons/message6.png" alt="Message preview 6" />
+            <img src="message-icons/message1.png" alt="" aria-hidden="true" />
+            <img src="message-icons/message2.png" alt="" aria-hidden="true" />
+            <img src="message-icons/message3.png" alt="" aria-hidden="true" />
+            <img src="message-icons/message4.png" alt="" aria-hidden="true" />
+            <img src="message-icons/message5.png" alt="" aria-hidden="true" />
+            <img src="message-icons/message6.png" alt="" aria-hidden="true" />
           </div>
         </div>
-        <div class="phone">
-          <div class="phone-scroll">
-            <div class="phone-links" id="previewLinks"></div>
-            <div class="phone-footer-group">
-              <div class="phone-cta-text" id="previewCta">WEMINT.APP/YOU/&gt;_POST ANYTHING</div>
-            </div>
+
+        <div class="ad-panel-copy">
+          <h2><span class="ad-url-domain">OP4N.LINK/</span><span class="ad-you-word" id="adYouWord">YOU</span></h2>
+          <p>Turn any link into something shareable, trackable, and yours.</p>
+          <p class="ad-contact-line">More? <button class="ad-contact-trigger" id="adContactTrigger" type="button">Contact Us</button></p>
+        </div>
+
+        <div class="ad-contact-backdrop" id="adContactBackdrop" aria-hidden="true"></div>
+        <div class="ad-contact-sheet" id="adContactSheet" aria-hidden="true">
+          <div class="ad-contact-handle"></div>
+          <div class="ad-contact-head">
+            <span>Contact Us</span>
+            <button class="ad-contact-close" id="adContactClose" type="button" aria-label="Close contact form">
+              <span class="material-symbols-outlined" aria-hidden="true">close</span>
+            </button>
           </div>
-          <div class="phone-bottom-banner" id="previewInboxBanner"></div>
-          <div class="phone-sheet-backdrop" id="previewInboxSheetBackdrop"></div>
-          <div class="phone-bottom-sheet" id="previewInboxSheet">
-            <div class="sheet-handle"></div>
-            <div class="sheet-header">
-              <span id="previewInboxSheetTitle">Get in touch</span>
-              <button class="icon-btn-sm" type="button" id="previewInboxSheetClose" aria-label="Close form">
-                <span class="material-symbols-outlined">close</span>
-              </button>
-            </div>
-            <form class="sheet-form" id="previewInboxForm"></form>
-          </div>
+          <form class="ad-contact-form" id="adContactForm">
+            <input id="adContactEmail" name="email" type="email" placeholder="Your email" required />
+            <textarea id="adContactMessage" name="message" rows="3" placeholder="How can we contact you?" required></textarea>
+            <button type="submit">Open email draft</button>
+          </form>
+          <p class="ad-contact-note" id="adContactNote">We will open your email app.</p>
         </div>
       </aside>
     </div>

@@ -172,6 +172,10 @@ textarea {
   .banner-mark .material-symbols-outlined {
     animation: none;
   }
+
+  .ad-message-track {
+    animation: none;
+  }
 }
 
 /* ── App shell ── */
@@ -181,6 +185,10 @@ textarea {
   gap: 24px;
   padding: 20px 24px 24px;
   height: calc(100vh - 44px);
+}
+
+.app-shell.is-ad-dismissed {
+  grid-template-columns: 260px 1fr;
 }
 
 .app-shell.discover-layout {
@@ -739,6 +747,13 @@ textarea {
   background: var(--secondary);
 }
 
+.icon-btn-sm:disabled,
+.icon-btn-sm[aria-disabled="true"] {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .icon-btn-sm.is-active {
   background: var(--accent);
   color: #fff;
@@ -861,6 +876,329 @@ textarea {
   flex-shrink: 0;
   border: 1px solid var(--border);
   position: relative;
+}
+
+/* ── Ad panel ── */
+.ad-panel {
+  position: sticky;
+  top: 24px;
+  align-self: start;
+  max-height: calc(100vh - 48px);
+  min-height: 520px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  box-shadow: var(--shadow-sm);
+  padding: 24px 22px 72px;
+}
+
+.ad-panel.is-hidden {
+  display: none;
+}
+
+.ad-panel-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.ad-panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #1f2937;
+  font-size: 24px;
+  font-weight: 750;
+  line-height: 1.1;
+}
+
+.ad-panel-title .material-symbols-outlined {
+  color: #7c3aed;
+  font-size: 30px;
+  font-variation-settings: "FILL" 1, "wght" 500, "GRAD" 0, "opsz" 32;
+}
+
+.ad-panel-close {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #111827;
+  display: none;
+  place-items: center;
+  cursor: pointer;
+}
+
+.ad-panel-close:hover,
+.ad-panel-close:focus-visible {
+  background: var(--secondary);
+  outline: none;
+}
+
+.ad-panel-close .material-symbols-outlined {
+  font-size: 34px;
+  font-variation-settings: "wght" 300, "FILL" 0;
+}
+
+.ad-message-stack {
+  position: relative;
+  width: 100%;
+  height: min(48vh, 380px);
+  min-height: 260px;
+  margin-top: 22px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+}
+
+.ad-message-track {
+  display: grid;
+  gap: 10px;
+  animation: ad-message-scroll 18s linear infinite;
+}
+
+.ad-message-stack:hover .ad-message-track,
+.ad-message-stack:focus-within .ad-message-track {
+  animation-play-state: paused;
+}
+
+.ad-message-track img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  box-shadow: var(--shadow-xs);
+}
+
+.ad-panel-copy {
+  margin-top: auto;
+  padding-top: 28px;
+  display: grid;
+  gap: 7px;
+  text-align: center;
+}
+
+.ad-panel-copy h2 {
+  margin: 0 auto;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 8px 16px;
+  color: #1f2937;
+  font-family: "IBM Plex Mono", var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: 0;
+  box-shadow: var(--shadow-xs);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ad-url-domain {
+  color: #8a929f;
+}
+
+.ad-you-word {
+  display: inline-block;
+  min-width: 54px;
+  text-align: center;
+  transition: opacity 0.35s ease, transform 0.35s ease, filter 0.35s ease;
+  will-change: opacity, transform, filter;
+}
+
+.ad-you-word.is-exiting {
+  opacity: 0;
+  transform: translateY(-8px);
+  filter: blur(2px);
+}
+
+.ad-you-word.is-entering {
+  opacity: 0;
+  transform: translateY(8px);
+  filter: blur(2px);
+}
+
+.ad-panel-copy p {
+  margin: 0;
+  color: #5f6b7c;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.ad-contact-line {
+  color: #7a8494;
+}
+
+.ad-contact-trigger {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #111827;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 650;
+  line-height: inherit;
+  padding: 0 0 1px;
+  border-bottom: 1px solid #c7ccd4;
+  text-transform: none;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.ad-contact-trigger:hover,
+.ad-contact-trigger:focus-visible {
+  color: #000000;
+  border-color: #111827;
+  outline: none;
+}
+
+.ad-contact-backdrop {
+  position: absolute;
+  inset: 0;
+  background: hsl(0 0% 0% / 0.12);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 2;
+}
+
+.ad-contact-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ad-contact-sheet {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 50%;
+  z-index: 3;
+  display: grid;
+  gap: 10px;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 18px 48px hsl(0 0% 0% / 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%) scale(0.96);
+  transition: opacity 0.2s ease, transform 0.24s ease;
+}
+
+.ad-contact-sheet.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) scale(1);
+}
+
+.ad-contact-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 999px;
+  background: #d4d4d4;
+  justify-self: center;
+}
+
+.ad-contact-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--foreground);
+}
+
+.ad-contact-close {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--secondary);
+  color: var(--foreground);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.ad-contact-close .material-symbols-outlined {
+  font-size: 20px;
+}
+
+.ad-contact-form {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.ad-contact-form input,
+.ad-contact-form textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--foreground);
+  font-size: 13px;
+  line-height: 1.35;
+  padding: 10px 12px;
+  box-shadow: var(--shadow-xs);
+}
+
+.ad-contact-form textarea {
+  resize: none;
+}
+
+.ad-contact-form input:focus-visible,
+.ad-contact-form textarea:focus-visible {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 25%, transparent);
+}
+
+.ad-contact-form button {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 10px 12px;
+}
+
+.ad-contact-form button:hover,
+.ad-contact-form button:focus-visible {
+  background: #000000;
+  outline: none;
+}
+
+.ad-contact-note {
+  margin: 0;
+  color: #5f6b7c;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+@keyframes ad-message-scroll {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
 }
 
 .profile-avatar.has-image .avatar-icon,
@@ -3169,6 +3507,44 @@ textarea {
     height: auto;
   }
 
+  .ad-panel {
+    position: fixed;
+    inset: auto 14px 14px;
+    z-index: 40;
+    display: flex;
+    width: auto;
+    max-height: 360px;
+    min-height: 0;
+    padding: 14px;
+    gap: 12px;
+    border-radius: 18px;
+    box-shadow: 0 24px 80px hsl(0 0% 0% / 0.24);
+  }
+
+  .ad-panel-close {
+    display: grid;
+  }
+
+  .ad-panel-header {
+    display: flex;
+  }
+
+  .ad-panel-title {
+    display: none;
+    font-size: 18px;
+  }
+
+  .ad-message-stack {
+    height: 168px;
+    min-height: 168px;
+    margin-top: 8px;
+  }
+
+  .ad-panel-copy {
+    display: grid;
+    margin-top: 0;
+  }
+
   .preview {
     display: flex;
     position: relative;
@@ -3221,6 +3597,45 @@ textarea {
 
   .main {
     padding: 16px;
+  }
+
+  .ad-panel {
+    position: fixed;
+    inset: auto 14px 14px;
+    z-index: 40;
+    display: flex;
+    width: auto;
+    max-height: 360px;
+    min-height: 0;
+    padding: 14px;
+    gap: 12px;
+    border-radius: 18px;
+    box-shadow: 0 24px 80px hsl(0 0% 0% / 0.24);
+  }
+
+  .ad-panel-close {
+    display: grid;
+  }
+
+  .ad-panel-header {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .ad-panel-title {
+    display: none;
+    font-size: 18px;
+  }
+
+  .ad-message-stack {
+    height: 168px;
+    min-height: 168px;
+    margin-top: 8px;
+  }
+
+  .ad-panel-copy {
+    display: grid;
+    margin-top: 0;
   }
 
   .preview-linkbar {
