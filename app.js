@@ -47,13 +47,18 @@ const links = Array.isArray(savedLinks)
 const socialLinks = storage.get("wemint_social_links", {});
 
 if (Array.isArray(links)) {
+  const existingCodes = new Set();
   links.forEach((link) => {
     const nextUrl = String(link?.url || "").trim();
     const nextHasUrl = typeof link?.hasUrl === "boolean" ? link.hasUrl : Boolean(nextUrl);
     link.url = nextHasUrl ? nextUrl : "";
     link.hasUrl = nextHasUrl;
     link.thumbnail = sanitizeRetiredAssetPath(link?.thumbnail);
+    if (String(link.shortCode || "").trim()) {
+      existingCodes.add(String(link.shortCode).trim());
+    }
   });
+  links.forEach((link) => ensureShortCode(link, existingCodes));
   if (savedLinks.length !== links.length) {
     storage.set("wemint_links", links);
   }
@@ -164,6 +169,33 @@ function prettyFieldType(type) {
   return map[type] || "Short answer";
 }
 
+function createShortCode(length = 7) {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const values = new Uint32Array(length);
+  crypto.getRandomValues(values);
+  return Array.from(values, (value) => chars[value % chars.length]).join("");
+}
+
+function ensureShortCode(link, existingCodes = new Set()) {
+  if (!link) return "";
+  let nextCode = String(link.shortCode || "").trim();
+  if (nextCode) {
+    existingCodes.add(nextCode);
+    return nextCode;
+  }
+  do {
+    nextCode = createShortCode();
+  } while (existingCodes.has(nextCode));
+  existingCodes.add(nextCode);
+  link.shortCode = nextCode;
+  return nextCode;
+}
+
+function getShortLink(link) {
+  const code = String(link.shortCode || "").trim();
+  return code ? `https://op4n.link/${escapeHTML(code)}` : "";
+}
+
 function isChoiceType(type) {
   return type === "single_choice" || type === "checkboxes" || type === "dropdown";
 }
@@ -202,6 +234,7 @@ const elements = {
   linkHasUrlToggle: document.getElementById("linkHasUrlToggle"),
   linkUrlField: document.getElementById("linkUrlField"),
   linkUrl: document.getElementById("linkUrl"),
+  addLinkFeatureBtn: document.getElementById("addLinkFeatureBtn"),
   addLinkBtn: document.getElementById("addLinkBtn"),
   topbarAddBtn: document.getElementById("topbarAddBtn"),
   sidebarAddBtn: document.getElementById("sidebarAddBtn"),
@@ -1547,11 +1580,11 @@ function renderLinks() {
 
     const safeTitle = escapeHTML(link.title);
     const hasUrl = Boolean(typeof link.hasUrl === "boolean" ? link.hasUrl : link.url);
-    const safeUrl = hasUrl ? escapeHTML(link.url) : "No URL";
+    const safeUrl = hasUrl ? escapeHTML(link.url) : "No destination URL";
     const displayUrl = hasUrl
       ? (link.url.length > 45 ? escapeHTML(link.url.substring(0, 45) + "...") : safeUrl)
       : safeUrl;
-
+    const shortLink = getShortLink(link);
     const isLayoutOpen = openLayoutId === link.id;
 
     card.innerHTML = `
@@ -1564,6 +1597,12 @@ function renderLinks() {
             <span class="link-title">${safeTitle}</span>
             <button class="icon-btn-sm edit-title-btn" aria-label="Edit title">
               <span class="material-symbols-outlined">edit</span>
+            </button>
+          </div>
+          <div class="link-short-row">
+            <a class="link-short-url" href="${shortLink}" target="_blank" rel="noopener noreferrer">${shortLink}</a>
+            <button class="icon-btn-sm copy-link-btn" type="button" aria-label="Copy link">
+              <span class="material-symbols-outlined">content_copy</span>
             </button>
           </div>
           <div class="link-url-row">
@@ -1666,6 +1705,20 @@ function renderLinks() {
             renderPreview();
           },
         });
+      });
+    }
+
+    const copyLinkBtn = card.querySelector(".copy-link-btn");
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener("click", () => {
+        const shortLinkText = shortLink;
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+          navigator.clipboard.writeText(shortLinkText).catch(() => {
+            prompt("Copy link", shortLinkText);
+          });
+        } else {
+          prompt("Copy link", shortLinkText);
+        }
       });
     }
 
@@ -1802,6 +1855,17 @@ function openModal(id = null) {
   elements.linkModal.classList.add("is-open");
 }
 
+function openLinkModal() {
+  editingId = null;
+  elements.modalTitle.textContent = "Add link";
+  elements.linkForm.reset();
+  if (elements.linkHasUrlToggle) {
+    elements.linkHasUrlToggle.checked = true;
+  }
+  updateLinkUrlVisibility();
+  elements.linkModal.classList.add("is-open");
+}
+
 function closeModal() {
   elements.linkModal.classList.remove("is-open");
 }
@@ -1885,7 +1949,12 @@ async function downloadPreviewImage() {
 }
 
 function initEvents() {
-  elements.addLinkBtn.addEventListener("click", () => openModal());
+  if (elements.addLinkFeatureBtn) {
+    elements.addLinkFeatureBtn.addEventListener("click", openLinkModal);
+  }
+  if (elements.addLinkBtn) {
+    elements.addLinkBtn.addEventListener("click", () => openModal());
+  }
   if (elements.topbarAddBtn) {
     elements.topbarAddBtn.addEventListener("click", openProfileModal);
   }
@@ -1895,21 +1964,28 @@ function initEvents() {
   if (elements.sidebarAddBtn) {
     elements.sidebarAddBtn.addEventListener("click", () => openModal());
   }
-  elements.closeModalBtn.addEventListener("click", closeModal);
-  elements.linkModal.addEventListener("click", (event) => {
-    if (event.target === elements.linkModal) closeModal();
-  });
+  if (elements.closeModalBtn) {
+    elements.closeModalBtn.addEventListener("click", closeModal);
+  }
+  if (elements.linkModal) {
+    elements.linkModal.addEventListener("click", (event) => {
+      if (event.target === elements.linkModal) closeModal();
+    });
+  }
 
   elements.linkForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const formData = new FormData(elements.linkForm);
-    const hasUrl = Boolean(elements.linkHasUrlToggle?.checked);
-    const urlValue = hasUrl ? String(formData.get("url") || "").trim() : "";
+    const urlValue = String(formData.get("url") || "").trim();
+    const hasUrl = Boolean(urlValue);
     const linkData = {
       id: editingId || crypto.randomUUID(),
       title: formData.get("title"),
       hasUrl,
       url: urlValue,
+      shortCode: editingId
+        ? links.find((item) => item.id === editingId)?.shortCode || createShortCode()
+        : createShortCode(),
       thumbnail: editingId ? links.find((item) => item.id === editingId)?.thumbnail || "" : "",
       featured: false,
       enabled: true,
@@ -1926,7 +2002,6 @@ function initEvents() {
     saveAll();
     renderLinks();
     renderPreview();
-    closeModal();
   });
 
   if (elements.linkHasUrlToggle) {

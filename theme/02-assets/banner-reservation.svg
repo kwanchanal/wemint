@@ -1,9 +1,0 @@
-<svg width="600" height="300" viewBox="0 0 600 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="600" height="300" rx="20" fill="#EDE4DA"/>
-  <rect x="56" y="56" width="168" height="188" rx="16" fill="#2D2521"/>
-  <circle cx="140" cy="102" r="22" fill="#CBAA6C"/>
-  <path d="M104 166H176" stroke="#F4E8D5" stroke-width="10" stroke-linecap="round"/>
-  <path d="M104 194H162" stroke="#F4E8D5" stroke-width="10" stroke-linecap="round"/>
-  <text x="256" y="126" fill="#3B2B24" font-family="Arial, sans-serif" font-size="34" font-weight="700">Table Booking</text>
-  <text x="256" y="166" fill="#6A4D40" font-family="Arial, sans-serif" font-size="22">Chef's counter available</text>
-</svg>

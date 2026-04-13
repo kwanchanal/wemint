@@ -1,9 +1,0 @@
-<svg width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="320" height="320" rx="24" fill="#FFF0D9"/>
-  <circle cx="100" cy="138" r="44" fill="#FFB36A"/>
-  <path d="M82 138H118" stroke="#7F4525" stroke-width="8" stroke-linecap="round"/>
-  <path d="M160 96H268" stroke="#A36D45" stroke-width="10" stroke-linecap="round"/>
-  <path d="M160 136H250" stroke="#C48A5A" stroke-width="8" stroke-linecap="round"/>
-  <path d="M160 176H228" stroke="#D7A57A" stroke-width="8" stroke-linecap="round"/>
-  <text x="24" y="286" fill="#8A5E3A" font-family="Arial, sans-serif" font-size="30" font-weight="700">1:1 Coaching</text>
-</svg>

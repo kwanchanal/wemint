@@ -47,11 +47,11 @@
             </a>
           </div>
           <div class="nav-section">
-            <button class="nav-title" type="button">Main</button>
+            <button class="nav-title" type="button">Home</button>
             <div class="nav-items">
               <a class="nav-link is-active" href="index.html" aria-current="page">
                 <span class="material-symbols-outlined nav-icon">badge</span>
-                Homepage
+                Links
               </a>
             </div>
           </div>
@@ -64,7 +64,7 @@
               </button>
               <button class="nav-link">
                 <span class="material-symbols-outlined nav-icon">chat</span>
-                Inbox
+                Pages
               </button>
             </div>
           </div>
@@ -72,14 +72,8 @@
             <button class="nav-title" type="button">Tools</button>
             <div class="nav-items">
               <button class="nav-link">
-                <span class="material-symbols-outlined nav-icon">link</span>
-                Link Shortener
-                <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
-              </button>
-              <button class="nav-link">
-                <span class="material-symbols-outlined nav-icon">travel_explore</span>
-                SEO
-                <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
+                <span class="material-symbols-outlined nav-icon">settings</span>
+                Setting
               </button>
             </div>
           </div>
@@ -93,43 +87,228 @@
 
       </aside>
 
-      <main class="main canvas-main">
-        <div class="canvas-area" id="canvasArea">
-          <div class="canvas-elements" id="canvasElements"></div>
-        </div>
-        <div class="canvas-toolbar">
-          <div class="canvas-toolbar-group">
-            <button class="canvas-tool-btn is-active" data-tool="select" title="Select">
-              <span class="material-symbols-outlined">near_me</span>
-            </button>
-            <button class="canvas-tool-btn" data-tool="hand" title="Hand">
-              <span class="material-symbols-outlined">back_hand</span>
-            </button>
-          </div>
-          <div class="canvas-toolbar-divider"></div>
-          <div class="canvas-toolbar-group">
-            <button class="canvas-tool-btn" id="addTextBtn" data-type="text" title="Text">
-              <span class="material-symbols-outlined">title</span>
-            </button>
-            <button class="canvas-tool-btn" id="addBoxBtn" data-type="box" title="Box">
-              <span class="material-symbols-outlined">check_box_outline_blank</span>
-            </button>
-            <button class="canvas-tool-btn" id="addImageBtn" data-type="image" title="Image">
-              <span class="material-symbols-outlined">image</span>
-            </button>
-            <button class="canvas-tool-btn" id="addLinkBtn" data-type="link" title="Link">
-              <span class="material-symbols-outlined">link</span>
-            </button>
-            <button class="canvas-tool-btn" id="addVideoBtn" data-type="video" title="Video">
-              <span class="material-symbols-outlined">play_circle</span>
-            </button>
-          </div>
-          <div class="canvas-toolbar-divider"></div>
-          <div class="canvas-toolbar-group">
-            <button class="canvas-tool-btn" id="topbarAddBtn" title="More">
-              <span class="material-symbols-outlined">add</span>
-            </button>
-          </div>
+      <main class="main">
+        <div class="main-scroll">
+          <header class="topbar">
+            <div class="topbar-row topbar-row--menu">
+              <div class="topbar-actions">
+                <button class="icon-btn" id="sidebarToggle" type="button" aria-label="Toggle sidebar">
+                  <span class="material-symbols-outlined">menu</span>
+                </button>
+              </div>
+            </div>
+            <div class="topbar-row">
+              <div class="page-title-group">
+                <div class="page-title">Hello,</div>
+                <button class="pill-dashed" id="topbarAddBtn" type="button">
+                  <span class="pill-icon">+</span>
+                  Tell The Word What You Do
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <section class="profile-card">
+            <div class="profile-avatar" id="profileAvatar">
+              <svg class="avatar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+                <path d="M360-390q-21 0-35.5-14.5T310-440q0-21 14.5-35.5T360-490q21 0 35.5 14.5T410-440q0 21-14.5 35.5T360-390Zm240 0q-21 0-35.5-14.5T550-440q0-21 14.5-35.5T600-490q21 0 35.5 14.5T650-440q0 21-14.5 35.5T600-390ZM480-160q134 0 227-93t93-227q0-24-3-46.5T786-570q-21 5-42 7.5t-44 2.5q-91 0-172-39T390-708q-32 78-91.5 135.5T160-486v6q0 134 93 227t227 93Zm0 80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm-54-715q42 70 114 112.5T700-640q14 0 27-1.5t27-3.5q-42-70-114-112.5T480-800q-14 0-27 1.5t-27 3.5ZM177-581q51-29 89-75t57-103q-51 29-89 75t-57 103Zm249-214Zm-103 36Z"/>
+              </svg>
+            </div>
+            <div class="profile-info">
+              <div class="profile-line">
+                <h2 id="profileName">Kwanchanal Geographic</h2>
+                <button class="icon-btn-sm" id="editProfileBtn" aria-label="Edit profile">
+                  <span class="material-symbols-outlined">edit</span>
+                </button>
+              </div>
+              <div class="profile-meta" id="profileMeta">Bio-native creator · Bangkok</div>
+              <div class="profile-icons" id="profileSocialIcons">
+                <button class="social-slot" type="button" data-platform="instagram" data-label="Instagram">
+                  <span class="social-emoji">📸</span>
+                  <span class="social-plus">+</span>
+                </button>
+                <button class="social-slot" type="button" data-platform="tiktok" data-label="TikTok">
+                  <span class="social-emoji">🎵</span>
+                  <span class="social-plus">+</span>
+                </button>
+                <button class="social-slot" type="button" data-platform="youtube" data-label="YouTube">
+                  <span class="social-emoji">📺</span>
+                  <span class="social-plus">+</span>
+                </button>
+                <button class="social-slot" type="button" data-platform="x" data-label="X">
+                  <span class="social-emoji">🐤</span>
+                  <span class="social-plus">+</span>
+                </button>
+                <button class="social-slot" type="button" data-platform="facebook" data-label="Facebook">
+                  <span class="social-emoji">📘</span>
+                  <span class="social-plus">+</span>
+                </button>
+                <button class="social-slot" type="button" data-platform="discord" data-label="Discord">
+                  <span class="social-emoji">🎧</span>
+                  <span class="social-plus">+</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-card">
+            <form class="link-entry-form" id="linkForm">
+              <div class="field">
+                <label for="linkTitle">Title</label>
+                <input id="linkTitle" name="title" type="text" placeholder="Link title" />
+              </div>
+              <div class="field">
+                <label for="linkUrl">URL</label>
+                <input id="linkUrl" name="url" type="url" placeholder="https://example.com" />
+              </div>
+              <button class="cta" type="submit">+ Make Link</button>
+            </form>
+          </section>
+
+          <section class="inbox-section" id="inboxSection">
+            <div class="inbox-section-header">
+              <button class="inbox-header-left" type="button" aria-label="Reorder inbox section">
+                <span class="material-symbols-outlined">drag_indicator</span>
+                <span>Inbox</span>
+              </button>
+              <div class="inbox-header-actions">
+                <button class="icon-btn-sm" type="button" aria-label="Add">
+                  <span class="material-symbols-outlined">add</span>
+                </button>
+                <button class="icon-btn-sm" type="button" aria-label="Download">
+                  <span class="material-symbols-outlined">download</span>
+                </button>
+                <button class="icon-btn-sm" type="button" aria-label="Help">
+                  <span class="material-symbols-outlined">help</span>
+                </button>
+                <label class="switch">
+                  <input type="checkbox" id="inboxSwitch" checked />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="link-card inbox-card">
+              <div class="link-row">
+                <div class="link-info">
+                  <div class="link-title-row">
+                    <span class="link-title" id="inboxTitle">Get in touch</span>
+                    <button class="icon-btn-sm" id="inboxEditBtn" aria-label="Edit title">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="link-meta-row">
+                <div class="link-tool-icons">
+                  <button class="icon-btn-sm layout-toggle-btn inbox-layout-btn" id="inboxLayoutBtn" aria-label="Layout">
+                    <span class="material-symbols-outlined">grid_view</span>
+                  </button>
+                  <button class="icon-btn-sm" aria-label="Email">
+                    <span class="material-symbols-outlined">mail</span>
+                  </button>
+                  <button class="icon-btn-sm" aria-label="Favorite">
+                    <span class="material-symbols-outlined">star</span>
+                  </button>
+                  <button class="icon-btn-sm" aria-label="Copy">
+                    <span class="material-symbols-outlined">content_copy</span>
+                  </button>
+                  <button class="icon-btn-sm" aria-label="Lock">
+                    <span class="material-symbols-outlined">lock</span>
+                  </button>
+                  <span class="link-stats">
+                    <span class="material-symbols-outlined">bar_chart</span>
+                    0 clicks
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="inbox-panel" id="inboxPanel">
+              <div class="layout-bar">
+                <h3>Layout</h3>
+                <button class="icon-btn" type="button" id="inboxCloseBtn" aria-label="Close panel">
+                  <span class="material-symbols-outlined">close</span>
+                </button>
+              </div>
+              <div class="layout-tabs" role="tablist">
+                <button class="layout-tab is-active" type="button" data-inbox-tab="forms" aria-selected="true">
+                  Forms
+                </button>
+                <button class="layout-tab" type="button" data-inbox-tab="layout" aria-selected="false">
+                  Layout
+                </button>
+              </div>
+              <div class="layout-body inbox-tab-panel is-active" data-inbox-panel="forms">
+                <div class="inbox-panel-title">Forms</div>
+                <div class="inbox-panel-desc">Receive messages and collect information from your visitors</div>
+                <button class="inbox-primary-btn" id="inboxEditFormBtn" type="button">Edit form</button>
+                <div class="inbox-panel-subtitle">Incoming responses</div>
+                <div class="inbox-panel-desc">Take action in the way that suits you</div>
+                <div class="inbox-action-list">
+                  <button class="inbox-action" type="button">
+                    <span class="material-symbols-outlined">mail</span>
+                    <span>Get notified by email</span>
+                    <span class="material-symbols-outlined">chevron_right</span>
+                  </button>
+                  <button class="inbox-action" type="button">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>Manage contacts</span>
+                    <span class="material-symbols-outlined">chevron_right</span>
+                  </button>
+                  <button class="inbox-action" type="button">
+                    <span class="material-symbols-outlined">hub</span>
+                    <span>Sync to other platforms</span>
+                    <span class="material-symbols-outlined">chevron_right</span>
+                  </button>
+                </div>
+              </div>
+              <div class="layout-body inbox-tab-panel" data-inbox-panel="layout">
+                <p class="muted">Choose a layout for your link</p>
+                <div class="layout-options" id="inboxLayoutBody"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="inbox-section banner-section" id="bannerSection">
+            <div class="inbox-section-header">
+              <button class="inbox-header-left" type="button" aria-label="Banner feature">
+                <span class="material-symbols-outlined">drag_indicator</span>
+                <span>Banner</span>
+              </button>
+              <div class="inbox-header-actions">
+                <button class="icon-btn-sm" id="bannerAddBtn" type="button" aria-label="Add banner item">
+                  <span class="material-symbols-outlined">add</span>
+                </button>
+                <button class="icon-btn-sm" type="button" aria-label="Help">
+                  <span class="material-symbols-outlined">help</span>
+                </button>
+                <label class="switch">
+                  <input type="checkbox" id="bannerSwitch" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="banner-note" id="bannerRequirementNote">
+              Add at least 3 banners to enable infinite slide in preview.
+            </div>
+            <div class="banner-items" id="bannerItemsList"></div>
+          </section>
+
+          <section class="links" id="linksList"></section>
+
+          <section class="footer-toggle">
+            <div>
+              <div class="footer-title">wemint.link footer</div>
+            </div>
+            <div class="footer-actions">
+            <label class="switch">
+              <input type="checkbox" id="footerSwitch" checked />
+              <span class="slider"></span>
+            </label>
+              <div class="upgrade-tooltip" id="footerUpgradeTip">Upgrade to Unlock</div>
+            </div>
+          </section>
         </div>
       </main>
 
@@ -168,37 +347,6 @@
       </aside>
     </div>
 
-    <div class="modal" id="linkModal" aria-hidden="true">
-      <div class="modal-card">
-        <div class="modal-header">
-          <h3 id="modalTitle">Add box</h3>
-          <button class="icon-btn" id="closeModalBtn">
-            <span class="material-symbols-outlined">close</span>
-          </button>
-        </div>
-        <form id="linkForm">
-          <div class="field">
-            <label for="linkTitle">Title</label>
-            <input id="linkTitle" name="title" type="text" required />
-          </div>
-          <div class="field">
-            <div class="field-head">
-              <label for="linkHasUrlToggle">Add URL</label>
-              <label class="switch switch-sm">
-                <input id="linkHasUrlToggle" type="checkbox" checked />
-                <span class="slider"></span>
-              </label>
-            </div>
-            <p class="field-hint toggle-hint">Turn off if this box should display without a URL.</p>
-          </div>
-          <div class="field" id="linkUrlField">
-            <label for="linkUrl">URL</label>
-            <input id="linkUrl" name="url" type="url" required placeholder="https://" />
-          </div>
-          <button class="primary" type="submit">Save</button>
-        </form>
-      </div>
-    </div>
 
     <div class="modal" id="profileModal" aria-hidden="true">
       <div class="modal-card">

@@ -1,6 +1,0 @@
-<svg width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="320" height="320" rx="24" fill="#E5F4FF"/>
-  <path d="M30 230L118 134L164 186L216 126L292 230V320H30V230Z" fill="#5D7F96"/>
-  <path d="M120 132L164 186" stroke="#FDFEFF" stroke-width="8" stroke-linecap="round"/>
-  <text x="26" y="286" fill="#34556C" font-family="Arial, sans-serif" font-size="29" font-weight="700">Free Route Guide</text>
-</svg>

@@ -1,9 +1,0 @@
-<svg width="600" height="300" viewBox="0 0 600 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="600" height="300" rx="20" fill="#E8F5E8"/>
-  <circle cx="108" cy="154" r="62" fill="#2F5D50"/>
-  <path d="M108 108V200" stroke="#DFF7E4" stroke-width="14" stroke-linecap="round"/>
-  <path d="M72 146H144" stroke="#DFF7E4" stroke-width="14" stroke-linecap="round"/>
-  <rect x="206" y="86" width="324" height="132" rx="16" fill="#F7FFF6" stroke="#9CC9A4"/>
-  <text x="228" y="142" fill="#1F4A2B" font-family="Arial, sans-serif" font-size="30" font-weight="700">Gear Review Pack</text>
-  <text x="228" y="177" fill="#4E7C59" font-family="Arial, sans-serif" font-size="20">Shoes, chalk, quickdraws</text>
-</svg>
