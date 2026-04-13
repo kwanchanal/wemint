@@ -109,16 +109,6 @@ textarea {
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
 }
 
-@media (max-width: 1024px), (hover: none), (pointer: coarse) {
-  .desktop-only-notice {
-    display: grid;
-  }
-
-  body.dashboard {
-    overflow: hidden;
-  }
-}
-
 /* ── Top banner ── */
 .top-banner {
   background: var(--primary);
@@ -705,17 +695,21 @@ textarea {
   display: none;
 }
 
-/* ── Buttons ── */
-.icon-btn {
-  border: 1px solid var(--border);
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 8px 10px;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--shadow-xs);
+.intro-copy {
+  padding: 2px 0 0;
+  margin: 0 0 0 0;
+}
+
+.intro-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.form-card {
+  margin-top: 0;
+}
 }
 
 .icon-btn:disabled {
@@ -785,15 +779,15 @@ textarea {
 .pill-dashed .pill-icon {
   width: 26px;
   height: 26px;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   background: var(--primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   font-size: 15px;
   font-weight: 700;
   line-height: 1;
-  padding-bottom: 1px;
+  padding: 0;
   color: var(--primary-foreground);
   box-shadow: var(--shadow-xs);
 }
@@ -3152,11 +3146,12 @@ textarea {
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 1024px), (hover: none), (pointer: coarse) {
   .app-shell {
     grid-template-columns: 1fr;
     padding: 12px;
     gap: 16px;
+    height: auto;
   }
 
   .sidebar {
@@ -3169,6 +3164,8 @@ textarea {
     transform: translateX(-100%);
     transition: transform 0.25s ease;
     z-index: 30;
+    max-height: 100vh;
+    overflow: auto;
   }
 
   .sidebar.is-open {
@@ -3241,6 +3238,20 @@ textarea {
   .thumbnail-row {
     flex-wrap: wrap;
   }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .topbar-row {
+    justify-content: space-between;
+  }
+
+  .topbar-row--menu {
+    display: flex;
+  }
 }
 
 @media (max-height: 760px) {
@@ -3258,16 +3269,3 @@ textarea {
     padding-bottom: 8px;
   }
 }
-  .topbar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-
-  .topbar-row {
-    justify-content: space-between;
-  }
-
-  .topbar-row--menu {
-    display: flex;
-  }

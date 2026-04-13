@@ -1956,10 +1956,35 @@ function initEvents() {
     elements.addLinkBtn.addEventListener("click", () => openModal());
   }
   if (elements.topbarAddBtn) {
-    elements.topbarAddBtn.addEventListener("click", openProfileModal);
+    elements.topbarAddBtn.addEventListener("click", () => {
+      const linkTitle = document.getElementById("linkTitle");
+      if (linkTitle) {
+        linkTitle.focus({ preventScroll: true });
+        linkTitle.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    });
   }
   if (elements.downloadPreviewBtn) {
     elements.downloadPreviewBtn.addEventListener("click", downloadPreviewImage);
+  }
+  if (elements.sidebarToggle && elements.sidebar && elements.sidebarOverlay) {
+    const openSidebar = () => {
+      elements.sidebar.classList.add("is-open");
+      elements.sidebarOverlay.classList.add("is-visible");
+    };
+    const closeSidebar = () => {
+      elements.sidebar.classList.remove("is-open");
+      elements.sidebarOverlay.classList.remove("is-visible");
+    };
+
+    elements.sidebarToggle.addEventListener("click", () => {
+      if (elements.sidebar.classList.contains("is-open")) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+    elements.sidebarOverlay.addEventListener("click", closeSidebar);
   }
   if (elements.sidebarAddBtn) {
     elements.sidebarAddBtn.addEventListener("click", () => openModal());
@@ -2455,8 +2480,8 @@ function initNavAccordion() {
 
 function initBannerCycle() {
   const messages = [
-    "WeMint — Make Anything",
-    "Open For Bespoke Design Service",
+    "OP4N.LINK/YOU",
+    "OPEN FOR BESPOKE LINK DESIGN",
   ];
   const el = elements.bannerText;
   if (!el) return;
