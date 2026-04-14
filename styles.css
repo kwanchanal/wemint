@@ -3789,7 +3789,7 @@ textarea {
     background: none;
     cursor: pointer;
     flex-shrink: 0;
-    padding: 4px 0 0;
+    padding: 0;
     width: 100%;
   }
 
@@ -3810,8 +3810,8 @@ textarea {
     width: 100%;
     max-height: 88vh;
     min-height: 0;
-    padding: 10px 20px 32px;
-    gap: 14px;
+    padding: 8px 20px 32px;
+    gap: 8px;
     border-radius: 24px 24px 0 0;
     box-shadow: 0 -8px 40px hsl(0 0% 0% / 0.14);
     overflow: hidden;
@@ -3859,6 +3859,7 @@ textarea {
   .ad-panel-copy {
     display: grid;
     margin-top: 0;
+    padding-top: 0;
   }
 
   .preview {
@@ -3937,6 +3938,7 @@ textarea {
   .ad-panel-copy {
     display: grid;
     margin-top: 0;
+    padding-top: 0;
   }
 
   .preview-linkbar {
@@ -3953,7 +3955,7 @@ textarea {
 
   .link-card {
     position: relative;
-    padding-right: 60px;
+    padding-right: 50px;
   }
 
   .link-row {
@@ -3964,13 +3966,29 @@ textarea {
   .link-right {
     position: absolute;
     top: 18px;
-    right: 18px;
+    right: 14px;
+  }
+
+  .link-right .switch {
+    width: 40px;
+    height: 22px;
+  }
+
+  .link-right .slider::before {
+    width: 16px;
+    height: 16px;
+    left: 3px;
+    bottom: 3px;
+  }
+
+  .link-right .switch input:checked + .slider::before {
+    transform: translateX(18px);
   }
 
   .link-meta-row {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    flex-wrap: nowrap;
     gap: 6px;
     overflow: hidden;
   }
@@ -3993,10 +4011,15 @@ textarea {
   }
 
   .link-delete {
+    display: inline-flex !important;
     flex-shrink: 0;
+    justify-self: end;
   }
 
-  .link-url {
+  .link-url,
+  .link-short-url {
+    display: block;
+    min-width: 0;
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
@@ -4005,9 +4028,17 @@ textarea {
 
   .link-url-row,
   .link-short-row {
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
     overflow: hidden;
     min-width: 0;
+  }
+
+  .copy-link-btn,
+  .edit-url-btn {
+    justify-self: end;
+    flex-shrink: 0;
   }
 
   .layout-option {
