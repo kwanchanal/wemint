@@ -544,10 +544,37 @@ textarea {
   border-radius: 16px;
 }
 
+.discover-mobile-header {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.discover-mobile-copy p {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.discover-mobile-copy span {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.2;
+}
+
 .canvas-area {
   position: relative;
   width: 100%;
   height: 100%;
+  flex: 1;
+  min-height: 0;
   overflow: auto;
   background-color: #f7f7f6;
   background-image: radial-gradient(circle, #d4d4d0 1px, transparent 1px);
@@ -3916,6 +3943,54 @@ textarea {
     padding: 0;
   }
 
+  .app-shell.discover-layout {
+    grid-template-columns: 1fr;
+    height: calc(100vh - 64px);
+    min-height: 620px;
+    gap: 0;
+  }
+
+  .discover-layout .canvas-main {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .discover-mobile-header {
+    display: flex;
+  }
+
+  .discover-layout .canvas-area {
+    min-height: 0;
+  }
+
+  .discover-layout .canvas-toolbar {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    max-width: calc(100vw - 48px);
+    transform: none;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 6px;
+    border-radius: 12px;
+    scrollbar-width: none;
+  }
+
+  .discover-layout .canvas-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .discover-layout .canvas-toolbar-group {
+    flex-shrink: 0;
+  }
+
+  .discover-layout .canvas-tool-btn {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+  }
+
   .ad-panel-close {
     display: none;
   }
@@ -4082,6 +4157,29 @@ textarea {
   .topbar-row--menu {
     display: flex;
     width: fit-content;
+  }
+}
+
+@media (max-width: 520px) {
+  .app-shell.discover-layout {
+    padding: 8px;
+    height: calc(100vh - 56px);
+    min-height: 560px;
+  }
+
+  .discover-layout .canvas-main {
+    border-radius: 18px;
+  }
+
+  .discover-layout .canvas-toolbar {
+    max-width: calc(100vw - 32px);
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .discover-layout .canvas-toolbar-divider {
+    margin: 0 4px;
   }
 }
 

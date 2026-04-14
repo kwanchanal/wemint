@@ -156,8 +156,33 @@
 
       @media (max-width: 720px) {
         .discover-gallery {
-          padding: 20px;
+          padding: 16px;
           grid-template-columns: 1fr;
+          gap: 16px;
+        }
+
+        .showcase-card {
+          border-radius: 20px;
+          padding: 12px;
+        }
+
+        .showcase-card-visual {
+          min-height: 190px;
+          border-radius: 16px;
+          padding: 14px;
+        }
+
+        .showcase-card-ticket {
+          max-width: 220px;
+        }
+
+        .showcase-card-title {
+          font-size: 26px;
+        }
+
+        .showcase-card-meta {
+          flex-wrap: wrap;
+          gap: 6px;
         }
       }
     </style>
@@ -223,6 +248,15 @@
       </aside>
 
       <main class="main canvas-main" aria-label="Discover workspace">
+        <header class="discover-mobile-header">
+          <button class="icon-btn" id="sidebarToggle" type="button" aria-label="Toggle sidebar" aria-expanded="false">
+            <span class="material-symbols-outlined">menu</span>
+          </button>
+          <div class="discover-mobile-copy">
+            <p>Discover</p>
+            <span>Explore open boards</span>
+          </div>
+        </header>
         <div class="canvas-area">
           <section class="discover-gallery" aria-label="Showcase gallery">
           </section>
@@ -268,6 +302,9 @@
       (function () {
         const messages = ["WeMint — Make Anything", "Open For Bespoke Design Service"];
         const el = document.getElementById("bannerText");
+        const sidebar = document.getElementById("sidebar");
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
         let index = 0;
         setInterval(() => {
           el.style.animation = "banner-slide-up-out 0.4s ease forwards";
@@ -277,6 +314,25 @@
             el.style.animation = "banner-slide-up-in 0.4s ease forwards";
           }, 420);
         }, 2000);
+
+        const closeSidebar = () => {
+          sidebar?.classList.remove("is-open");
+          sidebarOverlay?.classList.remove("is-visible");
+          sidebarToggle?.setAttribute("aria-expanded", "false");
+        };
+
+        sidebarToggle?.addEventListener("click", () => {
+          sidebar?.classList.toggle("is-open");
+          const isOpen = sidebar?.classList.contains("is-open");
+          sidebarOverlay?.classList.toggle("is-visible", isOpen);
+          sidebarToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+        });
+
+        sidebarOverlay?.addEventListener("click", closeSidebar);
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") closeSidebar();
+        });
       })();
     </script>
   </body>
